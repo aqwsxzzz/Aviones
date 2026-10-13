@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6499E2C5-4DE6-4393-8A86-D5DC70BEBE93}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Aviones_2._0</RootNamespace>
+    <AssemblyName>Aviones 2.0</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Aviones_2._0.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\frmAvisos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmAvisos.Designer.cs">
+      <DependentUpon>frmAvisos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Componentes.cs" />
+    <Compile Include="Common\ConexionSQL.cs" />
+    <Compile Include="Common\funcGenericas.cs" />
+    <Compile Include="Forms\Compras\frmCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Compras\frmCompras.Designer.cs">
+      <DependentUpon>frmCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Compras\frmFaltanteCom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Compras\frmFaltanteCom.Designer.cs">
+      <DependentUpon>frmFaltanteCom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Compras\frmIngresoCom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Compras\frmIngresoCom.Designer.cs">
+      <DependentUpon>frmIngresoCom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Compras\funcCompras.cs" />
+    <Compile Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.Designer.cs">
+      <DependentUpon>frmEliminarFamilia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\EliminarFamilias\funcionesEliminarFam.cs" />
+    <Compile Include="Forms\Materiales\frmIngreso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmIngreso.Designer.cs">
+      <DependentUpon>frmIngreso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmListados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmListados.Designer.cs">
+      <DependentUpon>frmListados.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\funcMateriales.cs" />
+    <Compile Include="Forms\Materiales\frmMateriales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmMateriales.Designer.cs">
+      <DependentUpon>frmMateriales.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\Modificaciones\frmModificaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\Modificaciones\frmModificaciones.Designer.cs">
+      <DependentUpon>frmModificaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\Modificar-EliminarMateriales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\Modificar-EliminarMateriales.Designer.cs">
+      <DependentUpon>Modificar-EliminarMateriales.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\Condicion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\Condicion.Designer.cs">
+      <DependentUpon>Condicion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmIngreso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmIngreso.Designer.cs">
+      <DependentUpon>frmIngreso.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmMaterialporModelo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmMaterialporModelo.Designer.cs">
+      <DependentUpon>frmMaterialporModelo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModificacionMod.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModificacionMod.Designer.cs">
+      <DependentUpon>frmModificacionMod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\funcModelos.cs" />
+    <Compile Include="Forms\Modelos\frmModelos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModelos.Designer.cs">
+      <DependentUpon>frmModelos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PantallaPrincipal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PantallaPrincipal.Designer.cs">
+      <DependentUpon>PantallaPrincipal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\frmAvisos.resx">
+      <DependentUpon>frmAvisos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Compras\frmCompras.resx">
+      <DependentUpon>frmCompras.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Compras\frmFaltanteCom.resx">
+      <DependentUpon>frmFaltanteCom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Compras\frmIngresoCom.resx">
+      <DependentUpon>frmIngresoCom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.resx">
+      <DependentUpon>frmEliminarFamilia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Materiales\frmIngreso.resx">
+      <DependentUpon>frmIngreso.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Materiales\frmMateriales.resx">
+      <DependentUpon>frmMateriales.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Materiales\frmListados.resx">
+      <DependentUpon>frmListados.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Materiales\Modificaciones\frmModificaciones.resx">
+      <DependentUpon>frmModificaciones.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Modelos\Condicion.resx">
+      <DependentUpon>Condicion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Modelos\frmIngreso.resx">
+      <DependentUpon>frmIngreso.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Modelos\frmMaterialporModelo.resx">
+      <DependentUpon>frmMaterialporModelo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Modelos\frmModelos.resx">
+      <DependentUpon>frmModelos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Modelos\frmModificacionMod.resx">
+      <DependentUpon>frmModificacionMod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PantallaPrincipal.resx">
+      <DependentUpon>PantallaPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prueba.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prueba1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Buscar.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Buscar 1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Ingresar.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Buscar 11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Modificar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Eliminar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Imprimir.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir del sistema.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir del sistema1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir del sistema2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir del sistema.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salida del sistema.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salida del sistema1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salir1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salida del sistema2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Salida del sistema3.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Regresa.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Se va.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Se va1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\la iguanas 1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DB\alter_valor_to_decimal.sql" />
+    <Content Include="DB\migrate_acopio_to_materiales.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

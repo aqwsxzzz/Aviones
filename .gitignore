@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+TestResults/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Database files (the DB is rebuilt from Aviones 2.0/DB/schema.sql + seed.sql)
+Base de datos/
+Respaldo/
+*.mdf
+*.ldf
+*.bak
