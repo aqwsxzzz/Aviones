@@ -78,6 +78,29 @@ Reconstructed from the code and `DB/migrate_acopio_to_materiales.sql`. The origi
 
 The migration copied only the **latest lot** of each material into `Materiales` (`ROW_NUMBER() … ORDER BY IdAcopio DESC`), so materials with more than one lot lost the older ones, and the code was only half-adapted.
 
+## New data design (branch `refactor/data-layer`)
+
+Decision (2026-10-14): **keep stock lots**. A material is a catalog entry; each acquisition is a lot with its own manufacturer, location, quantity, available and unit price. Models consume from specific lots.
+
+| Table | Replaces | Notes |
+|---|---|---|
+| `Familias` | `Familiares` | unique name |
+| `TiposUnidad` | free-text `Materiales.Tipo` | unique name |
+| `EstadosModelo` | free-text `Modelos.Estado` | Activo, En construcción, En reparación, Inactivo |
+| `Materiales` | `Materiales` (catalog part) | FK to family and unit type; `Estado` N/U checked |
+| `Lotes` | `Acopio` | `Disponible` is a number, `0 ≤ Disponible ≤ Cantidad`; new `FechaIngreso` |
+| `Modelos` | `Modelos` | FK to state |
+| `MaterialesModelo` | `MaterialesModelo` | references `IdLote`; deleting a model deletes its rows |
+| `vMaterialesStock` | — | one row per material with its lots summed |
+
+Quantities are `DECIMAL(18,3)` everywhere, money `DECIMAL(18,2)`.
+
+Data access lives in `Aviones 2.0/Data/`: one repository per table, all SQL parameterized (Dapper), and every stock movement (assign, change, remove, delete model) runs in a transaction that fails as a whole if a lot doesn't have enough. Integration tests in `Aviones 2.0.UnitTests/Data/` run against an `Aviones_Test` database.
+
+Reset the dev database with `Aviones 2.0/DB/reset.ps1`.
+
+The old screens still use the old tables, so they won't work against this schema until they're moved to the repositories.
+
 ## Cross-cutting problems
 
 - **"Acopio" leftovers.** Material data used to be split between `Materiales` and an `Acopio` table. A migration merged them, but the code was only half-updated: it still passes an "IdAcopio" around and checks for `Acopio`/`IdAcopioUltimo` at runtime. This is the root cause of the Modelos bugs.

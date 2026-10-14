@@ -43,6 +43,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -51,6 +52,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\Db.cs" />
+    <Compile Include="Data\Entidades.cs" />
+    <Compile Include="Data\Errores.cs" />
+    <Compile Include="Data\Repositorios\EstadoModeloRepositorio.cs" />
+    <Compile Include="Data\Repositorios\FamiliaRepositorio.cs" />
+    <Compile Include="Data\Repositorios\LoteRepositorio.cs" />
+    <Compile Include="Data\Repositorios\MaterialRepositorio.cs" />
+    <Compile Include="Data\Repositorios\ModeloRepositorio.cs" />
+    <Compile Include="Data\Repositorios\Stock.cs" />
+    <Compile Include="Data\Repositorios\TipoUnidadRepositorio.cs" />
     <Compile Include="Forms\frmAvisos.cs">
       <SubType>Form</SubType>
     </Compile>
