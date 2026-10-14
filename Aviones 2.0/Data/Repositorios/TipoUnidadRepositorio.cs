@@ -37,6 +37,26 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
+        public void Renombrar(int idTipoUnidad, string nombre)
+        {
+            nombre = nombre?.Trim();
+            if (string.IsNullOrEmpty(nombre))
+            {
+                throw new ReglaNegocioException("El tipo de unidad no puede quedar vacío.");
+            }
+            using (var cn = Db.Abrir())
+            {
+                try
+                {
+                    cn.Execute("UPDATE dbo.TiposUnidad SET Nombre = @nombre WHERE IdTipoUnidad = @idTipoUnidad", new { idTipoUnidad, nombre });
+                }
+                catch (SqlException ex) when (SqlErrores.EsDuplicado(ex))
+                {
+                    throw new ReglaNegocioException($"Ya existe el tipo \"{nombre}\".");
+                }
+            }
+        }
+
         public void Eliminar(int idTipoUnidad)
         {
             using (var cn = Db.Abrir())

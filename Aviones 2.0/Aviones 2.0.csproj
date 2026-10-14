@@ -93,44 +93,6 @@
       <DependentUpon>frmIngresoCom.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Compras\funcCompras.cs" />
-    <Compile Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.Designer.cs">
-      <DependentUpon>frmEliminarFamilia.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Materiales\EliminarFamilias\funcionesEliminarFam.cs" />
-    <Compile Include="Forms\Materiales\frmIngreso.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\frmIngreso.Designer.cs">
-      <DependentUpon>frmIngreso.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Materiales\frmListados.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\frmListados.Designer.cs">
-      <DependentUpon>frmListados.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Materiales\funcMateriales.cs" />
-    <Compile Include="Forms\Materiales\frmMateriales.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\frmMateriales.Designer.cs">
-      <DependentUpon>frmMateriales.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Materiales\Modificaciones\frmModificaciones.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\Modificaciones\frmModificaciones.Designer.cs">
-      <DependentUpon>frmModificaciones.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Materiales\Modificar-EliminarMateriales.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Materiales\Modificar-EliminarMateriales.Designer.cs">
-      <DependentUpon>Modificar-EliminarMateriales.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\Modelos\Condicion.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,22 +144,6 @@
     <EmbeddedResource Include="Forms\Compras\frmIngresoCom.resx">
       <DependentUpon>frmIngresoCom.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Materiales\EliminarFamilias\frmEliminarFamilia.resx">
-      <DependentUpon>frmEliminarFamilia.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Materiales\frmIngreso.resx">
-      <DependentUpon>frmIngreso.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Materiales\frmMateriales.resx">
-      <DependentUpon>frmMateriales.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Materiales\frmListados.resx">
-      <DependentUpon>frmListados.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Materiales\Modificaciones\frmModificaciones.resx">
-      <DependentUpon>frmModificaciones.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Modelos\Condicion.resx">
       <DependentUpon>Condicion.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -236,6 +182,41 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Forms\Materiales\frmMateriales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmMateriales.Designer.cs">
+      <DependentUpon>frmMateriales.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmMaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmMaterialEditor.Designer.cs">
+      <DependentUpon>frmMaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmLoteEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmLoteEditor.Designer.cs">
+      <DependentUpon>frmLoteEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmInformeValor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Materiales\frmInformeValor.Designer.cs">
+      <DependentUpon>frmInformeValor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Comun\frmListaEditable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Comun\frmListaEditable.Designer.cs">
+      <DependentUpon>frmListaEditable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Numeros.cs" />
+    <Compile Include="Common\Imagenes.cs" />
+    <Compile Include="Common\Mensajes.cs" />
+    <Compile Include="Common\Estilo.cs" />
+    <Compile Include="Common\ImpresionGrilla.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -316,8 +297,9 @@
     <None Include="Resources\la iguanas 1.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DB\alter_valor_to_decimal.sql" />
-    <Content Include="DB\migrate_acopio_to_materiales.sql" />
+    <None Include="DB\schema.sql" />
+    <None Include="DB\seed.sql" />
+    <None Include="DB\reset.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

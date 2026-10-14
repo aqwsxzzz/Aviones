@@ -14,6 +14,9 @@ Stock control for building model airplanes:
 
 ## Materiales
 
+> **Rebuilt on `refactor/data-layer` (2026-10-14).** One screen: filters (family, text that also searches manufacturer and location, "Sin stock", "A comprar"), the full list (zero-stock rows in gray), and for the selected material its photo, lots, and the models that use it. Dialogs for material (with optional first lot), lot, families/units, a value-per-family report, and multi-page printing. The table below describes the **old** code.
+
+
 Expected: list of all materials (zero stock included), filters, create / edit / delete, optional photo, and see which airplanes use each material.
 
 | Feature | Status | Notes |

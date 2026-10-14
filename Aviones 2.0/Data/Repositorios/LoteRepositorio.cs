@@ -79,6 +79,21 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
+        /// <summary>Fabricantes ya usados, para sugerirlos al escribir.</summary>
+        public List<string> ListarFabricantes() => ListarDistintos("Fabricante");
+
+        /// <summary>Ubicaciones ya usadas, para sugerirlas al escribir.</summary>
+        public List<string> ListarUbicaciones() => ListarDistintos("Ubicacion");
+
+        private static List<string> ListarDistintos(string columna)
+        {
+            using (var cn = Db.Abrir())
+            {
+                return cn.Query<string>(
+                    $"SELECT DISTINCT {columna} FROM dbo.Lotes WHERE {columna} IS NOT NULL AND {columna} <> '' ORDER BY {columna}").ToList();
+            }
+        }
+
         internal static int Insertar(IDbConnection cn, IDbTransaction tx, Lote lote)
         {
             Validar(lote);

@@ -128,6 +128,15 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
+        /// <summary>Grupos ya usados, para sugerirlos al escribir.</summary>
+        public List<string> ListarGrupos()
+        {
+            using (var cn = Db.Abrir())
+            {
+                return cn.Query<string>("SELECT DISTINCT Grupo FROM dbo.Materiales ORDER BY Grupo").ToList();
+            }
+        }
+
         public byte[] ObtenerImagen(int idMaterial)
         {
             using (var cn = Db.Abrir())
