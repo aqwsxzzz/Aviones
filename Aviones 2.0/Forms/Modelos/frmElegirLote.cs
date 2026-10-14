@@ -14,10 +14,15 @@ namespace Aviones_2._0.Forms.Modelos
     /// </summary>
     public partial class frmElegirLote : Form
     {
-        /// <summary>Un lote como se muestra: con lo disponible descontando lo que ya se agregó sin guardar.</summary>
+        /// <summary>
+        /// El stock nuevo o el usado de un lote, como se muestra: con lo disponible descontando
+        /// lo que ya se tomó en la edición sin guardar. Un lote con los dos stocks aparece dos veces.
+        /// </summary>
         public class LoteVista
         {
             public Lote Lote { get; set; }
+            public string Estado { get; set; }
+            public string Condicion => EstadosMaterial.Nombre(Estado);
             public string Fabricante => Lote.Fabricante;
             public string Ubicacion => Lote.Ubicacion;
             public decimal Disponible { get; set; }
@@ -27,16 +32,16 @@ namespace Aviones_2._0.Forms.Modelos
 
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private readonly LoteRepositorio lotes = new LoteRepositorio();
-        private readonly Func<int, decimal> usoPendiente;
+        private readonly Func<int, string, decimal> usoPendiente;
         private readonly Func<int, decimal> usoPendienteMaterial;
         private readonly Action<FilaMaterial> agregar;
         private List<MaterialStock> conStock = new List<MaterialStock>();
         private bool cargando;
 
-        /// <param name="usoPendiente">Cuánto de un lote ya está tomado en la edición sin guardar.</param>
+        /// <param name="usoPendiente">Cuánto del stock nuevo o usado de un lote ya está tomado en la edición sin guardar.</param>
         /// <param name="usoPendienteMaterial">Lo mismo, sumado por material.</param>
         /// <param name="agregar">Recibe cada material elegido.</param>
-        public frmElegirLote(Func<int, decimal> usoPendiente, Func<int, decimal> usoPendienteMaterial, Action<FilaMaterial> agregar)
+        public frmElegirLote(Func<int, string, decimal> usoPendiente, Func<int, decimal> usoPendienteMaterial, Action<FilaMaterial> agregar)
         {
             InitializeComponent();
             this.usoPendiente = usoPendiente;
@@ -100,13 +105,17 @@ namespace Aviones_2._0.Forms.Modelos
                 return;
             }
             var vistas = lotes.ListarPorMaterial(m.IdMaterial, soloConStock: true)
-                .Select(l => new LoteVista { Lote = l, Disponible = l.Disponible - usoPendiente(l.IdLote) })
+                .SelectMany(l => new[]
+                {
+                    new LoteVista { Lote = l, Estado = EstadosMaterial.Nuevo, Disponible = l.DisponibleNuevo - usoPendiente(l.IdLote, EstadosMaterial.Nuevo) },
+                    new LoteVista { Lote = l, Estado = EstadosMaterial.Usado, Disponible = l.DisponibleUsado - usoPendiente(l.IdLote, EstadosMaterial.Usado) }
+                })
                 .Where(v => v.Disponible > 0)
                 .ToList();
             dgvLotes.DataSource = OrdenGrilla.Aplicar(dgvLotes, vistas);
             labLotes.Text = vistas.Count == 1
-                ? $"Lote de {Descripcion(m)}"
-                : $"Lotes de {Descripcion(m)} ({vistas.Count}): elija de cuál se usa";
+                ? $"Stock de {Descripcion(m)}"
+                : $"Stock de {Descripcion(m)} ({vistas.Count} opciones): elija de cuál se usa";
         }
 
         private static string Descripcion(MaterialStock m) =>
@@ -166,7 +175,7 @@ namespace Aviones_2._0.Forms.Modelos
             }
             if (cantidad > vista.Disponible)
             {
-                Mensajes.Aviso(this, $"La cantidad supera lo disponible en ese lote ({Numeros.Cantidad(vista.Disponible)}).");
+                Mensajes.Aviso(this, $"La cantidad supera lo disponible {vista.Condicion.ToLower()} en ese lote ({Numeros.Cantidad(vista.Disponible)}).");
                 txtCantidad.Focus();
                 return;
             }
@@ -174,6 +183,7 @@ namespace Aviones_2._0.Forms.Modelos
             agregar(new FilaMaterial
             {
                 IdLote = vista.Lote.IdLote,
+                Estado = vista.Estado,
                 IdMaterial = m.IdMaterial,
                 Familia = m.Familia,
                 Material = Descripcion(m),
@@ -183,7 +193,7 @@ namespace Aviones_2._0.Forms.Modelos
                 ValorUnitario = vista.ValorUnitario
             });
 
-            labEstado.Text = $"Agregado: {Numeros.Cantidad(cantidad)} {m.TipoUnidad} de {Descripcion(m)}";
+            labEstado.Text = $"Agregado: {Numeros.Cantidad(cantidad)} {m.TipoUnidad} de {Descripcion(m)} ({vista.Condicion.ToLower()})";
             txtCantidad.Clear();
 
             int idMaterial = m.IdMaterial;

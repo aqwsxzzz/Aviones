@@ -153,6 +153,35 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Lote_CompradoUsadoEntraTodoComoUsado()
+        {
+            var (idMaterial, _) = CrearMaterialConLote(1m);
+            int idLote = lotes.Crear(new Lote { IdMaterial = idMaterial, Cantidad = 4m, CompradoUsado = true, ValorUnitario = 5m });
+
+            var lote = lotes.Obtener(idLote);
+            Assert.AreEqual(0m, lote.DisponibleNuevo);
+            Assert.AreEqual(4m, lote.DisponibleUsado);
+            var fila = materiales.ListarStock().Single();
+            Assert.AreEqual(1m, fila.DisponibleNuevo);
+            Assert.AreEqual(4m, fila.DisponibleUsado);
+            Assert.AreEqual(5m, fila.Disponible);
+        }
+
+        [TestMethod]
+        public void LoteActualizar_CompradoUsadoAjustaElStockUsado()
+        {
+            var (idMaterial, _) = CrearMaterialConLote(1m);
+            int idLote = lotes.Crear(new Lote { IdMaterial = idMaterial, Cantidad = 4m, CompradoUsado = true });
+
+            var lote = lotes.Obtener(idLote);
+            lote.Cantidad = 6m;
+            lotes.Actualizar(lote);
+
+            Assert.AreEqual(6m, lotes.Obtener(idLote).DisponibleUsado);
+            Assert.AreEqual(0m, lotes.Obtener(idLote).DisponibleNuevo);
+        }
+
+        [TestMethod]
         public void LoteEliminar_UsadoEnModeloNoSePuede()
         {
             var (_, idLote) = CrearMaterialConLote(5m);

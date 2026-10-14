@@ -37,7 +37,7 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 Text = "Nuevo ingreso";
                 dtpFecha.Value = DateTime.Today;
-                labUso.Text = "Todo lo ingresado queda disponible.";
+                labUso.Text = "Todo lo ingresado queda disponible, como nuevo o como usado según se compró.";
             }
             else
             {
@@ -47,11 +47,13 @@ namespace Aviones_2._0.Forms.Materiales
                 txtCantidad.Text = Numeros.Cantidad(lote.Cantidad);
                 txtValor.Text = Numeros.Dinero(lote.ValorUnitario);
                 dtpFecha.Value = lote.FechaIngreso;
-                decimal usado = lote.Cantidad - lote.Disponible;
-                labUso.Text = usado > 0
-                    ? $"Ya se usaron {Numeros.Cantidad(usado)} en modelos; quedan {Numeros.Cantidad(lote.Disponible)}.\n"
-                      + "Si cambia la cantidad, lo disponible cambia en la misma diferencia."
-                    : "No se usó en ningún modelo.";
+                radCompraUsado.Checked = lote.CompradoUsado;
+                radCompraNuevo.Checked = !lote.CompradoUsado;
+                flpCompra.Enabled = false;   // cómo se compró no se cambia después
+                labUso.Text = $"Quedan {Numeros.Cantidad(lote.DisponibleNuevo)} nuevos y {Numeros.Cantidad(lote.DisponibleUsado)} usados"
+                    + (lote.Consumido > 0 ? $"; salieron {Numeros.Cantidad(lote.Consumido)} (en modelos o descartados)." : ".")
+                    + "\nSi cambia la cantidad, lo disponible " + (lote.CompradoUsado ? "usado" : "nuevo")
+                    + " cambia en la misma diferencia.";
             }
             ActiveControl = txtFabricante;
         }
@@ -78,6 +80,7 @@ namespace Aviones_2._0.Forms.Materiales
                 Fabricante = string.IsNullOrWhiteSpace(txtFabricante.Text) ? null : txtFabricante.Text.Trim(),
                 Ubicacion = string.IsNullOrWhiteSpace(txtUbicacion.Text) ? null : txtUbicacion.Text.Trim(),
                 Cantidad = cantidad,
+                CompradoUsado = radCompraUsado.Checked,
                 ValorUnitario = valor ?? 0m,
                 FechaIngreso = dtpFecha.Value.Date
             };

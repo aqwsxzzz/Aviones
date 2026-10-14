@@ -106,7 +106,10 @@ namespace Aviones_2._0.Forms.Materiales
 
             int sinStock = lista.Count(m => m.Disponible == 0);
             decimal valor = lista.Sum(m => m.ValorDisponible);
-            labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   Valor disponible: $ {Numeros.Dinero(valor)}";
+            decimal usado = lista.Sum(m => m.DisponibleUsado);
+            labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   "
+                + (usado > 0 ? $"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado   ·   " : "")
+                + $"Valor disponible: $ {Numeros.Dinero(valor)}";
 
             MostrarDetalle();
         }
@@ -227,11 +230,6 @@ namespace Aviones_2._0.Forms.Materiales
             if (e.RowIndex < 0 || !(dgvMateriales.Rows[e.RowIndex].DataBoundItem is MaterialStock m))
             {
                 return;
-            }
-            if (e.ColumnIndex == colEstado.Index)
-            {
-                e.Value = m.Estado == EstadosMaterial.Usado ? "Usado" : "Nuevo";
-                e.FormattingApplied = true;
             }
             if (m.Disponible == 0)
             {

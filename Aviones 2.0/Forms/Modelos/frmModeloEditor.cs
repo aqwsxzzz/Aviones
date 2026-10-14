@@ -24,8 +24,8 @@ namespace Aviones_2._0.Forms.Modelos
         private readonly int? idModelo;
 
         private readonly BindingList<FilaMaterial> filas = new BindingList<FilaMaterial>();
-        private readonly List<MaterialQuitado> quitados = new List<MaterialQuitado>();
-        private readonly List<FilaMaterial> filasQuitadas = new List<FilaMaterial>();
+        /// <summary>Materiales guardados que se quitaron en esta edición, con qué pasa con cada uno.</summary>
+        private readonly List<(FilaMaterial Fila, DestinoMaterial Destino)> quitados = new List<(FilaMaterial, DestinoMaterial)>();
 
         private byte[] foto;
         private bool fotoCambiada;
@@ -84,6 +84,7 @@ namespace Aviones_2._0.Forms.Modelos
                         {
                             IdMaterialModelo = m.IdMaterialModelo,
                             IdLote = m.IdLote,
+                            Estado = m.Estado,
                             IdMaterial = m.IdMaterial,
                             Familia = m.Familia,
                             Material = string.Join(" ", new[] { m.Grupo, m.Caracteristica, m.Color, m.Medidas }
@@ -116,26 +117,51 @@ namespace Aviones_2._0.Forms.Modelos
 
         #region Materiales
 
+        /// <summary>A qué stock del lote va lo que sale del modelo (null si se descarta).</summary>
+        private static string EstadoDestino(DestinoMaterial destino) =>
+            destino == DestinoMaterial.Nuevo ? EstadosMaterial.Nuevo
+            : destino == DestinoMaterial.Usado ? EstadosMaterial.Usado
+            : null;
+
         /// <summary>
-        /// Cuánto de un lote toman los cambios todavía sin guardar
-        /// (positivo: se va a descontar; negativo: se va a devolver).
+        /// Cuánto toma un renglón del stock nuevo o usado de un lote con los cambios sin guardar
+        /// (positivo: se va a descontar; negativo: va a volver).
         /// </summary>
-        private decimal UsoPendiente(int idLote) =>
-            filas.Where(f => f.IdLote == idLote).Sum(f => f.Cantidad - f.CantidadOriginal)
-            - quitados.Where(q => q.DevolverAlStock).Join(filasQuitadas.Where(f => f.IdLote == idLote),
-                q => q.IdMaterialModelo, f => f.IdMaterialModelo.Value, (q, f) => f.CantidadOriginal).Sum();
+        private static decimal Contribucion(FilaMaterial f, int idLote, string estado)
+        {
+            if (f.IdLote != idLote)
+            {
+                return 0m;
+            }
+            decimal c = 0m;
+            if (f.Cantidad > f.CantidadOriginal && f.Estado == estado)
+            {
+                c += f.Cantidad - f.CantidadOriginal;
+            }
+            if (f.Cantidad < f.CantidadOriginal && EstadoDestino(f.DestinoBaja) == estado)
+            {
+                c -= f.CantidadOriginal - f.Cantidad;
+            }
+            return c;
+        }
+
+        /// <summary>Cuánto del stock nuevo o usado de un lote toman todos los cambios sin guardar.</summary>
+        private decimal UsoPendiente(int idLote, string estado) =>
+            filas.Sum(f => Contribucion(f, idLote, estado))
+            - quitados.Where(q => q.Fila.IdLote == idLote && EstadoDestino(q.Destino) == estado).Sum(q => q.Fila.CantidadOriginal);
 
         private decimal UsoPendienteMaterial(int idMaterial) =>
             filas.Where(f => f.IdMaterial == idMaterial).Select(f => f.IdLote)
-                .Concat(filasQuitadas.Where(f => f.IdMaterial == idMaterial).Select(f => f.IdLote))
-                .Distinct().Sum(UsoPendiente);
+                .Concat(quitados.Where(q => q.Fila.IdMaterial == idMaterial).Select(q => q.Fila.IdLote))
+                .Distinct()
+                .Sum(l => UsoPendiente(l, EstadosMaterial.Nuevo) + UsoPendiente(l, EstadosMaterial.Usado));
 
         private FilaMaterial FilaSeleccionada() =>
             dgvMateriales.SelectedRows.Count > 0 ? dgvMateriales.SelectedRows[0].DataBoundItem as FilaMaterial : null;
 
         private void AgregarFila(FilaMaterial nueva)
         {
-            var existente = filas.FirstOrDefault(f => f.IdLote == nueva.IdLote);
+            var existente = filas.FirstOrDefault(f => f.IdLote == nueva.IdLote && f.Estado == nueva.Estado);
             if (existente != null)
             {
                 existente.Cantidad += nueva.Cantidad;
@@ -169,15 +195,33 @@ namespace Aviones_2._0.Forms.Modelos
             {
                 return;
             }
-            decimal maximo = fila.Cantidad + lote.Disponible - UsoPendiente(fila.IdLote);
+            // Lo que puede llegar a usar: lo guardado más lo que queda en su stock (nuevo o usado)
+            // sin contar lo que este mismo renglón ya toma o devuelve en esta edición.
+            decimal disponible = fila.Estado == EstadosMaterial.Usado ? lote.DisponibleUsado : lote.DisponibleNuevo;
+            decimal libre = disponible - (UsoPendiente(fila.IdLote, fila.Estado) - Contribucion(fila, fila.IdLote, fila.Estado));
+            decimal maximo = fila.CantidadOriginal + libre;
+
             var nueva = frmCantidad.Pedir(this, "Cambiar cantidad",
-                $"¿Cuánto de \"{fila.Material}\" usa el modelo? ({fila.Unidad})", fila.Cantidad, maximo);
-            if (nueva.HasValue && nueva.Value != fila.Cantidad)
+                $"¿Cuánto de \"{fila.Material}\" usa el modelo? ({fila.Unidad}, {fila.Condicion.ToLower()})", fila.Cantidad, maximo);
+            if (!nueva.HasValue || nueva.Value == fila.Cantidad)
             {
-                fila.Cantidad = nueva.Value;
-                filas.ResetItem(filas.IndexOf(fila));
-                modificado = true;
+                return;
             }
+
+            // Si queda menos de lo guardado, lo que se quita puede volver al stock o descartarse
+            if (!fila.EsNueva && nueva.Value < fila.CantidadOriginal)
+            {
+                var destino = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal - nueva.Value, fila.Unidad, fila.Estado);
+                if (!destino.HasValue)
+                {
+                    return;
+                }
+                fila.DestinoBaja = destino.Value;
+            }
+
+            fila.Cantidad = nueva.Value;
+            filas.ResetItem(filas.IndexOf(fila));
+            modificado = true;
         }
 
         private void dgvMateriales_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -197,20 +241,12 @@ namespace Aviones_2._0.Forms.Modelos
             }
             if (!fila.EsNueva)
             {
-                var respuesta = MessageBox.Show(this,
-                    $"¿\"{fila.Material}\" se recicla?\n\n" +
-                    "Sí: vuelve al stock.\nNo: se da por consumido.",
-                    "Quitar material", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
-                if (respuesta == DialogResult.Cancel)
+                var destino = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal, fila.Unidad, fila.Estado);
+                if (!destino.HasValue)
                 {
                     return;
                 }
-                quitados.Add(new MaterialQuitado
-                {
-                    IdMaterialModelo = fila.IdMaterialModelo.Value,
-                    DevolverAlStock = respuesta == DialogResult.Yes
-                });
-                filasQuitadas.Add(fila);
+                quitados.Add((fila, destino.Value));
             }
             filas.Remove(fila);
             modificado = true;
@@ -310,16 +346,24 @@ namespace Aviones_2._0.Forms.Modelos
             {
                 if (EsNuevo)
                 {
-                    IdModelo = modelos.Crear(modelo, filas.Select(f => new LoteAsignado(f.IdLote, f.Cantidad)));
+                    IdModelo = modelos.Crear(modelo, filas.Select(f => new LoteAsignado(f.IdLote, f.Cantidad, f.Estado)));
                 }
                 else
                 {
                     var cambios = new CambiosDeMateriales();
-                    cambios.Quitados.AddRange(quitados);
+                    cambios.Quitados.AddRange(quitados.Select(q =>
+                        new MaterialQuitado { IdMaterialModelo = q.Fila.IdMaterialModelo.Value, Destino = q.Destino }));
+                    // Primero las bajas (pueden devolver stock que usan las subas)
                     cambios.Cantidades.AddRange(filas
                         .Where(f => !f.EsNueva && f.Cantidad != f.CantidadOriginal)
-                        .Select(f => new CambioDeCantidad { IdMaterialModelo = f.IdMaterialModelo.Value, Cantidad = f.Cantidad }));
-                    cambios.Agregados.AddRange(filas.Where(f => f.EsNueva).Select(f => new LoteAsignado(f.IdLote, f.Cantidad)));
+                        .OrderBy(f => f.Cantidad > f.CantidadOriginal)
+                        .Select(f => new CambioDeCantidad
+                        {
+                            IdMaterialModelo = f.IdMaterialModelo.Value,
+                            Cantidad = f.Cantidad,
+                            Destino = f.DestinoBaja
+                        }));
+                    cambios.Agregados.AddRange(filas.Where(f => f.EsNueva).Select(f => new LoteAsignado(f.IdLote, f.Cantidad, f.Estado)));
                     modelos.Guardar(modelo, cambios);
                     IdModelo = modelo.IdModelo;
                 }

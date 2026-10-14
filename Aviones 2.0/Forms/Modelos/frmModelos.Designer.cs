@@ -41,6 +41,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colMatCaracteristica = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMatMedidas = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMatFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMatCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMatUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMatSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -259,6 +260,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colMatCaracteristica,
             this.colMatMedidas,
             this.colMatFabricante,
+            this.colMatCondicion,
             this.colMatCantidad,
             this.colMatUnidad,
             this.colMatSubtotal});
@@ -301,6 +303,14 @@ namespace Aviones_2._0.Forms.Modelos
             this.colMatFabricante.HeaderText = "Fabricante";
             this.colMatFabricante.MinimumWidth = 80;
             this.colMatFabricante.Name = "colMatFabricante";
+            //
+            // colMatCondicion
+            //
+            this.colMatCondicion.DataPropertyName = "Condicion";
+            this.colMatCondicion.FillWeight = 55F;
+            this.colMatCondicion.HeaderText = "Salió";
+            this.colMatCondicion.MinimumWidth = 55;
+            this.colMatCondicion.Name = "colMatCondicion";
             //
             // colMatCantidad
             //
@@ -484,6 +494,7 @@ namespace Aviones_2._0.Forms.Modelos
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatCaracteristica;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatMedidas;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatFabricante;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatCantidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatUnidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMatSubtotal;

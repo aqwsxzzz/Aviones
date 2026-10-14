@@ -29,11 +29,16 @@ namespace Aviones_2._0.Forms.Materiales
             this.txtValor = new System.Windows.Forms.TextBox();
             this.labFecha = new System.Windows.Forms.Label();
             this.dtpFecha = new System.Windows.Forms.DateTimePicker();
+            this.labCompra = new System.Windows.Forms.Label();
+            this.flpCompra = new System.Windows.Forms.FlowLayoutPanel();
+            this.radCompraNuevo = new System.Windows.Forms.RadioButton();
+            this.radCompraUsado = new System.Windows.Forms.RadioButton();
             this.labUso = new System.Windows.Forms.Label();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
             this.botCancelar = new System.Windows.Forms.Button();
             this.botGuardar = new System.Windows.Forms.Button();
             this.tlpPrincipal.SuspendLayout();
+            this.flpCompra.SuspendLayout();
             this.flpBotones.SuspendLayout();
             this.SuspendLayout();
             //
@@ -53,7 +58,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.txtValor, 1, 4);
             this.tlpPrincipal.Controls.Add(this.labFecha, 0, 5);
             this.tlpPrincipal.Controls.Add(this.dtpFecha, 1, 5);
-            this.tlpPrincipal.Controls.Add(this.labUso, 0, 6);
+            this.tlpPrincipal.Controls.Add(this.labCompra, 0, 6);
+            this.tlpPrincipal.Controls.Add(this.flpCompra, 1, 6);
+            this.tlpPrincipal.Controls.Add(this.labUso, 0, 7);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 8);
             this.tlpPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPrincipal.Name = "tlpPrincipal";
@@ -155,6 +162,38 @@ namespace Aviones_2._0.Forms.Materiales
             this.dtpFecha.Size = new System.Drawing.Size(120, 23);
             this.dtpFecha.TabIndex = 4;
             //
+            // labCompra
+            //
+            this.labCompra.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labCompra.AutoSize = true;
+            this.labCompra.Name = "labCompra";
+            this.labCompra.Text = "Se compró";
+            //
+            // flpCompra
+            //
+            this.flpCompra.AutoSize = true;
+            this.flpCompra.Controls.Add(this.radCompraNuevo);
+            this.flpCompra.Controls.Add(this.radCompraUsado);
+            this.flpCompra.Name = "flpCompra";
+            this.flpCompra.TabIndex = 5;
+            //
+            // radCompraNuevo
+            //
+            this.radCompraNuevo.AutoSize = true;
+            this.radCompraNuevo.Checked = true;
+            this.radCompraNuevo.Name = "radCompraNuevo";
+            this.radCompraNuevo.TabIndex = 0;
+            this.radCompraNuevo.TabStop = true;
+            this.radCompraNuevo.Text = "Nuevo";
+            //
+            // radCompraUsado
+            //
+            this.radCompraUsado.AutoSize = true;
+            this.radCompraUsado.Margin = new System.Windows.Forms.Padding(20, 3, 3, 3);
+            this.radCompraUsado.Name = "radCompraUsado";
+            this.radCompraUsado.TabIndex = 1;
+            this.radCompraUsado.Text = "Usado";
+            //
             // labUso
             //
             this.labUso.AutoSize = true;
@@ -197,7 +236,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.CancelButton = this.botCancelar;
-            this.ClientSize = new System.Drawing.Size(520, 400);
+            this.ClientSize = new System.Drawing.Size(540, 440);
             this.Controls.Add(this.tlpPrincipal);
             this.Font = new System.Drawing.Font("Arial", 10F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -210,6 +249,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.Load += new System.EventHandler(this.frmLoteEditor_Load);
             this.tlpPrincipal.ResumeLayout(false);
             this.tlpPrincipal.PerformLayout();
+            this.flpCompra.ResumeLayout(false);
+            this.flpCompra.PerformLayout();
             this.flpBotones.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -229,6 +270,10 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.TextBox txtValor;
         private System.Windows.Forms.Label labFecha;
         private System.Windows.Forms.DateTimePicker dtpFecha;
+        private System.Windows.Forms.Label labCompra;
+        private System.Windows.Forms.FlowLayoutPanel flpCompra;
+        private System.Windows.Forms.RadioButton radCompraNuevo;
+        private System.Windows.Forms.RadioButton radCompraUsado;
         private System.Windows.Forms.Label labUso;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;
         private System.Windows.Forms.Button botCancelar;

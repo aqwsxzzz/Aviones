@@ -7,7 +7,7 @@ namespace Aviones_2._0.Data.Repositorios
     public class MaterialRepositorio
     {
         private const string ColumnasMaterial =
-            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, Estado, IdTipoUnidad, CantidadAComprar";
+            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, CantidadAComprar";
 
         /// <summary>Todos los materiales (también los sin stock), con el stock sumado de sus lotes.</summary>
         public List<MaterialStock> ListarStock(FiltroMateriales filtro = null)
@@ -65,8 +65,8 @@ namespace Aviones_2._0.Data.Repositorios
             using (var tx = cn.BeginTransaction())
             {
                 int id = cn.ExecuteScalar<int>(@"
-                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, Estado, IdTipoUnidad, CantidadAComprar)
-                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @Estado, @IdTipoUnidad, @CantidadAComprar);
+                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, CantidadAComprar)
+                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @CantidadAComprar);
                     SELECT CAST(SCOPE_IDENTITY() AS int);", material, tx);
 
                 if (loteInicial != null)
@@ -89,7 +89,7 @@ namespace Aviones_2._0.Data.Repositorios
                 cn.Execute(@"
                     UPDATE dbo.Materiales SET
                         IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
-                        Medidas = @Medidas, Codigo = @Codigo, Estado = @Estado, IdTipoUnidad = @IdTipoUnidad,
+                        Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
                         CantidadAComprar = @CantidadAComprar
                     WHERE IdMaterial = @IdMaterial", material);
             }
@@ -119,7 +119,7 @@ namespace Aviones_2._0.Data.Repositorios
             using (var cn = Db.Abrir())
             {
                 return cn.Query<UsoDeMaterial>(@"
-                    SELECT Mo.IdModelo, Mo.Nombre AS Modelo, Mo.Alias, MM.IdLote, MM.Cantidad
+                    SELECT Mo.IdModelo, Mo.Nombre AS Modelo, Mo.Alias, MM.IdLote, MM.Estado, MM.Cantidad
                     FROM dbo.MaterialesModelo MM
                     JOIN dbo.Lotes L    ON L.IdLote = MM.IdLote
                     JOIN dbo.Modelos Mo ON Mo.IdModelo = MM.IdModelo
@@ -201,10 +201,6 @@ namespace Aviones_2._0.Data.Repositorios
             if (string.IsNullOrWhiteSpace(m.Grupo))
             {
                 throw new ReglaNegocioException("El grupo del material es obligatorio.");
-            }
-            if (m.Estado != EstadosMaterial.Nuevo && m.Estado != EstadosMaterial.Usado)
-            {
-                throw new ReglaNegocioException("El estado del material tiene que ser Nuevo o Usado.");
             }
             if (m.CantidadAComprar < 0)
             {

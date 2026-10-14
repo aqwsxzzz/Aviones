@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
@@ -10,21 +11,30 @@ using Aviones_2._0.Data.Repositorios;
 namespace Aviones_2._0.Forms.Modelos
 {
     /// <summary>
-    /// Elimina un modelo preguntando, material por material, qué se recicla y vuelve al stock
-    /// (todo o una parte) y qué se da por consumido.
+    /// Elimina un modelo preguntando, material por material, qué pasa con cada pieza:
+    /// vuelve como usado (se recicla), como nuevo, o se descarta. Puede volver sólo una parte.
     /// </summary>
     public partial class frmEliminarModelo : Form
     {
         public class FilaDevolucion
         {
             public int IdMaterialModelo { get; set; }
-            public bool Vuelve { get; set; }
+            public string Estado { get; set; }
+            public string Condicion => EstadosMaterial.Nombre(Estado);
+            public DestinoMaterial Destino { get; set; } = DestinoMaterial.Descartar;
             public string Familia { get; set; }
             public string Material { get; set; }
             public string Fabricante { get; set; }
             public decimal Usado { get; set; }
             public decimal CantidadVuelve { get; set; }
             public string Unidad { get; set; }
+            public bool Vuelve => Destino != DestinoMaterial.Descartar;
+        }
+
+        private class OpcionDestino
+        {
+            public DestinoMaterial Valor { get; set; }
+            public string Texto { get; set; }
         }
 
         private readonly ModeloRepositorio modelos = new ModeloRepositorio();
@@ -44,12 +54,23 @@ namespace Aviones_2._0.Forms.Modelos
             botEliminar.BackColor = Color.Firebrick;
             Estilo.BotonSecundario(botCancelar);
 
+            colDestino.ValueType = typeof(DestinoMaterial);
+            colDestino.DisplayMember = nameof(OpcionDestino.Texto);
+            colDestino.ValueMember = nameof(OpcionDestino.Valor);
+            colDestino.DataSource = new List<OpcionDestino>
+            {
+                new OpcionDestino { Valor = DestinoMaterial.Descartar, Texto = "Se descarta" },
+                new OpcionDestino { Valor = DestinoMaterial.Usado, Texto = "Vuelve como usado" },
+                new OpcionDestino { Valor = DestinoMaterial.Nuevo, Texto = "Vuelve como nuevo" }
+            };
+
             labTitulo.Text = $"Eliminar \"{modelo.Nombre}\"" + (string.IsNullOrEmpty(modelo.Alias) ? "" : $" ({modelo.Alias})");
             foreach (var m in modelos.ListarMateriales(modelo.IdModelo))
             {
                 filas.Add(new FilaDevolucion
                 {
                     IdMaterialModelo = m.IdMaterialModelo,
+                    Estado = m.Estado,
                     Familia = m.Familia,
                     Material = string.Join(" ", new[] { m.Grupo, m.Caracteristica, m.Color, m.Medidas }
                         .Where(s => !string.IsNullOrWhiteSpace(s))),
@@ -66,30 +87,30 @@ namespace Aviones_2._0.Forms.Modelos
 
         private void ActualizarResumen()
         {
-            int vuelven = filas.Count(f => f.Vuelve);
-            labResumen.Text = vuelven == 0
-                ? "Ningún material vuelve al stock."
-                : $"{vuelven} de {filas.Count} materiales vuelven al stock.";
+            int usados = filas.Count(f => f.Destino == DestinoMaterial.Usado);
+            int nuevos = filas.Count(f => f.Destino == DestinoMaterial.Nuevo);
+            int descartados = filas.Count - usados - nuevos;
+            labResumen.Text = $"Vuelven como usados: {usados}   ·   como nuevos: {nuevos}   ·   se descartan: {descartados}";
         }
 
-        private void MarcarTodos(bool vuelve)
+        private void MarcarTodos(DestinoMaterial destino)
         {
             dgvMateriales.EndEdit();
             foreach (var f in filas)
             {
-                f.Vuelve = vuelve;
+                f.Destino = destino;
             }
             filas.ResetBindings();
         }
 
-        private void botTodos_Click(object sender, EventArgs e) => MarcarTodos(true);
+        private void botTodos_Click(object sender, EventArgs e) => MarcarTodos(DestinoMaterial.Usado);
 
-        private void botNinguno_Click(object sender, EventArgs e) => MarcarTodos(false);
+        private void botNinguno_Click(object sender, EventArgs e) => MarcarTodos(DestinoMaterial.Descartar);
 
         private void dgvMateriales_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
-            // Que el tilde se aplique al hacer clic, sin tener que salir de la celda
-            if (dgvMateriales.IsCurrentCellDirty && dgvMateriales.CurrentCell is DataGridViewCheckBoxCell)
+            // Que la elección se aplique al momento, sin tener que salir de la celda
+            if (dgvMateriales.IsCurrentCellDirty && dgvMateriales.CurrentCell is DataGridViewComboBoxCell)
             {
                 dgvMateriales.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
@@ -102,11 +123,17 @@ namespace Aviones_2._0.Forms.Modelos
                 return;
             }
             var fila = filas[e.RowIndex];
-            if (e.ColumnIndex == colCantidadVuelve.Index && fila.CantidadVuelve > 0 && !fila.Vuelve)
+            if (e.ColumnIndex == colDestino.Index && fila.Destino == DestinoMaterial.Nuevo && fila.Estado == EstadosMaterial.Usado)
             {
-                // Escribir una cantidad implica que se recicla
-                fila.Vuelve = true;
-                filas.ResetItem(e.RowIndex);
+                Mensajes.Aviso(this, "Ese material salió del stock usado: no puede volver como nuevo.");
+                fila.Destino = DestinoMaterial.Usado;
+                BeginInvoke(new Action(() => filas.ResetItem(e.RowIndex)));
+            }
+            else if (e.ColumnIndex == colCantidadVuelve.Index && fila.CantidadVuelve > 0 && !fila.Vuelve)
+            {
+                // Escribir una cantidad implica que vuelve; por defecto como usado (se recicla)
+                fila.Destino = DestinoMaterial.Usado;
+                BeginInvoke(new Action(() => filas.ResetItem(e.RowIndex)));
             }
             ActualizarResumen();
         }
@@ -161,12 +188,12 @@ namespace Aviones_2._0.Forms.Modelos
             }
 
             var devolver = filas.Where(f => f.Vuelve && f.CantidadVuelve > 0)
-                .Select(f => new MaterialADevolver(f.IdMaterialModelo, f.CantidadVuelve))
+                .Select(f => new MaterialADevolver(f.IdMaterialModelo, f.CantidadVuelve, f.Destino))
                 .ToList();
 
             string pregunta = devolver.Count == 0
-                ? $"Se elimina \"{modelo.Nombre}\" y todos sus materiales se dan por consumidos.\n\n¿Continuar?"
-                : $"Se elimina \"{modelo.Nombre}\" y {devolver.Count} materiales vuelven al stock; el resto se da por consumido.\n\n¿Continuar?";
+                ? $"Se elimina \"{modelo.Nombre}\" y todos sus materiales se descartan.\n\n¿Continuar?"
+                : $"Se elimina \"{modelo.Nombre}\" y {devolver.Count} materiales vuelven al stock; el resto se descarta.\n\n¿Continuar?";
             if (!Mensajes.Confirmar(this, pregunta, "Eliminar modelo"))
             {
                 return;

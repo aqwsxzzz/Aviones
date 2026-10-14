@@ -86,8 +86,6 @@ namespace Aviones_2._0.Forms.Materiales
             txtColor.Text = m.Color;
             txtMedidas.Text = m.Medidas;
             txtCodigo.Text = m.Codigo;
-            radUsado.Checked = m.Estado == EstadosMaterial.Usado;
-            radNuevo.Checked = !radUsado.Checked;
             cboUnidad.SelectedValue = m.IdTipoUnidad;
             txtAComprar.Text = Numeros.Cantidad(m.CantidadAComprar);
         }
@@ -176,6 +174,7 @@ namespace Aviones_2._0.Forms.Materiales
                     Fabricante = Limpio(txtFabricante.Text),
                     Ubicacion = Limpio(txtUbicacion.Text),
                     Cantidad = cantidad,
+                    CompradoUsado = radUsado.Checked,
                     ValorUnitario = valor ?? 0m,
                     FechaIngreso = dtpFecha.Value.Date
                 };
@@ -190,7 +189,6 @@ namespace Aviones_2._0.Forms.Materiales
                 Color = Limpio(txtColor.Text),
                 Medidas = Limpio(txtMedidas.Text),
                 Codigo = Limpio(txtCodigo.Text),
-                Estado = radUsado.Checked ? EstadosMaterial.Usado : EstadosMaterial.Nuevo,
                 IdTipoUnidad = idTipoUnidad,
                 CantidadAComprar = aComprar
             };

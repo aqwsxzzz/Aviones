@@ -88,8 +88,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.txtMedidas, 1, 4);
             this.tlpPrincipal.Controls.Add(this.labCodigo, 0, 5);
             this.tlpPrincipal.Controls.Add(this.txtCodigo, 1, 5);
-            this.tlpPrincipal.Controls.Add(this.labEstado, 0, 6);
-            this.tlpPrincipal.Controls.Add(this.flpEstado, 1, 6);
             this.tlpPrincipal.Controls.Add(this.labUnidad, 0, 7);
             this.tlpPrincipal.Controls.Add(this.flpUnidad, 1, 7);
             this.tlpPrincipal.Controls.Add(this.labAComprar, 0, 8);
@@ -208,8 +206,9 @@ namespace Aviones_2._0.Forms.Materiales
             //
             this.labEstado.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labEstado.AutoSize = true;
+            this.labEstado.Margin = new System.Windows.Forms.Padding(16, 0, 3, 0);
             this.labEstado.Name = "labEstado";
-            this.labEstado.Text = "Estado";
+            this.labEstado.Text = "Se compró";
             //
             // flpEstado
             //
@@ -351,6 +350,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpLote.Controls.Add(this.txtValor, 3, 1);
             this.tlpLote.Controls.Add(this.labFecha, 0, 2);
             this.tlpLote.Controls.Add(this.dtpFecha, 1, 2);
+            this.tlpLote.Controls.Add(this.labEstado, 2, 2);
+            this.tlpLote.Controls.Add(this.flpEstado, 3, 2);
             this.tlpLote.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpLote.Name = "tlpLote";
             this.tlpLote.RowCount = 3;

@@ -8,7 +8,7 @@ namespace Aviones_2._0.Data.Repositorios
     public class LoteRepositorio
     {
         private const string Columnas =
-            "IdLote, IdMaterial, Fabricante, Ubicacion, Cantidad, Disponible, ValorUnitario, FechaIngreso";
+            "IdLote, IdMaterial, Fabricante, Ubicacion, Cantidad, CompradoUsado, DisponibleNuevo, DisponibleUsado, ValorUnitario, FechaIngreso";
 
         public List<Lote> ListarPorMaterial(int idMaterial, bool soloConStock = false)
         {
@@ -16,7 +16,7 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 return cn.Query<Lote>(
                     $"SELECT {Columnas} FROM dbo.Lotes WHERE IdMaterial = @idMaterial"
-                    + (soloConStock ? " AND Disponible > 0" : "")
+                    + (soloConStock ? " AND DisponibleNuevo + DisponibleUsado > 0" : "")
                     + " ORDER BY FechaIngreso, IdLote",
                     new { idMaterial }).ToList();
             }
@@ -30,7 +30,7 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        /// <summary>Ingresa un lote nuevo; arranca con todo disponible.</summary>
+        /// <summary>Ingresa un lote; arranca con todo disponible como nuevo, o como usado si se compró usado.</summary>
         public int Crear(Lote lote)
         {
             using (var cn = Db.Abrir())
@@ -43,8 +43,9 @@ namespace Aviones_2._0.Data.Repositorios
         }
 
         /// <summary>
-        /// Corrige los datos del lote. Si cambia la cantidad, el disponible se ajusta en la misma diferencia;
-        /// no se puede bajar la cantidad por debajo de lo ya usado en modelos.
+        /// Corrige los datos del lote (no si se compró nuevo o usado). Si cambia la cantidad, el stock
+        /// de la compra (nuevo, o usado si se compró usado) cambia en la misma diferencia;
+        /// no puede quedar negativo.
         /// </summary>
         public void Actualizar(Lote lote)
         {
@@ -55,14 +56,19 @@ namespace Aviones_2._0.Data.Repositorios
                     UPDATE dbo.Lotes SET
                         Fabricante = @Fabricante, Ubicacion = @Ubicacion, ValorUnitario = @ValorUnitario,
                         FechaIngreso = @FechaIngreso,
-                        Disponible = Disponible + (@Cantidad - Cantidad),
+                        DisponibleNuevo = CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo + (@Cantidad - Cantidad) ELSE 0 END,
+                        DisponibleUsado = CASE WHEN CompradoUsado = 1 THEN DisponibleUsado + (@Cantidad - Cantidad) ELSE DisponibleUsado END,
                         Cantidad = @Cantidad
-                    WHERE IdLote = @IdLote AND Disponible + (@Cantidad - Cantidad) >= 0", lote);
+                    WHERE IdLote = @IdLote
+                      AND (CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo ELSE DisponibleUsado END) + (@Cantidad - Cantidad) >= 0", lote);
                 if (filas == 0)
                 {
-                    throw new ReglaNegocioException("La cantidad no puede ser menor que lo que ya se usó en modelos.");
+                    throw new ReglaNegocioException("La cantidad no puede ser menor que lo que ya salió del lote (usado en modelos o descartado).");
                 }
-                lote.Disponible = cn.ExecuteScalar<decimal>("SELECT Disponible FROM dbo.Lotes WHERE IdLote = @IdLote", lote);
+                var actual = cn.QuerySingle<Lote>($"SELECT {Columnas} FROM dbo.Lotes WHERE IdLote = @IdLote", lote);
+                lote.CompradoUsado = actual.CompradoUsado;
+                lote.DisponibleNuevo = actual.DisponibleNuevo;
+                lote.DisponibleUsado = actual.DisponibleUsado;
             }
         }
 
@@ -97,10 +103,11 @@ namespace Aviones_2._0.Data.Repositorios
         internal static int Insertar(IDbConnection cn, IDbTransaction tx, Lote lote)
         {
             Validar(lote);
-            lote.Disponible = lote.Cantidad;
+            lote.DisponibleNuevo = lote.CompradoUsado ? 0m : lote.Cantidad;
+            lote.DisponibleUsado = lote.CompradoUsado ? lote.Cantidad : 0m;
             return cn.ExecuteScalar<int>(@"
-                INSERT INTO dbo.Lotes (IdMaterial, Fabricante, Ubicacion, Cantidad, Disponible, ValorUnitario, FechaIngreso)
-                VALUES (@IdMaterial, @Fabricante, @Ubicacion, @Cantidad, @Disponible, @ValorUnitario, @FechaIngreso);
+                INSERT INTO dbo.Lotes (IdMaterial, Fabricante, Ubicacion, Cantidad, CompradoUsado, DisponibleNuevo, DisponibleUsado, ValorUnitario, FechaIngreso)
+                VALUES (@IdMaterial, @Fabricante, @Ubicacion, @Cantidad, @CompradoUsado, @DisponibleNuevo, @DisponibleUsado, @ValorUnitario, @FechaIngreso);
                 SELECT CAST(SCOPE_IDENTITY() AS int);", lote, tx);
         }
 

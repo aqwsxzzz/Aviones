@@ -33,6 +33,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labLotes = new System.Windows.Forms.Label();
             this.dgvLotes = new System.Windows.Forms.DataGridView();
+            this.colLoteCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteUbicacion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -187,11 +188,12 @@ namespace Aviones_2._0.Forms.Modelos
             this.labLotes.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold);
             this.labLotes.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
             this.labLotes.Name = "labLotes";
-            this.labLotes.Text = "Lotes con stock";
+            this.labLotes.Text = "Stock disponible";
             //
             // dgvLotes
             //
             this.dgvLotes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colLoteCondicion,
             this.colLoteFabricante,
             this.colLoteUbicacion,
             this.colLoteDisponible,
@@ -200,6 +202,13 @@ namespace Aviones_2._0.Forms.Modelos
             this.dgvLotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvLotes.Name = "dgvLotes";
             this.dgvLotes.TabIndex = 2;
+            //
+            // colLoteCondicion
+            //
+            this.colLoteCondicion.DataPropertyName = "Condicion";
+            this.colLoteCondicion.FillWeight = 60F;
+            this.colLoteCondicion.HeaderText = "Stock";
+            this.colLoteCondicion.Name = "colLoteCondicion";
             //
             // colLoteFabricante
             //
@@ -345,6 +354,7 @@ namespace Aviones_2._0.Forms.Modelos
         private System.Windows.Forms.DataGridViewTextBoxColumn colDisponible;
         private System.Windows.Forms.Label labLotes;
         private System.Windows.Forms.DataGridView dgvLotes;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLoteCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteFabricante;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteUbicacion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteDisponible;

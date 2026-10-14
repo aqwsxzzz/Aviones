@@ -36,7 +36,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.colColor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMedidas = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDispNuevo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDispUsado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -50,7 +51,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteUbicacion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLoteDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLoteCompra = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLoteNuevo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colLoteUsado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteValor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colLoteFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.flpBotonesLote = new System.Windows.Forms.FlowLayoutPanel();
@@ -61,6 +64,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.dgvUsos = new System.Windows.Forms.DataGridView();
             this.colUsoModelo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUsoAlias = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colUsoCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUsoCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labResumen = new System.Windows.Forms.Label();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
@@ -215,9 +219,10 @@ namespace Aviones_2._0.Forms.Materiales
             this.colColor,
             this.colMedidas,
             this.colCodigo,
-            this.colEstado,
             this.colUnidad,
             this.colCantidad,
+            this.colDispNuevo,
+            this.colDispUsado,
             this.colDisponible,
             this.colValorDisponible,
             this.colAComprar,
@@ -276,13 +281,25 @@ namespace Aviones_2._0.Forms.Materiales
             this.colCodigo.MinimumWidth = 70;
             this.colCodigo.Name = "colCodigo";
             //
-            // colEstado
+            // colDispNuevo
             //
-            this.colEstado.DataPropertyName = "Estado";
-            this.colEstado.FillWeight = 55F;
-            this.colEstado.HeaderText = "Estado";
-            this.colEstado.MinimumWidth = 60;
-            this.colEstado.Name = "colEstado";
+            this.colDispNuevo.DataPropertyName = "DisponibleNuevo";
+            this.colDispNuevo.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colDispNuevo.DefaultCellStyle.Format = "0.###";
+            this.colDispNuevo.FillWeight = 55F;
+            this.colDispNuevo.HeaderText = "Nuevo";
+            this.colDispNuevo.MinimumWidth = 55;
+            this.colDispNuevo.Name = "colDispNuevo";
+            //
+            // colDispUsado
+            //
+            this.colDispUsado.DataPropertyName = "DisponibleUsado";
+            this.colDispUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colDispUsado.DefaultCellStyle.Format = "0.###";
+            this.colDispUsado.FillWeight = 55F;
+            this.colDispUsado.HeaderText = "Usado";
+            this.colDispUsado.MinimumWidth = 55;
+            this.colDispUsado.Name = "colDispUsado";
             //
             // colUnidad
             //
@@ -308,7 +325,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDisponible.DefaultCellStyle.Format = "0.###";
             this.colDisponible.FillWeight = 65F;
-            this.colDisponible.HeaderText = "Disponible";
+            this.colDisponible.HeaderText = "Disponible total";
             this.colDisponible.MinimumWidth = 80;
             this.colDisponible.Name = "colDisponible";
             //
@@ -386,8 +403,10 @@ namespace Aviones_2._0.Forms.Materiales
             this.dgvLotes.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colLoteFabricante,
             this.colLoteUbicacion,
+            this.colLoteCompra,
             this.colLoteCantidad,
-            this.colLoteDisponible,
+            this.colLoteNuevo,
+            this.colLoteUsado,
             this.colLoteValor,
             this.colLoteFecha});
             this.dgvLotes.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -421,15 +440,33 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteCantidad.MinimumWidth = 50;
             this.colLoteCantidad.Name = "colLoteCantidad";
             //
-            // colLoteDisponible
+            // colLoteCompra
             //
-            this.colLoteDisponible.DataPropertyName = "Disponible";
-            this.colLoteDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colLoteDisponible.DefaultCellStyle.Format = "0.###";
-            this.colLoteDisponible.FillWeight = 60F;
-            this.colLoteDisponible.HeaderText = "Disp.";
-            this.colLoteDisponible.MinimumWidth = 50;
-            this.colLoteDisponible.Name = "colLoteDisponible";
+            this.colLoteCompra.DataPropertyName = "Compra";
+            this.colLoteCompra.FillWeight = 55F;
+            this.colLoteCompra.HeaderText = "Compra";
+            this.colLoteCompra.MinimumWidth = 55;
+            this.colLoteCompra.Name = "colLoteCompra";
+            //
+            // colLoteNuevo
+            //
+            this.colLoteNuevo.DataPropertyName = "DisponibleNuevo";
+            this.colLoteNuevo.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colLoteNuevo.DefaultCellStyle.Format = "0.###";
+            this.colLoteNuevo.FillWeight = 50F;
+            this.colLoteNuevo.HeaderText = "Nuevo";
+            this.colLoteNuevo.MinimumWidth = 50;
+            this.colLoteNuevo.Name = "colLoteNuevo";
+            //
+            // colLoteUsado
+            //
+            this.colLoteUsado.DataPropertyName = "DisponibleUsado";
+            this.colLoteUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colLoteUsado.DefaultCellStyle.Format = "0.###";
+            this.colLoteUsado.FillWeight = 50F;
+            this.colLoteUsado.HeaderText = "Usado";
+            this.colLoteUsado.MinimumWidth = 50;
+            this.colLoteUsado.Name = "colLoteUsado";
             //
             // colLoteValor
             //
@@ -497,6 +534,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.dgvUsos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colUsoModelo,
             this.colUsoAlias,
+            this.colUsoCondicion,
             this.colUsoCantidad});
             this.dgvUsos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvUsos.Name = "dgvUsos";
@@ -514,6 +552,14 @@ namespace Aviones_2._0.Forms.Materiales
             this.colUsoAlias.DataPropertyName = "Alias";
             this.colUsoAlias.HeaderText = "Alias";
             this.colUsoAlias.Name = "colUsoAlias";
+            //
+            // colUsoCondicion
+            //
+            this.colUsoCondicion.DataPropertyName = "Condicion";
+            this.colUsoCondicion.FillWeight = 55F;
+            this.colUsoCondicion.HeaderText = "Salió";
+            this.colUsoCondicion.MinimumWidth = 55;
+            this.colUsoCondicion.Name = "colUsoCondicion";
             //
             // colUsoCantidad
             //
@@ -680,7 +726,8 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridViewTextBoxColumn colColor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMedidas;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCodigo;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colEstado;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDispNuevo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDispUsado;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUnidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCantidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDisponible;
@@ -694,7 +741,9 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteFabricante;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteUbicacion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteCantidad;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLoteDisponible;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLoteCompra;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLoteNuevo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colLoteUsado;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteValor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colLoteFecha;
         private System.Windows.Forms.FlowLayoutPanel flpBotonesLote;
@@ -705,6 +754,7 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridView dgvUsos;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsoModelo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsoAlias;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colUsoCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsoCantidad;
         private System.Windows.Forms.Label labResumen;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;

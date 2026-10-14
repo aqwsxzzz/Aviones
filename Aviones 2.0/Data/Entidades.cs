@@ -24,10 +24,24 @@ namespace Aviones_2._0.Data
         public override string ToString() => Nombre;
     }
 
+    /// <summary>De qué stock de un lote sale o a cuál vuelve el material.</summary>
     public static class EstadosMaterial
     {
         public const string Nuevo = "N";
         public const string Usado = "U";
+
+        public static string Nombre(string estado) => estado == Usado ? "Usado" : "Nuevo";
+    }
+
+    /// <summary>Qué pasa con material que sale de un modelo.</summary>
+    public enum DestinoMaterial
+    {
+        /// <summary>Roto o consumido: no vuelve al stock.</summary>
+        Descartar,
+        /// <summary>No se llegó a usar: vuelve al stock nuevo (sólo si salió del nuevo).</summary>
+        Nuevo,
+        /// <summary>Se recicla: vuelve al stock usado de su lote.</summary>
+        Usado
     }
 
     /// <summary>Qué es un material (catálogo). El stock está en sus lotes.</summary>
@@ -40,7 +54,6 @@ namespace Aviones_2._0.Data
         public string Color { get; set; }
         public string Medidas { get; set; }
         public string Codigo { get; set; }
-        public string Estado { get; set; } = EstadosMaterial.Nuevo;
         public int IdTipoUnidad { get; set; }
         public decimal? CantidadAComprar { get; set; }
     }
@@ -56,12 +69,13 @@ namespace Aviones_2._0.Data
         public string Color { get; set; }
         public string Medidas { get; set; }
         public string Codigo { get; set; }
-        public string Estado { get; set; }
         public int IdTipoUnidad { get; set; }
         public string TipoUnidad { get; set; }
         public decimal? CantidadAComprar { get; set; }
         public int CantidadLotes { get; set; }
         public decimal Cantidad { get; set; }
+        public decimal DisponibleNuevo { get; set; }
+        public decimal DisponibleUsado { get; set; }
         public decimal Disponible { get; set; }
         public decimal ValorDisponible { get; set; }
     }
@@ -77,7 +91,10 @@ namespace Aviones_2._0.Data
         public bool SoloAComprar { get; set; }
     }
 
-    /// <summary>Un ingreso de stock de un material (antes "Acopio").</summary>
+    /// <summary>
+    /// Un ingreso de stock de un material (antes "Acopio"). Lo que queda se lleva separado
+    /// en nuevo y usado: lo reciclado de los modelos vuelve como usado.
+    /// </summary>
     public class Lote
     {
         public int IdLote { get; set; }
@@ -85,7 +102,19 @@ namespace Aviones_2._0.Data
         public string Fabricante { get; set; }
         public string Ubicacion { get; set; }
         public decimal Cantidad { get; set; }
-        public decimal Disponible { get; set; }
+
+        /// <summary>Se compró usado: todo entra como usado.</summary>
+        public bool CompradoUsado { get; set; }
+
+        public decimal DisponibleNuevo { get; set; }
+        public decimal DisponibleUsado { get; set; }
+        public decimal Disponible => DisponibleNuevo + DisponibleUsado;
+
+        /// <summary>Lo que salió del lote y no volvió (usado en modelos o descartado).</summary>
+        public decimal Consumido => Cantidad - Disponible;
+
+        public string Compra => CompradoUsado ? "Usado" : "Nuevo";
+
         public decimal ValorUnitario { get; set; }
         public DateTime FechaIngreso { get; set; } = DateTime.Today;
     }
@@ -97,6 +126,8 @@ namespace Aviones_2._0.Data
         public string Modelo { get; set; }
         public string Alias { get; set; }
         public int IdLote { get; set; }
+        public string Estado { get; set; }
+        public string Condicion => EstadosMaterial.Nombre(Estado);
         public decimal Cantidad { get; set; }
     }
 
@@ -123,27 +154,30 @@ namespace Aviones_2._0.Data
     {
         public int IdMaterialModelo { get; set; }
         public decimal Cantidad { get; set; }
+
+        /// <summary>Si la cantidad baja, qué pasa con lo que se quita.</summary>
+        public DestinoMaterial Destino { get; set; }
     }
 
     public class MaterialQuitado
     {
         public int IdMaterialModelo { get; set; }
-
-        /// <summary>true si se recicla y vuelve al lote; false si se da por consumido.</summary>
-        public bool DevolverAlStock { get; set; }
+        public DestinoMaterial Destino { get; set; }
     }
 
-    /// <summary>Al eliminar un modelo: cuánto de uno de sus materiales vuelve al stock.</summary>
+    /// <summary>Al eliminar un modelo: cuánto de uno de sus materiales vuelve al stock y cómo.</summary>
     public class MaterialADevolver
     {
         public int IdMaterialModelo { get; set; }
         public decimal Cantidad { get; set; }
+        public DestinoMaterial Destino { get; set; } = DestinoMaterial.Usado;
 
         public MaterialADevolver() { }
-        public MaterialADevolver(int idMaterialModelo, decimal cantidad)
+        public MaterialADevolver(int idMaterialModelo, decimal cantidad, DestinoMaterial destino = DestinoMaterial.Usado)
         {
             IdMaterialModelo = idMaterialModelo;
             Cantidad = cantidad;
+            Destino = destino;
         }
     }
 
@@ -157,17 +191,19 @@ namespace Aviones_2._0.Data
         public bool HayCambios => Agregados.Count > 0 || Cantidades.Count > 0 || Quitados.Count > 0;
     }
 
-    /// <summary>Lo que se pide al armar un modelo: cuánto de qué lote.</summary>
+    /// <summary>Lo que se pide al armar un modelo: cuánto de qué lote y de qué stock (nuevo o usado).</summary>
     public class LoteAsignado
     {
         public int IdLote { get; set; }
+        public string Estado { get; set; } = EstadosMaterial.Nuevo;
         public decimal Cantidad { get; set; }
 
         public LoteAsignado() { }
-        public LoteAsignado(int idLote, decimal cantidad)
+        public LoteAsignado(int idLote, decimal cantidad, string estado = EstadosMaterial.Nuevo)
         {
             IdLote = idLote;
             Cantidad = cantidad;
+            Estado = estado;
         }
     }
 
@@ -177,6 +213,8 @@ namespace Aviones_2._0.Data
         public int IdMaterialModelo { get; set; }
         public int IdModelo { get; set; }
         public int IdLote { get; set; }
+        public string Estado { get; set; }
+        public string Condicion => EstadosMaterial.Nombre(Estado);
         public int IdMaterial { get; set; }
         public string Familia { get; set; }
         public string Grupo { get; set; }

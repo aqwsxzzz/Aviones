@@ -93,13 +93,15 @@ Decision (2026-10-14): **keep stock lots**. A material is a catalog entry; each 
 | `Familias` | `Familiares` | unique name |
 | `TiposUnidad` | free-text `Materiales.Tipo` | unique name |
 | `EstadosModelo` | free-text `Modelos.Estado` | Activo, En construcción, En reparación, Inactivo |
-| `Materiales` | `Materiales` (catalog part) | FK to family and unit type; `Estado` N/U checked |
-| `Lotes` | `Acopio` | `Disponible` is a number, `0 ≤ Disponible ≤ Cantidad`; new `FechaIngreso` |
+| `Materiales` | `Materiales` (catalog part) | FK to family and unit type |
+| `Lotes` | `Acopio` | one row per purchase (history). `CompradoUsado`; remaining stock split in `DisponibleNuevo` / `DisponibleUsado`, `nuevo + usado ≤ Cantidad`; new `FechaIngreso` |
 | `Modelos` | `Modelos` | FK to state |
-| `MaterialesModelo` | `MaterialesModelo` | references `IdLote`; deleting a model deletes its rows |
+| `MaterialesModelo` | `MaterialesModelo` | references `IdLote` and `Estado` (taken from new or used stock); deleting a model deletes its rows |
 | `vMaterialesStock` | — | one row per material with its lots summed |
 
 Quantities are `DECIMAL(18,3)` everywhere, money `DECIMAL(18,2)`.
+
+**New / used stock (2026-10-14).** Nuevo/Usado belongs to each lot, not to the material. A purchase goes entirely into new or used stock. Whenever material leaves a model (lowering a quantity, removing it, deleting the model) the user is asked what happens to the piece, not why: **vuelve como nuevo** (only if it came from new stock), **vuelve como usado** (recycled) or **se descarta**. It always returns to the lot it came from, so it keeps its real purchase price.
 
 Data access lives in `Aviones 2.0/Data/`: one repository per table, all SQL parameterized (Dapper), and every stock movement (assign, change, remove, delete model) runs in a transaction that fails as a whole if a lot doesn't have enough. Integration tests in `Aviones 2.0.UnitTests/Data/` run against an `Aviones_Test` database.
 
@@ -123,8 +125,8 @@ The old screens still use the old tables, so they won't work against this schema
 2. Al modificar la Cantidad de un material, ¿es una compra nueva (suma al stock) o una corrección de un error?
 3. ¿Qué era "Acopio"? ¿Hace falta un historial de ingresos/compras de cada material?
 4. ~~Al quitar un material de un modelo, ¿se recicla?~~ **Respondido:** sí, se pregunta; si se recicla vuelve al stock.
-5. Filtros: ¿por qué campos necesita buscar? (familia, grupo, fabricante, ubicación, sin stock, …)
+5. Filtros: ¿por qué campos necesita buscar? (familia, grupo, fabricante, ubicación, sin stock, …) — *hoy: familia, texto, sin stock, a comprar.*
 6. "Ubicación": ¿es dónde se guarda el material (caja, estante) o en qué avión está?
 7. ~~Al eliminar un modelo, ¿los materiales vuelven al stock?~~ **Respondido (2026-10-14):** se muestra la lista de materiales del modelo y se marca cuáles se reciclan (motor, batería…), con la cantidad que vuelve; el resto se da por consumido.
-8. El estado del material (Nuevo/Usado), ¿se usa para algo más que mostrarlo?
+8. ~~El estado del material (Nuevo/Usado)~~ **Resuelto (2026-10-14):** pasa a cada lote, con stock nuevo y usado separados; lo que vuelve de un modelo se pregunta si vuelve nuevo, usado o se descarta.
 9. El selector de materiales excluye una familia "Aeronaves". ¿Había una familia para aviones completos?

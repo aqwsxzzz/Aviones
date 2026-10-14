@@ -36,6 +36,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colValorUnitario = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -221,6 +222,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colFamilia,
             this.colMaterial,
             this.colFabricante,
+            this.colCondicion,
             this.colCantidad,
             this.colUnidad,
             this.colValorUnitario,
@@ -251,6 +253,13 @@ namespace Aviones_2._0.Forms.Modelos
             this.colFabricante.DataPropertyName = "Fabricante";
             this.colFabricante.HeaderText = "Fabricante (lote)";
             this.colFabricante.Name = "colFabricante";
+            //
+            // colCondicion
+            //
+            this.colCondicion.DataPropertyName = "Condicion";
+            this.colCondicion.FillWeight = 55F;
+            this.colCondicion.HeaderText = "Salió";
+            this.colCondicion.Name = "colCondicion";
             //
             // colCantidad
             //
@@ -415,6 +424,7 @@ namespace Aviones_2._0.Forms.Modelos
         private System.Windows.Forms.DataGridViewTextBoxColumn colFamilia;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMaterial;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFabricante;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCantidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUnidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colValorUnitario;
