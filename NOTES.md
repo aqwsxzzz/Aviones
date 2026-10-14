@@ -42,6 +42,42 @@ Expected: list of airplanes; create one with its material composition (discounti
 | Delete model | ❌ Missing | ELIMINAR button isn't wired to any code. |
 | LISTADOS | ❌ Missing | Button isn't wired to any code. |
 
+## Original data design (before the "Acopio" merge)
+
+Reconstructed from the code and `DB/migrate_acopio_to_materiales.sql`. The original tables are gone from the database we have, so this is what the code expected.
+
+**Materiales**: *what* the material is (catalog entry)
+
+| Column | Meaning |
+|---|---|
+| IdMaterial | key |
+| IdFamilia | → Familiares (Madera, Electrónica, …) |
+| Grupo | kind within the family (Balsa, Servo, Batería…) |
+| Caracteristica | description (Tabla, Micro 9 g, LiPo 3S…) |
+| Color | color; for wood it holds the imperial size |
+| Medidas | dimensions |
+| Codigo | manufacturer part number |
+| Estado | N = Nuevo, U = Usado |
+| Tipo | unit (Unidades, Metros…) |
+| ImageData | photo |
+| Cantacomprar | quantity to buy (used by Compras) |
+
+**Acopio**: one row per *stock lot* of a material (each time it was acquired)
+
+| Column | Meaning |
+|---|---|
+| IdAcopio | key |
+| IdMaterial | → Materiales |
+| Fabricante | manufacturer / brand of this lot |
+| Ubicacion | where this lot is stored |
+| Cantidad | quantity acquired in this lot |
+| Disponible | what's left of this lot |
+| Valor | unit price paid for this lot |
+
+**MaterialesModelo** stored the **IdAcopio** (the lot) in its `IdMaterial` column: a model consumed from a specific lot, and removing a "recyclable" material returned the quantity to that lot. This explains why the code reads column 15 (`IdAcopio`).
+
+The migration copied only the **latest lot** of each material into `Materiales` (`ROW_NUMBER() … ORDER BY IdAcopio DESC`), so materials with more than one lot lost the older ones, and the code was only half-adapted.
+
 ## Cross-cutting problems
 
 - **"Acopio" leftovers.** Material data used to be split between `Materiales` and an `Acopio` table. A migration merged them, but the code was only half-updated: it still passes an "IdAcopio" around and checks for `Acopio`/`IdAcopioUltimo` at runtime. This is the root cause of the Modelos bugs.
