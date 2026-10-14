@@ -122,9 +122,9 @@ The old screens still use the old tables, so they won't work against this schema
 1. ¿"Disponible" debe ser siempre *Cantidad − lo usado en modelos*, o a veces se ajusta a mano?
 2. Al modificar la Cantidad de un material, ¿es una compra nueva (suma al stock) o una corrección de un error?
 3. ¿Qué era "Acopio"? ¿Hace falta un historial de ingresos/compras de cada material?
-4. Al quitar un material de un modelo, el programa pregunta "¿Este material se recicla?": si se recicla vuelve al stock, si no se pierde. ¿Es correcto?
+4. ~~Al quitar un material de un modelo, ¿se recicla?~~ **Respondido:** sí, se pregunta; si se recicla vuelve al stock.
 5. Filtros: ¿por qué campos necesita buscar? (familia, grupo, fabricante, ubicación, sin stock, …)
 6. "Ubicación": ¿es dónde se guarda el material (caja, estante) o en qué avión está?
-7. Al eliminar un modelo, ¿los materiales vuelven al stock?
+7. ~~Al eliminar un modelo, ¿los materiales vuelven al stock?~~ **Respondido (2026-10-14):** se muestra la lista de materiales del modelo y se marca cuáles se reciclan (motor, batería…), con la cantidad que vuelve; el resto se da por consumido.
 8. El estado del material (Nuevo/Usado), ¿se usa para algo más que mostrarlo?
 9. El selector de materiales excluye una familia "Aeronaves". ¿Había una familia para aviones completos?

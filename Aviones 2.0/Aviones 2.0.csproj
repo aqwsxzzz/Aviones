@@ -195,6 +195,12 @@
       <DependentUpon>frmCantidad.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Modelos\FilaMaterial.cs" />
+    <Compile Include="Forms\Modelos\frmEliminarModelo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmEliminarModelo.Designer.cs">
+      <DependentUpon>frmEliminarModelo.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

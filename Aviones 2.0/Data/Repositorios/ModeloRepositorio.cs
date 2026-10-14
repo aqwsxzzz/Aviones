@@ -95,20 +95,33 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        /// <summary>Borra el modelo. Si <paramref name="devolverAlStock"/>, sus materiales vuelven a los lotes.</summary>
+        /// <summary>Borra el modelo. Si <paramref name="devolverAlStock"/>, todos sus materiales vuelven a los lotes.</summary>
         public void Eliminar(int idModelo, bool devolverAlStock)
+        {
+            var devolver = devolverAlStock
+                ? ListarMateriales(idModelo).Select(m => new MaterialADevolver(m.IdMaterialModelo, m.Cantidad))
+                : Enumerable.Empty<MaterialADevolver>();
+            Eliminar(idModelo, devolver);
+        }
+
+        /// <summary>
+        /// Borra el modelo devolviendo al stock sólo lo que se recicla (puede ser una parte de lo usado).
+        /// El resto se da por consumido. Si algo no es válido no se borra nada.
+        /// </summary>
+        public void Eliminar(int idModelo, IEnumerable<MaterialADevolver> devolver)
         {
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                if (devolverAlStock)
+                foreach (var d in devolver ?? Enumerable.Empty<MaterialADevolver>())
                 {
-                    var renglones = cn.Query<LoteAsignado>(
-                        "SELECT IdLote, Cantidad FROM dbo.MaterialesModelo WHERE IdModelo = @idModelo", new { idModelo }, tx);
-                    foreach (var r in renglones)
+                    var renglon = ObtenerRenglon(cn, tx, idModelo, d.IdMaterialModelo);
+                    if (d.Cantidad > renglon.Cantidad)
                     {
-                        Stock.Devolver(cn, tx, r.IdLote, r.Cantidad);
+                        throw new ReglaNegocioException(
+                            $"No se puede devolver {d.Cantidad}: el modelo sólo usó {renglon.Cantidad} de ese material.");
                     }
+                    Stock.Devolver(cn, tx, renglon.IdLote, d.Cantidad);
                 }
                 cn.Execute("DELETE FROM dbo.Modelos WHERE IdModelo = @idModelo", new { idModelo }, tx);
                 tx.Commit();

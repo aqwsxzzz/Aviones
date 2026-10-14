@@ -160,6 +160,41 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Eliminar_DevuelveSoloLoQueSeRecicla()
+        {
+            var (_, motor) = CrearMaterialConLote(3m, grupo: "Motor");
+            var (_, servo) = CrearMaterialConLote(10m, grupo: "Servo");
+            var (_, cola) = CrearMaterialConLote(2m, grupo: "Cola");
+            int idModelo = CrearModelo(new LoteAsignado(motor, 1m), new LoteAsignado(servo, 4m), new LoteAsignado(cola, 1m));
+            var renglones = modelos.ListarMateriales(idModelo);
+
+            modelos.Eliminar(idModelo, new[]
+            {
+                new MaterialADevolver(renglones.Single(r => r.IdLote == motor).IdMaterialModelo, 1m),
+                new MaterialADevolver(renglones.Single(r => r.IdLote == servo).IdMaterialModelo, 2.5m)
+            });
+
+            Assert.IsNull(modelos.Obtener(idModelo));
+            Assert.AreEqual(3m, DisponibleDe(motor));
+            Assert.AreEqual(8.5m, DisponibleDe(servo));
+            Assert.AreEqual(1m, DisponibleDe(cola));
+        }
+
+        [TestMethod]
+        public void Eliminar_NoDevuelveMasDeLoUsadoYNoBorraNada()
+        {
+            var (_, lote) = CrearMaterialConLote(10m);
+            int idModelo = CrearModelo(new LoteAsignado(lote, 4m));
+            int idRenglon = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo;
+
+            Assert.ThrowsExactly<ReglaNegocioException>(() =>
+                modelos.Eliminar(idModelo, new[] { new MaterialADevolver(idRenglon, 5m) }));
+
+            Assert.IsNotNull(modelos.Obtener(idModelo));
+            Assert.AreEqual(6m, DisponibleDe(lote));
+        }
+
+        [TestMethod]
         public void Actualizar_GuardaDatosYFecha()
         {
             int idModelo = CrearModelo();

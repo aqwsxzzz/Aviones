@@ -133,6 +133,20 @@ namespace Aviones_2._0.Data
         public bool DevolverAlStock { get; set; }
     }
 
+    /// <summary>Al eliminar un modelo: cuánto de uno de sus materiales vuelve al stock.</summary>
+    public class MaterialADevolver
+    {
+        public int IdMaterialModelo { get; set; }
+        public decimal Cantidad { get; set; }
+
+        public MaterialADevolver() { }
+        public MaterialADevolver(int idMaterialModelo, decimal cantidad)
+        {
+            IdMaterialModelo = idMaterialModelo;
+            Cantidad = cantidad;
+        }
+    }
+
     /// <summary>Cambios de materiales de un modelo que se guardan juntos.</summary>
     public class CambiosDeMateriales
     {

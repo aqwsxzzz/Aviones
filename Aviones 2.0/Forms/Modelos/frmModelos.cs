@@ -190,30 +190,32 @@ namespace Aviones_2._0.Forms.Modelos
         private void botEliminar_Click(object sender, EventArgs e)
         {
             var m = ModeloSeleccionado();
-            if (m == null || !Mensajes.Confirmar(this, $"¿Eliminar el modelo \"{m.Nombre}\"?", "Eliminar modelo"))
+            if (m == null)
             {
                 return;
             }
 
-            bool devolver = false;
-            if (m.CantidadMateriales > 0)
+            if (m.CantidadMateriales == 0)
             {
-                var respuesta = MessageBox.Show(this,
-                    $"El modelo usa {m.CantidadMateriales} materiales.\n\n" +
-                    "¿Vuelven al stock?\n\nSí: se devuelven a sus lotes.\nNo: se dan por consumidos.",
-                    "Eliminar modelo", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
-                if (respuesta == DialogResult.Cancel)
+                if (Mensajes.Confirmar(this, $"¿Eliminar el modelo \"{m.Nombre}\"?", "Eliminar modelo"))
                 {
-                    return;
+                    Mensajes.Intentar(this, () =>
+                    {
+                        modelos.Eliminar(m.IdModelo, devolverAlStock: false);
+                        CargarModelos();
+                    });
                 }
-                devolver = respuesta == DialogResult.Yes;
+                return;
             }
 
-            Mensajes.Intentar(this, () =>
+            // Con materiales: se elige cuáles se reciclan y vuelven al stock
+            using (var dialogo = new frmEliminarModelo(m))
             {
-                modelos.Eliminar(m.IdModelo, devolver);
-                CargarModelos();
-            });
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
+                {
+                    Mensajes.Intentar(this, () => CargarModelos());
+                }
+            }
         }
 
         private void botImprimir_Click(object sender, EventArgs e)
