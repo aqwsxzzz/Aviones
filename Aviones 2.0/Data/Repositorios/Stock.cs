@@ -24,30 +24,36 @@ namespace Aviones_2._0.Data.Repositorios
         }
 
         /// <summary>
-        /// Material que sale de un modelo: según el destino vuelve al stock nuevo, al usado, o se descarta.
-        /// Lo que salió del stock usado no puede volver como nuevo.
+        /// Material que sale de un modelo (hasta <paramref name="saliente"/>): una parte puede volver al stock
+        /// nuevo, otra al usado, y el resto se descarta. Lo que salió del stock usado no puede volver como nuevo.
         /// </summary>
         public static void Devolver(IDbConnection cn, IDbTransaction tx, int idLote, string estadoOrigen,
-            DestinoMaterial destino, decimal cantidad)
+            Devolucion devolucion, decimal saliente)
         {
-            ValidarCantidad(cantidad);
-            if (destino == DestinoMaterial.Descartar)
+            if (devolucion.Nuevo < 0 || devolucion.Usado < 0)
             {
-                return;
+                throw new ReglaNegocioException("Las cantidades que vuelven no pueden ser negativas.");
             }
-            if (destino == DestinoMaterial.Nuevo && estadoOrigen == EstadosMaterial.Usado)
+            if (devolucion.Total > saliente)
+            {
+                throw new ReglaNegocioException($"No puede volver más de lo que sale ({saliente}).");
+            }
+            if (devolucion.Nuevo > 0 && estadoOrigen == EstadosMaterial.Usado)
             {
                 throw new ReglaNegocioException("Material que salió del stock usado no puede volver como nuevo.");
             }
+            if (devolucion.Total == 0)
+            {
+                return;
+            }
 
-            string columna = Columna(destino == DestinoMaterial.Nuevo ? EstadosMaterial.Nuevo : EstadosMaterial.Usado);
             int filas = cn.Execute(
-                $@"UPDATE dbo.Lotes SET {columna} = {columna} + @cantidad
-                   WHERE IdLote = @idLote AND DisponibleNuevo + DisponibleUsado + @cantidad <= Cantidad",
-                new { idLote, cantidad }, tx);
+                @"UPDATE dbo.Lotes SET DisponibleNuevo = DisponibleNuevo + @nuevo, DisponibleUsado = DisponibleUsado + @usado
+                  WHERE IdLote = @idLote AND DisponibleNuevo + DisponibleUsado + @nuevo + @usado <= Cantidad",
+                new { idLote, nuevo = devolucion.Nuevo, usado = devolucion.Usado }, tx);
             if (filas == 0)
             {
-                throw new ReglaNegocioException($"No se puede devolver {cantidad} al lote {idLote}: superaría la cantidad ingresada.");
+                throw new ReglaNegocioException($"No se puede devolver {devolucion.Total} al lote {idLote}: superaría la cantidad ingresada.");
             }
         }
 

@@ -21,13 +21,14 @@ namespace Aviones_2._0.Forms.Modelos
             this.labTitulo = new System.Windows.Forms.Label();
             this.labExplicacion = new System.Windows.Forms.Label();
             this.dgvMateriales = new System.Windows.Forms.DataGridView();
-            this.colDestino = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.colFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUsado = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCantidadVuelve = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colVuelveNuevo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colVuelveUsado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDescarta = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.flpMarcar = new System.Windows.Forms.FlowLayoutPanel();
             this.botTodos = new System.Windows.Forms.Button();
@@ -74,7 +75,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.labExplicacion.AutoSize = true;
             this.labExplicacion.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
             this.labExplicacion.Name = "labExplicacion";
-            this.labExplicacion.Text = "Elija qué pasa con cada material: vuelve al stock como usado (se recicla), como nuevo (no se llegó a usar)\r\no se descarta. La cantidad que vuelve se puede cambiar; el resto se descarta.";
+            this.labExplicacion.Text = "Para cada material escriba cuánto vuelve al stock como nuevo (no se llegó a usar) y cuánto como usado (se recicla).\r\nLo que no vuelve se descarta.";
             //
             // dgvMateriales
             //
@@ -84,36 +85,19 @@ namespace Aviones_2._0.Forms.Modelos
             this.colFabricante,
             this.colCondicion,
             this.colUsado,
-            this.colDestino,
-            this.colCantidadVuelve,
+            this.colVuelveNuevo,
+            this.colVuelveUsado,
+            this.colDescarta,
             this.colUnidad});
             this.dgvMateriales.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMateriales.Name = "dgvMateriales";
             this.dgvMateriales.TabIndex = 0;
+            this.dgvMateriales.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvMateriales_CellBeginEdit);
             this.dgvMateriales.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvMateriales_CellFormatting);
             this.dgvMateriales.CellParsing += new System.Windows.Forms.DataGridViewCellParsingEventHandler(this.dgvMateriales_CellParsing);
             this.dgvMateriales.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgvMateriales_CellValidating);
             this.dgvMateriales.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMateriales_CellValueChanged);
-            this.dgvMateriales.CurrentCellDirtyStateChanged += new System.EventHandler(this.dgvMateriales_CurrentCellDirtyStateChanged);
             this.dgvMateriales.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgvMateriales_DataError);
-            //
-            // colDestino
-            //
-            this.colDestino.DataPropertyName = "Destino";
-            this.colDestino.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.ComboBox;
-            this.colDestino.FillWeight = 120F;
-            this.colDestino.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.colDestino.HeaderText = "¿Qué pasa con la pieza?";
-            this.colDestino.MinimumWidth = 150;
-            this.colDestino.Name = "colDestino";
-            //
-            // colCondicion
-            //
-            this.colCondicion.DataPropertyName = "Condicion";
-            this.colCondicion.FillWeight = 50F;
-            this.colCondicion.HeaderText = "Salió";
-            this.colCondicion.Name = "colCondicion";
-            this.colCondicion.ReadOnly = true;
             //
             // colFamilia
             //
@@ -138,24 +122,54 @@ namespace Aviones_2._0.Forms.Modelos
             this.colFabricante.Name = "colFabricante";
             this.colFabricante.ReadOnly = true;
             //
+            // colCondicion
+            //
+            this.colCondicion.DataPropertyName = "Condicion";
+            this.colCondicion.FillWeight = 50F;
+            this.colCondicion.HeaderText = "Salió";
+            this.colCondicion.Name = "colCondicion";
+            this.colCondicion.ReadOnly = true;
+            //
             // colUsado
             //
             this.colUsado.DataPropertyName = "Usado";
             this.colUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colUsado.DefaultCellStyle.Format = "0.###";
-            this.colUsado.FillWeight = 55F;
-            this.colUsado.HeaderText = "Usado";
+            this.colUsado.FillWeight = 50F;
+            this.colUsado.HeaderText = "En el modelo";
             this.colUsado.Name = "colUsado";
             this.colUsado.ReadOnly = true;
             //
-            // colCantidadVuelve
+            // colVuelveNuevo
             //
-            this.colCantidadVuelve.DataPropertyName = "CantidadVuelve";
-            this.colCantidadVuelve.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colCantidadVuelve.DefaultCellStyle.Format = "0.###";
-            this.colCantidadVuelve.FillWeight = 70F;
-            this.colCantidadVuelve.HeaderText = "Vuelve al stock";
-            this.colCantidadVuelve.Name = "colCantidadVuelve";
+            this.colVuelveNuevo.DataPropertyName = "VuelveNuevo";
+            this.colVuelveNuevo.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colVuelveNuevo.DefaultCellStyle.BackColor = System.Drawing.Color.White;
+            this.colVuelveNuevo.DefaultCellStyle.Format = "0.###";
+            this.colVuelveNuevo.FillWeight = 60F;
+            this.colVuelveNuevo.HeaderText = "Vuelve nuevo";
+            this.colVuelveNuevo.Name = "colVuelveNuevo";
+            //
+            // colVuelveUsado
+            //
+            this.colVuelveUsado.DataPropertyName = "VuelveUsado";
+            this.colVuelveUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colVuelveUsado.DefaultCellStyle.BackColor = System.Drawing.Color.White;
+            this.colVuelveUsado.DefaultCellStyle.Format = "0.###";
+            this.colVuelveUsado.FillWeight = 60F;
+            this.colVuelveUsado.HeaderText = "Vuelve usado";
+            this.colVuelveUsado.Name = "colVuelveUsado";
+            //
+            // colDescarta
+            //
+            this.colDescarta.DataPropertyName = "SeDescarta";
+            this.colDescarta.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colDescarta.DefaultCellStyle.Format = "0.###";
+            this.colDescarta.DefaultCellStyle.ForeColor = System.Drawing.Color.Firebrick;
+            this.colDescarta.FillWeight = 60F;
+            this.colDescarta.HeaderText = "Se descarta";
+            this.colDescarta.Name = "colDescarta";
+            this.colDescarta.ReadOnly = true;
             //
             // colUnidad
             //
@@ -235,11 +249,11 @@ namespace Aviones_2._0.Forms.Modelos
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaShell;
             this.CancelButton = this.botCancelar;
-            this.ClientSize = new System.Drawing.Size(1080, 620);
+            this.ClientSize = new System.Drawing.Size(1120, 620);
             this.Controls.Add(this.tlpPrincipal);
             this.Font = new System.Drawing.Font("Arial", 10F);
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(760, 420);
+            this.MinimumSize = new System.Drawing.Size(800, 420);
             this.Name = "frmEliminarModelo";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -260,13 +274,14 @@ namespace Aviones_2._0.Forms.Modelos
         private System.Windows.Forms.Label labTitulo;
         private System.Windows.Forms.Label labExplicacion;
         private System.Windows.Forms.DataGridView dgvMateriales;
-        private System.Windows.Forms.DataGridViewComboBoxColumn colDestino;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFamilia;
         private System.Windows.Forms.DataGridViewTextBoxColumn colMaterial;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFabricante;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsado;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCantidadVuelve;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colVuelveNuevo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colVuelveUsado;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDescarta;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUnidad;
         private System.Windows.Forms.FlowLayoutPanel flpMarcar;
         private System.Windows.Forms.Button botTodos;

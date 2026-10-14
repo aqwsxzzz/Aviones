@@ -24,8 +24,8 @@ namespace Aviones_2._0.Forms.Modelos
         private readonly int? idModelo;
 
         private readonly BindingList<FilaMaterial> filas = new BindingList<FilaMaterial>();
-        /// <summary>Materiales guardados que se quitaron en esta edición, con qué pasa con cada uno.</summary>
-        private readonly List<(FilaMaterial Fila, DestinoMaterial Destino)> quitados = new List<(FilaMaterial, DestinoMaterial)>();
+        /// <summary>Materiales guardados que se quitaron en esta edición, con cuánto vuelve de cada uno.</summary>
+        private readonly List<(FilaMaterial Fila, Devolucion Devolucion)> quitados = new List<(FilaMaterial, Devolucion)>();
 
         private byte[] foto;
         private bool fotoCambiada;
@@ -117,11 +117,9 @@ namespace Aviones_2._0.Forms.Modelos
 
         #region Materiales
 
-        /// <summary>A qué stock del lote va lo que sale del modelo (null si se descarta).</summary>
-        private static string EstadoDestino(DestinoMaterial destino) =>
-            destino == DestinoMaterial.Nuevo ? EstadosMaterial.Nuevo
-            : destino == DestinoMaterial.Usado ? EstadosMaterial.Usado
-            : null;
+        /// <summary>Cuánto de una devolución va al stock nuevo o al usado.</summary>
+        private static decimal Parte(Devolucion d, string estado) =>
+            estado == EstadosMaterial.Usado ? d.Usado : d.Nuevo;
 
         /// <summary>
         /// Cuánto toma un renglón del stock nuevo o usado de un lote con los cambios sin guardar
@@ -138,9 +136,9 @@ namespace Aviones_2._0.Forms.Modelos
             {
                 c += f.Cantidad - f.CantidadOriginal;
             }
-            if (f.Cantidad < f.CantidadOriginal && EstadoDestino(f.DestinoBaja) == estado)
+            if (f.Cantidad < f.CantidadOriginal)
             {
-                c -= f.CantidadOriginal - f.Cantidad;
+                c -= Parte(f.DevolucionBaja, estado);
             }
             return c;
         }
@@ -148,7 +146,7 @@ namespace Aviones_2._0.Forms.Modelos
         /// <summary>Cuánto del stock nuevo o usado de un lote toman todos los cambios sin guardar.</summary>
         private decimal UsoPendiente(int idLote, string estado) =>
             filas.Sum(f => Contribucion(f, idLote, estado))
-            - quitados.Where(q => q.Fila.IdLote == idLote && EstadoDestino(q.Destino) == estado).Sum(q => q.Fila.CantidadOriginal);
+            - quitados.Where(q => q.Fila.IdLote == idLote).Sum(q => Parte(q.Devolucion, estado));
 
         private decimal UsoPendienteMaterial(int idMaterial) =>
             filas.Where(f => f.IdMaterial == idMaterial).Select(f => f.IdLote)
@@ -208,15 +206,19 @@ namespace Aviones_2._0.Forms.Modelos
                 return;
             }
 
-            // Si queda menos de lo guardado, lo que se quita puede volver al stock o descartarse
+            // Si queda menos de lo guardado, lo que se quita puede volver al stock (nuevo o usado) o descartarse
             if (!fila.EsNueva && nueva.Value < fila.CantidadOriginal)
             {
-                var destino = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal - nueva.Value, fila.Unidad, fila.Estado);
-                if (!destino.HasValue)
+                var devolucion = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal - nueva.Value, fila.Unidad, fila.Estado);
+                if (!devolucion.HasValue)
                 {
                     return;
                 }
-                fila.DestinoBaja = destino.Value;
+                fila.DevolucionBaja = devolucion.Value;
+            }
+            else
+            {
+                fila.DevolucionBaja = Devolucion.Nada;
             }
 
             fila.Cantidad = nueva.Value;
@@ -241,12 +243,12 @@ namespace Aviones_2._0.Forms.Modelos
             }
             if (!fila.EsNueva)
             {
-                var destino = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal, fila.Unidad, fila.Estado);
-                if (!destino.HasValue)
+                var devolucion = frmDestino.Pedir(this, fila.Material, fila.CantidadOriginal, fila.Unidad, fila.Estado);
+                if (!devolucion.HasValue)
                 {
                     return;
                 }
-                quitados.Add((fila, destino.Value));
+                quitados.Add((fila, devolucion.Value));
             }
             filas.Remove(fila);
             modificado = true;
@@ -352,7 +354,7 @@ namespace Aviones_2._0.Forms.Modelos
                 {
                     var cambios = new CambiosDeMateriales();
                     cambios.Quitados.AddRange(quitados.Select(q =>
-                        new MaterialQuitado { IdMaterialModelo = q.Fila.IdMaterialModelo.Value, Destino = q.Destino }));
+                        new MaterialQuitado { IdMaterialModelo = q.Fila.IdMaterialModelo.Value, Devolucion = q.Devolucion }));
                     // Primero las bajas (pueden devolver stock que usan las subas)
                     cambios.Cantidades.AddRange(filas
                         .Where(f => !f.EsNueva && f.Cantidad != f.CantidadOriginal)
@@ -361,7 +363,7 @@ namespace Aviones_2._0.Forms.Modelos
                         {
                             IdMaterialModelo = f.IdMaterialModelo.Value,
                             Cantidad = f.Cantidad,
-                            Destino = f.DestinoBaja
+                            DevolucionSiBaja = f.Cantidad < f.CantidadOriginal ? f.DevolucionBaja : Devolucion.Nada
                         }));
                     cambios.Agregados.AddRange(filas.Where(f => f.EsNueva).Select(f => new LoteAsignado(f.IdLote, f.Cantidad, f.Estado)));
                     modelos.Guardar(modelo, cambios);

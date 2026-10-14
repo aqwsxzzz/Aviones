@@ -59,10 +59,10 @@ namespace Aviones_2._0.UnitTests.Data
             int idModelo = CrearModelo(new LoteAsignado(idLote, 2m));
             int idRenglon = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo;
 
-            modelos.CambiarCantidad(idRenglon, 3.5m, DestinoMaterial.Nuevo);
+            modelos.CambiarCantidad(idRenglon, 3.5m, Devolucion.Nada);
             Assert.AreEqual(1.5m, DisponibleDe(idLote));
 
-            modelos.CambiarCantidad(idRenglon, 0.5m, DestinoMaterial.Nuevo);
+            modelos.CambiarCantidad(idRenglon, 0.5m, Devolucion.ComoNuevo(3m));
             Assert.AreEqual(4.5m, DisponibleDe(idLote));
         }
 
@@ -72,7 +72,7 @@ namespace Aviones_2._0.UnitTests.Data
             var (_, idLote) = CrearMaterialConLote(5m);
             int idModelo = CrearModelo(new LoteAsignado(idLote, 2m));
 
-            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, DestinoMaterial.Usado);
+            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Devolucion.ComoUsado(2m));
 
             Assert.AreEqual(5m, DisponibleDe(idLote));
             Assert.AreEqual(0, modelos.ListarMateriales(idModelo).Count);
@@ -84,7 +84,7 @@ namespace Aviones_2._0.UnitTests.Data
             var (_, idLote) = CrearMaterialConLote(5m);
             int idModelo = CrearModelo(new LoteAsignado(idLote, 2m));
 
-            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, DestinoMaterial.Descartar);
+            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Devolucion.Nada);
 
             Assert.AreEqual(3m, DisponibleDe(idLote));
         }
@@ -114,7 +114,7 @@ namespace Aviones_2._0.UnitTests.Data
             var modelo = modelos.Obtener(idModelo);
 
             var cambios = new CambiosDeMateriales();
-            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = renglones.Single(r => r.IdLote == loteA).IdMaterialModelo, Destino = DestinoMaterial.Usado });
+            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = renglones.Single(r => r.IdLote == loteA).IdMaterialModelo, Devolucion = Devolucion.ComoUsado(2m) });
             cambios.Cantidades.Add(new CambioDeCantidad { IdMaterialModelo = renglones.Single(r => r.IdLote == loteB).IdMaterialModelo, Cantidad = 3m });
             cambios.Agregados.Add(new LoteAsignado(loteC, 1.5m));
             modelos.Guardar(modelo, cambios);
@@ -137,7 +137,7 @@ namespace Aviones_2._0.UnitTests.Data
             modelo.Nombre = "Otro nombre";
 
             var cambios = new CambiosDeMateriales();
-            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Destino = DestinoMaterial.Usado });
+            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Devolucion = Devolucion.ComoUsado(2m) });
             cambios.Agregados.Add(new LoteAsignado(loteCorto, 4m));
 
             Assert.ThrowsExactly<StockInsuficienteException>(() => modelos.Guardar(modelo, cambios));
@@ -170,8 +170,8 @@ namespace Aviones_2._0.UnitTests.Data
 
             modelos.Eliminar(idModelo, new[]
             {
-                new MaterialADevolver(renglones.Single(r => r.IdLote == motor).IdMaterialModelo, 1m),
-                new MaterialADevolver(renglones.Single(r => r.IdLote == servo).IdMaterialModelo, 2.5m)
+                new MaterialADevolver(renglones.Single(r => r.IdLote == motor).IdMaterialModelo, Devolucion.ComoUsado(1m)),
+                new MaterialADevolver(renglones.Single(r => r.IdLote == servo).IdMaterialModelo, Devolucion.ComoUsado(2.5m))
             });
 
             Assert.IsNull(modelos.Obtener(idModelo));
@@ -188,7 +188,7 @@ namespace Aviones_2._0.UnitTests.Data
             int idRenglon = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo;
 
             Assert.ThrowsExactly<ReglaNegocioException>(() =>
-                modelos.Eliminar(idModelo, new[] { new MaterialADevolver(idRenglon, 5m) }));
+                modelos.Eliminar(idModelo, new[] { new MaterialADevolver(idRenglon, Devolucion.ComoUsado(5m)) }));
 
             Assert.IsNotNull(modelos.Obtener(idModelo));
             Assert.AreEqual(6m, DisponibleDe(lote));
@@ -200,7 +200,7 @@ namespace Aviones_2._0.UnitTests.Data
             var (_, lote) = CrearMaterialConLote(5m);
             int idModelo = CrearModelo(new LoteAsignado(lote, 2m));
 
-            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, DestinoMaterial.Usado);
+            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Devolucion.ComoUsado(2m));
 
             var l = new LoteRepositorio().Obtener(lote);
             Assert.AreEqual(3m, l.DisponibleNuevo);
@@ -213,7 +213,7 @@ namespace Aviones_2._0.UnitTests.Data
             var (_, lote) = CrearMaterialConLote(5m);
             int idModelo = CrearModelo(new LoteAsignado(lote, 2m));
 
-            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, DestinoMaterial.Nuevo);
+            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, Devolucion.ComoNuevo(2m));
 
             var l = new LoteRepositorio().Obtener(lote);
             Assert.AreEqual(5m, l.DisponibleNuevo);
@@ -225,14 +225,14 @@ namespace Aviones_2._0.UnitTests.Data
         {
             var (_, lote) = CrearMaterialConLote(5m);
             int primero = CrearModelo(new LoteAsignado(lote, 2m));
-            modelos.QuitarMaterial(modelos.ListarMateriales(primero).Single().IdMaterialModelo, DestinoMaterial.Usado);
+            modelos.QuitarMaterial(modelos.ListarMateriales(primero).Single().IdMaterialModelo, Devolucion.ComoUsado(2m));
 
             int segundo = CrearModelo(new LoteAsignado(lote, 1m, EstadosMaterial.Usado));
             var renglon = modelos.ListarMateriales(segundo).Single();
             Assert.AreEqual(EstadosMaterial.Usado, renglon.Estado);
             Assert.AreEqual(1m, new LoteRepositorio().Obtener(lote).DisponibleUsado);
 
-            Assert.ThrowsExactly<ReglaNegocioException>(() => modelos.QuitarMaterial(renglon.IdMaterialModelo, DestinoMaterial.Nuevo));
+            Assert.ThrowsExactly<ReglaNegocioException>(() => modelos.QuitarMaterial(renglon.IdMaterialModelo, Devolucion.ComoNuevo(1m)));
         }
 
         [TestMethod]
@@ -249,7 +249,7 @@ namespace Aviones_2._0.UnitTests.Data
             var (_, lote) = CrearMaterialConLote(5m);
             int idModelo = CrearModelo(new LoteAsignado(lote, 3m));
 
-            modelos.CambiarCantidad(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, 1m, DestinoMaterial.Descartar);
+            modelos.CambiarCantidad(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, 1m, Devolucion.Nada);
 
             Assert.AreEqual(2m, DisponibleDe(lote));
             Assert.AreEqual(1m, modelos.ListarMateriales(idModelo).Single().Cantidad);
@@ -260,7 +260,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             var (_, lote) = CrearMaterialConLote(5m);
             int previo = CrearModelo(new LoteAsignado(lote, 2m));
-            modelos.QuitarMaterial(modelos.ListarMateriales(previo).Single().IdMaterialModelo, DestinoMaterial.Usado);
+            modelos.QuitarMaterial(modelos.ListarMateriales(previo).Single().IdMaterialModelo, Devolucion.ComoUsado(2m));
 
             int idModelo = CrearModelo(new LoteAsignado(lote, 1m), new LoteAsignado(lote, 1m, EstadosMaterial.Usado));
 
@@ -279,14 +279,44 @@ namespace Aviones_2._0.UnitTests.Data
 
             modelos.Eliminar(idModelo, new[]
             {
-                new MaterialADevolver(renglones.Single(r => r.IdLote == motor).IdMaterialModelo, 1m, DestinoMaterial.Usado),
-                new MaterialADevolver(renglones.Single(r => r.IdLote == servo).IdMaterialModelo, 3m, DestinoMaterial.Nuevo)
+                new MaterialADevolver(renglones.Single(r => r.IdLote == motor).IdMaterialModelo, Devolucion.ComoUsado(1m)),
+                new MaterialADevolver(renglones.Single(r => r.IdLote == servo).IdMaterialModelo, Devolucion.ComoNuevo(3m))
             });
 
             var lotes = new LoteRepositorio();
             Assert.AreEqual(1m, lotes.Obtener(motor).DisponibleUsado);
             Assert.AreEqual(9m, lotes.Obtener(servo).DisponibleNuevo);
             Assert.AreEqual(0m, lotes.Obtener(servo).DisponibleUsado);
+        }
+
+        [TestMethod]
+        public void Quitar_RepartidoEntreNuevoUsadoYDescartado()
+        {
+            var (_, alas) = CrearMaterialConLote(10m, grupo: "Ala");
+            int idModelo = CrearModelo(new LoteAsignado(alas, 5m));
+
+            // 5 piezas salen: 2 vuelven nuevas, 2 usadas y 1 se descarta
+            modelos.QuitarMaterial(modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, new Devolucion(2m, 2m));
+
+            var l = new LoteRepositorio().Obtener(alas);
+            Assert.AreEqual(7m, l.DisponibleNuevo);
+            Assert.AreEqual(2m, l.DisponibleUsado);
+            Assert.AreEqual(1m, l.Consumido);
+        }
+
+        [TestMethod]
+        public void BajarCantidad_RepartidoYNoMasDeLoQueSale()
+        {
+            var (_, lote) = CrearMaterialConLote(10m);
+            int idModelo = CrearModelo(new LoteAsignado(lote, 5m));
+            int idRenglon = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo;
+
+            Assert.ThrowsExactly<ReglaNegocioException>(() => modelos.CambiarCantidad(idRenglon, 3m, new Devolucion(2m, 1m)));
+
+            modelos.CambiarCantidad(idRenglon, 3m, new Devolucion(1m, 1m));
+            var l = new LoteRepositorio().Obtener(lote);
+            Assert.AreEqual(6m, l.DisponibleNuevo);
+            Assert.AreEqual(1m, l.DisponibleUsado);
         }
 
         [TestMethod]

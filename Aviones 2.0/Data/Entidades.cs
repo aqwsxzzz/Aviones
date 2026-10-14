@@ -33,15 +33,25 @@ namespace Aviones_2._0.Data
         public static string Nombre(string estado) => estado == Usado ? "Usado" : "Nuevo";
     }
 
-    /// <summary>Qué pasa con material que sale de un modelo.</summary>
-    public enum DestinoMaterial
+    /// <summary>
+    /// Qué pasa con material que sale de un modelo: cuánto vuelve al stock como nuevo (sólo si salió
+    /// del nuevo), cuánto como usado (se recicla); el resto se descarta (roto o consumido).
+    /// </summary>
+    public struct Devolucion
     {
-        /// <summary>Roto o consumido: no vuelve al stock.</summary>
-        Descartar,
-        /// <summary>No se llegó a usar: vuelve al stock nuevo (sólo si salió del nuevo).</summary>
-        Nuevo,
-        /// <summary>Se recicla: vuelve al stock usado de su lote.</summary>
-        Usado
+        public decimal Nuevo { get; }
+        public decimal Usado { get; }
+        public decimal Total => Nuevo + Usado;
+
+        public Devolucion(decimal nuevo, decimal usado)
+        {
+            Nuevo = nuevo;
+            Usado = usado;
+        }
+
+        public static Devolucion Nada => new Devolucion(0m, 0m);
+        public static Devolucion ComoNuevo(decimal cantidad) => new Devolucion(cantidad, 0m);
+        public static Devolucion ComoUsado(decimal cantidad) => new Devolucion(0m, cantidad);
     }
 
     /// <summary>Qué es un material (catálogo). El stock está en sus lotes.</summary>
@@ -155,29 +165,27 @@ namespace Aviones_2._0.Data
         public int IdMaterialModelo { get; set; }
         public decimal Cantidad { get; set; }
 
-        /// <summary>Si la cantidad baja, qué pasa con lo que se quita.</summary>
-        public DestinoMaterial Destino { get; set; }
+        /// <summary>Si la cantidad baja, cuánto de lo que se quita vuelve como nuevo y como usado.</summary>
+        public Devolucion DevolucionSiBaja { get; set; }
     }
 
     public class MaterialQuitado
     {
         public int IdMaterialModelo { get; set; }
-        public DestinoMaterial Destino { get; set; }
+        public Devolucion Devolucion { get; set; }
     }
 
-    /// <summary>Al eliminar un modelo: cuánto de uno de sus materiales vuelve al stock y cómo.</summary>
+    /// <summary>Al eliminar un modelo: cuánto de uno de sus materiales vuelve al stock como nuevo y como usado.</summary>
     public class MaterialADevolver
     {
         public int IdMaterialModelo { get; set; }
-        public decimal Cantidad { get; set; }
-        public DestinoMaterial Destino { get; set; } = DestinoMaterial.Usado;
+        public Devolucion Devolucion { get; set; }
 
         public MaterialADevolver() { }
-        public MaterialADevolver(int idMaterialModelo, decimal cantidad, DestinoMaterial destino = DestinoMaterial.Usado)
+        public MaterialADevolver(int idMaterialModelo, Devolucion devolucion)
         {
             IdMaterialModelo = idMaterialModelo;
-            Cantidad = cantidad;
-            Destino = destino;
+            Devolucion = devolucion;
         }
     }
 

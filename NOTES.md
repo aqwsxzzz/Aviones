@@ -101,7 +101,7 @@ Decision (2026-10-14): **keep stock lots**. A material is a catalog entry; each 
 
 Quantities are `DECIMAL(18,3)` everywhere, money `DECIMAL(18,2)`.
 
-**New / used stock (2026-10-14).** Nuevo/Usado belongs to each lot, not to the material. A purchase goes entirely into new or used stock. Whenever material leaves a model (lowering a quantity, removing it, deleting the model) the user is asked what happens to the piece, not why: **vuelve como nuevo** (only if it came from new stock), **vuelve como usado** (recycled) or **se descarta**. It always returns to the lot it came from, so it keeps its real purchase price.
+**New / used stock (2026-10-14).** Nuevo/Usado belongs to each lot, not to the material. A purchase goes entirely into new or used stock. Whenever material leaves a model (lowering a quantity, removing it, deleting the model) the user is asked what happens to the pieces, not why, and can split the quantity: how many **vuelven como nuevas** (only if they came from new stock), how many **vuelven como usadas** (recycled); the rest **se descarta**. It always returns to the lot it came from, so it keeps its real purchase price.
 
 Data access lives in `Aviones 2.0/Data/`: one repository per table, all SQL parameterized (Dapper), and every stock movement (assign, change, remove, delete model) runs in a transaction that fails as a whole if a lot doesn't have enough. Integration tests in `Aviones 2.0.UnitTests/Data/` run against an `Aviones_Test` database.
 

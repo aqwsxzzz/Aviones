@@ -25,8 +25,8 @@ namespace Aviones_2._0.Forms.Modelos
         /// <summary>Cantidad guardada en la base (0 para los nuevos).</summary>
         public decimal CantidadOriginal { get; set; }
 
-        /// <summary>Si la cantidad quedó por debajo de la guardada, qué pasa con la diferencia.</summary>
-        public DestinoMaterial DestinoBaja { get; set; }
+        /// <summary>Si la cantidad quedó por debajo de la guardada, cuánto de la diferencia vuelve nuevo y usado.</summary>
+        public Devolucion DevolucionBaja { get; set; }
 
         public decimal ValorUnitario { get; set; }
         public decimal Subtotal => Cantidad * ValorUnitario;

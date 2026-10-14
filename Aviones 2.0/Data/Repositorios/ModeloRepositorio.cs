@@ -80,11 +80,11 @@ namespace Aviones_2._0.Data.Repositorios
 
                 foreach (var q in cambios.Quitados)
                 {
-                    QuitarMaterial(cn, tx, modelo.IdModelo, q.IdMaterialModelo, q.Destino);
+                    QuitarMaterial(cn, tx, modelo.IdModelo, q.IdMaterialModelo, q.Devolucion);
                 }
                 foreach (var c in cambios.Cantidades)
                 {
-                    CambiarCantidad(cn, tx, modelo.IdModelo, c.IdMaterialModelo, c.Cantidad, c.Destino);
+                    CambiarCantidad(cn, tx, modelo.IdModelo, c.IdMaterialModelo, c.Cantidad, c.DevolucionSiBaja);
                 }
                 foreach (var a in cambios.Agregados)
                 {
@@ -99,7 +99,7 @@ namespace Aviones_2._0.Data.Repositorios
         public void Eliminar(int idModelo, bool devolverAlStock)
         {
             var devolver = devolverAlStock
-                ? ListarMateriales(idModelo).Select(m => new MaterialADevolver(m.IdMaterialModelo, m.Cantidad))
+                ? ListarMateriales(idModelo).Select(m => new MaterialADevolver(m.IdMaterialModelo, Devolucion.ComoUsado(m.Cantidad)))
                 : Enumerable.Empty<MaterialADevolver>();
             Eliminar(idModelo, devolver);
         }
@@ -116,15 +116,7 @@ namespace Aviones_2._0.Data.Repositorios
                 foreach (var d in devolver ?? Enumerable.Empty<MaterialADevolver>())
                 {
                     var renglon = ObtenerRenglon(cn, tx, idModelo, d.IdMaterialModelo);
-                    if (d.Cantidad > renglon.Cantidad)
-                    {
-                        throw new ReglaNegocioException(
-                            $"No se puede devolver {d.Cantidad}: el modelo sólo usó {renglon.Cantidad} de ese material.");
-                    }
-                    if (d.Cantidad > 0)
-                    {
-                        Stock.Devolver(cn, tx, renglon.IdLote, renglon.Estado, d.Destino, d.Cantidad);
-                    }
+                    Stock.Devolver(cn, tx, renglon.IdLote, renglon.Estado, d.Devolucion, renglon.Cantidad);
                 }
                 cn.Execute("DELETE FROM dbo.Modelos WHERE IdModelo = @idModelo", new { idModelo }, tx);
                 tx.Commit();
@@ -162,25 +154,25 @@ namespace Aviones_2._0.Data.Repositorios
 
         /// <summary>
         /// Cambia cuánto se usó. Si sube, la diferencia se descuenta del mismo stock;
-        /// si baja, lo que se quita va según <paramref name="destinoSiBaja"/>.
+        /// si baja, de lo que se quita vuelve lo indicado en <paramref name="devolucionSiBaja"/> y el resto se descarta.
         /// </summary>
-        public void CambiarCantidad(int idMaterialModelo, decimal nuevaCantidad, DestinoMaterial destinoSiBaja)
+        public void CambiarCantidad(int idMaterialModelo, decimal nuevaCantidad, Devolucion devolucionSiBaja)
         {
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                CambiarCantidad(cn, tx, null, idMaterialModelo, nuevaCantidad, destinoSiBaja);
+                CambiarCantidad(cn, tx, null, idMaterialModelo, nuevaCantidad, devolucionSiBaja);
                 tx.Commit();
             }
         }
 
-        /// <summary>Quita un material del modelo: vuelve como nuevo, como usado (se recicla) o se descarta.</summary>
-        public void QuitarMaterial(int idMaterialModelo, DestinoMaterial destino)
+        /// <summary>Quita un material del modelo: lo indicado vuelve como nuevo y como usado; el resto se descarta.</summary>
+        public void QuitarMaterial(int idMaterialModelo, Devolucion devolucion)
         {
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                QuitarMaterial(cn, tx, null, idMaterialModelo, destino);
+                QuitarMaterial(cn, tx, null, idMaterialModelo, devolucion);
                 tx.Commit();
             }
         }
@@ -217,21 +209,21 @@ namespace Aviones_2._0.Data.Repositorios
         }
 
         private static void CambiarCantidad(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo,
-            decimal nuevaCantidad, DestinoMaterial destinoSiBaja)
+            decimal nuevaCantidad, Devolucion devolucionSiBaja)
         {
             Stock.ValidarCantidad(nuevaCantidad);
             var actual = ObtenerRenglon(cn, tx, idModelo, idMaterialModelo);
             decimal diferencia = nuevaCantidad - actual.Cantidad;
             if (diferencia > 0) Stock.Descontar(cn, tx, actual.IdLote, actual.Estado, diferencia);
-            if (diferencia < 0) Stock.Devolver(cn, tx, actual.IdLote, actual.Estado, destinoSiBaja, -diferencia);
+            if (diferencia < 0) Stock.Devolver(cn, tx, actual.IdLote, actual.Estado, devolucionSiBaja, -diferencia);
             cn.Execute("UPDATE dbo.MaterialesModelo SET Cantidad = @nuevaCantidad WHERE IdMaterialModelo = @idMaterialModelo",
                 new { idMaterialModelo, nuevaCantidad }, tx);
         }
 
-        private static void QuitarMaterial(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo, DestinoMaterial destino)
+        private static void QuitarMaterial(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo, Devolucion devolucion)
         {
             var actual = ObtenerRenglon(cn, tx, idModelo, idMaterialModelo);
-            Stock.Devolver(cn, tx, actual.IdLote, actual.Estado, destino, actual.Cantidad);
+            Stock.Devolver(cn, tx, actual.IdLote, actual.Estado, devolucion, actual.Cantidad);
             cn.Execute("DELETE FROM dbo.MaterialesModelo WHERE IdMaterialModelo = @idMaterialModelo", new { idMaterialModelo }, tx);
         }
 
