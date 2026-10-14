@@ -8,7 +8,11 @@ namespace Aviones_2._0.Data.Repositorios
     public class ModeloRepositorio
     {
         private const string SelectModelo = @"
-            SELECT Mo.IdModelo, Mo.Nombre, Mo.Alias, Mo.IdEstadoModelo, E.Nombre AS Estado, Mo.Desde
+            SELECT Mo.IdModelo, Mo.Nombre, Mo.Alias, Mo.IdEstadoModelo, E.Nombre AS Estado, Mo.Desde,
+                   (SELECT COUNT(*) FROM dbo.MaterialesModelo MM WHERE MM.IdModelo = Mo.IdModelo) AS CantidadMateriales,
+                   (SELECT ISNULL(SUM(MM.Cantidad * L.ValorUnitario), 0)
+                      FROM dbo.MaterialesModelo MM JOIN dbo.Lotes L ON L.IdLote = MM.IdLote
+                     WHERE MM.IdModelo = Mo.IdModelo) AS ValorMateriales
             FROM dbo.Modelos Mo
             JOIN dbo.EstadosModelo E ON E.IdEstadoModelo = Mo.IdEstadoModelo";
 
@@ -56,12 +60,38 @@ namespace Aviones_2._0.Data.Repositorios
 
         public void Actualizar(Modelo modelo)
         {
+            Guardar(modelo, new CambiosDeMateriales());
+        }
+
+        /// <summary>
+        /// Guarda los datos del modelo y todos los cambios de materiales en una sola transacción:
+        /// primero se quitan (devolviendo al stock si corresponde), después se cambian cantidades
+        /// y por último se agregan. Si algo falla no se guarda nada.
+        /// </summary>
+        public void Guardar(Modelo modelo, CambiosDeMateriales cambios)
+        {
             Validar(modelo);
             using (var cn = Db.Abrir())
+            using (var tx = cn.BeginTransaction())
             {
                 cn.Execute(@"
                     UPDATE dbo.Modelos SET Nombre = @Nombre, Alias = @Alias, IdEstadoModelo = @IdEstadoModelo, Desde = @Desde
-                    WHERE IdModelo = @IdModelo", modelo);
+                    WHERE IdModelo = @IdModelo", modelo, tx);
+
+                foreach (var q in cambios.Quitados)
+                {
+                    QuitarMaterial(cn, tx, modelo.IdModelo, q.IdMaterialModelo, q.DevolverAlStock);
+                }
+                foreach (var c in cambios.Cantidades)
+                {
+                    CambiarCantidad(cn, tx, modelo.IdModelo, c.IdMaterialModelo, c.Cantidad);
+                }
+                foreach (var a in cambios.Agregados)
+                {
+                    AgregarMaterial(cn, tx, modelo.IdModelo, a.IdLote, a.Cantidad);
+                }
+
+                tx.Commit();
             }
         }
 
@@ -117,16 +147,10 @@ namespace Aviones_2._0.Data.Repositorios
         /// <summary>Cambia cuánto se usó; la diferencia se descuenta o se devuelve al lote.</summary>
         public void CambiarCantidad(int idMaterialModelo, decimal nuevaCantidad)
         {
-            Stock.ValidarCantidad(nuevaCantidad);
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                var actual = ObtenerRenglon(cn, tx, idMaterialModelo);
-                decimal diferencia = nuevaCantidad - actual.Cantidad;
-                if (diferencia > 0) Stock.Descontar(cn, tx, actual.IdLote, diferencia);
-                if (diferencia < 0) Stock.Devolver(cn, tx, actual.IdLote, -diferencia);
-                cn.Execute("UPDATE dbo.MaterialesModelo SET Cantidad = @nuevaCantidad WHERE IdMaterialModelo = @idMaterialModelo",
-                    new { idMaterialModelo, nuevaCantidad }, tx);
+                CambiarCantidad(cn, tx, null, idMaterialModelo, nuevaCantidad);
                 tx.Commit();
             }
         }
@@ -140,12 +164,7 @@ namespace Aviones_2._0.Data.Repositorios
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                var actual = ObtenerRenglon(cn, tx, idMaterialModelo);
-                if (devolverAlStock)
-                {
-                    Stock.Devolver(cn, tx, actual.IdLote, actual.Cantidad);
-                }
-                cn.Execute("DELETE FROM dbo.MaterialesModelo WHERE IdMaterialModelo = @idMaterialModelo", new { idMaterialModelo }, tx);
+                QuitarMaterial(cn, tx, null, idMaterialModelo, devolverAlStock);
                 tx.Commit();
             }
         }
@@ -181,11 +200,34 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        private static LoteAsignado ObtenerRenglon(IDbConnection cn, IDbTransaction tx, int idMaterialModelo)
+        private static void CambiarCantidad(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo, decimal nuevaCantidad)
+        {
+            Stock.ValidarCantidad(nuevaCantidad);
+            var actual = ObtenerRenglon(cn, tx, idModelo, idMaterialModelo);
+            decimal diferencia = nuevaCantidad - actual.Cantidad;
+            if (diferencia > 0) Stock.Descontar(cn, tx, actual.IdLote, diferencia);
+            if (diferencia < 0) Stock.Devolver(cn, tx, actual.IdLote, -diferencia);
+            cn.Execute("UPDATE dbo.MaterialesModelo SET Cantidad = @nuevaCantidad WHERE IdMaterialModelo = @idMaterialModelo",
+                new { idMaterialModelo, nuevaCantidad }, tx);
+        }
+
+        private static void QuitarMaterial(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo, bool devolverAlStock)
+        {
+            var actual = ObtenerRenglon(cn, tx, idModelo, idMaterialModelo);
+            if (devolverAlStock)
+            {
+                Stock.Devolver(cn, tx, actual.IdLote, actual.Cantidad);
+            }
+            cn.Execute("DELETE FROM dbo.MaterialesModelo WHERE IdMaterialModelo = @idMaterialModelo", new { idMaterialModelo }, tx);
+        }
+
+        /// <summary>Lee el renglón; si se pasa el modelo, verifica que sea de ese modelo.</summary>
+        private static LoteAsignado ObtenerRenglon(IDbConnection cn, IDbTransaction tx, int? idModelo, int idMaterialModelo)
         {
             return cn.QuerySingleOrDefault<LoteAsignado>(
-                       "SELECT IdLote, Cantidad FROM dbo.MaterialesModelo WHERE IdMaterialModelo = @idMaterialModelo",
-                       new { idMaterialModelo }, tx)
+                       "SELECT IdLote, Cantidad FROM dbo.MaterialesModelo WHERE IdMaterialModelo = @idMaterialModelo"
+                       + (idModelo.HasValue ? " AND IdModelo = @idModelo" : ""),
+                       new { idMaterialModelo, idModelo }, tx)
                    ?? throw new ReglaNegocioException("Ese material ya no está en el modelo.");
         }
 

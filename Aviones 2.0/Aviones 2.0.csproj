@@ -93,37 +93,6 @@
       <DependentUpon>frmIngresoCom.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Compras\funcCompras.cs" />
-    <Compile Include="Forms\Modelos\Condicion.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Modelos\Condicion.Designer.cs">
-      <DependentUpon>Condicion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmIngreso.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmIngreso.Designer.cs">
-      <DependentUpon>frmIngreso.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmMaterialporModelo.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmMaterialporModelo.Designer.cs">
-      <DependentUpon>frmMaterialporModelo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmModificacionMod.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmModificacionMod.Designer.cs">
-      <DependentUpon>frmModificacionMod.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Modelos\funcModelos.cs" />
-    <Compile Include="Forms\Modelos\frmModelos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Modelos\frmModelos.Designer.cs">
-      <DependentUpon>frmModelos.cs</DependentUpon>
-    </Compile>
     <Compile Include="PantallaPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,22 +112,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Compras\frmIngresoCom.resx">
       <DependentUpon>frmIngresoCom.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Modelos\Condicion.resx">
-      <DependentUpon>Condicion.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Modelos\frmIngreso.resx">
-      <DependentUpon>frmIngreso.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Modelos\frmMaterialporModelo.resx">
-      <DependentUpon>frmMaterialporModelo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Modelos\frmModelos.resx">
-      <DependentUpon>frmModelos.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Modelos\frmModificacionMod.resx">
-      <DependentUpon>frmModificacionMod.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PantallaPrincipal.resx">
       <DependentUpon>PantallaPrincipal.cs</DependentUpon>
@@ -217,6 +170,31 @@
     <Compile Include="Common\Mensajes.cs" />
     <Compile Include="Common\Estilo.cs" />
     <Compile Include="Common\ImpresionGrilla.cs" />
+    <Compile Include="Forms\Modelos\frmModelos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModelos.Designer.cs">
+      <DependentUpon>frmModelos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModeloEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmModeloEditor.Designer.cs">
+      <DependentUpon>frmModeloEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmElegirLote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Modelos\frmElegirLote.Designer.cs">
+      <DependentUpon>frmElegirLote.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Comun\frmCantidad.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Comun\frmCantidad.Designer.cs">
+      <DependentUpon>frmCantidad.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Modelos\FilaMaterial.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

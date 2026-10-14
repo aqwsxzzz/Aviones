@@ -1,16 +1,9 @@
-﻿namespace Aviones_2._0.Forms.Modelos
+namespace Aviones_2._0.Forms.Modelos
 {
     partial class frmModelos
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,180 +15,487 @@
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
-            this.Salir = new System.Windows.Forms.Button();
-            this.TituloPincipal = new System.Windows.Forms.Label();
-            this.botIngresar = new System.Windows.Forms.Button();
+            this.tlpPrincipal = new System.Windows.Forms.TableLayoutPanel();
+            this.labTitulo = new System.Windows.Forms.Label();
+            this.flpFiltros = new System.Windows.Forms.FlowLayoutPanel();
+            this.labEstado = new System.Windows.Forms.Label();
+            this.cboEstado = new System.Windows.Forms.ComboBox();
+            this.labBuscar = new System.Windows.Forms.Label();
+            this.txtBuscar = new System.Windows.Forms.TextBox();
+            this.splPrincipal = new System.Windows.Forms.SplitContainer();
+            this.dgvModelos = new System.Windows.Forms.DataGridView();
+            this.colNombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colAlias = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDesde = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCantidadMateriales = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colValorMateriales = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tlpDetalle = new System.Windows.Forms.TableLayoutPanel();
+            this.picFoto = new System.Windows.Forms.PictureBox();
+            this.labMateriales = new System.Windows.Forms.Label();
+            this.dgvMateriales = new System.Windows.Forms.DataGridView();
+            this.colMatFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatGrupo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatCaracteristica = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatMedidas = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatFabricante = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colMatSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.flpDetalleBotones = new System.Windows.Forms.FlowLayoutPanel();
+            this.labTotal = new System.Windows.Forms.Label();
+            this.botImprimirMateriales = new System.Windows.Forms.Button();
+            this.labResumen = new System.Windows.Forms.Label();
+            this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
+            this.botNuevo = new System.Windows.Forms.Button();
             this.botModificar = new System.Windows.Forms.Button();
             this.botEliminar = new System.Windows.Forms.Button();
-            this.botListados = new System.Windows.Forms.Button();
-            this.directoryEntry1 = new System.DirectoryServices.DirectoryEntry();
-            this.panIngresoBorra = new System.Windows.Forms.Panel();
-            this.botCancelar = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.pictureBoxMod = new System.Windows.Forms.PictureBox();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMod)).BeginInit();
+            this.botImprimir = new System.Windows.Forms.Button();
+            this.botSalir = new System.Windows.Forms.Button();
+            this.tlpPrincipal.SuspendLayout();
+            this.flpFiltros.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splPrincipal)).BeginInit();
+            this.splPrincipal.Panel1.SuspendLayout();
+            this.splPrincipal.Panel2.SuspendLayout();
+            this.splPrincipal.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvModelos)).BeginInit();
+            this.tlpDetalle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picFoto)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMateriales)).BeginInit();
+            this.flpDetalleBotones.SuspendLayout();
+            this.flpBotones.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // Salir
-            // 
-            this.Salir.BackColor = System.Drawing.Color.DarkKhaki;
-            this.Salir.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Salir.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.Salir.Location = new System.Drawing.Point(1503, 714);
-            this.Salir.Name = "Salir";
-            this.Salir.Size = new System.Drawing.Size(160, 60);
-            this.Salir.TabIndex = 0;
-            this.Salir.Text = "SALIR";
-            this.Salir.UseVisualStyleBackColor = false;
-            this.Salir.Click += new System.EventHandler(this.Salir_Click_1);
-            // 
-            // TituloPincipal
-            // 
-            this.TituloPincipal.AutoSize = true;
-            this.TituloPincipal.Font = new System.Drawing.Font("Arial Rounded MT Bold", 21.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TituloPincipal.Location = new System.Drawing.Point(878, 85);
-            this.TituloPincipal.Name = "TituloPincipal";
-            this.TituloPincipal.Size = new System.Drawing.Size(162, 33);
-            this.TituloPincipal.TabIndex = 2;
-            this.TituloPincipal.Text = "MODELOS";
-            // 
-            // botIngresar
-            // 
-            this.botIngresar.BackColor = System.Drawing.Color.BurlyWood;
-            this.botIngresar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botIngresar.Location = new System.Drawing.Point(601, 714);
-            this.botIngresar.Name = "botIngresar";
-            this.botIngresar.Size = new System.Drawing.Size(160, 59);
-            this.botIngresar.TabIndex = 3;
-            this.botIngresar.Text = "INGRESAR / BORRAR";
-            this.botIngresar.UseVisualStyleBackColor = false;
-            this.botIngresar.Click += new System.EventHandler(this.botIngresar_Click);
-            // 
+            //
+            // tlpPrincipal
+            //
+            this.tlpPrincipal.ColumnCount = 1;
+            this.tlpPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpPrincipal.Controls.Add(this.labTitulo, 0, 0);
+            this.tlpPrincipal.Controls.Add(this.flpFiltros, 0, 1);
+            this.tlpPrincipal.Controls.Add(this.splPrincipal, 0, 2);
+            this.tlpPrincipal.Controls.Add(this.labResumen, 0, 3);
+            this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 4);
+            this.tlpPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpPrincipal.Name = "tlpPrincipal";
+            this.tlpPrincipal.Padding = new System.Windows.Forms.Padding(20, 10, 20, 10);
+            this.tlpPrincipal.RowCount = 5;
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpPrincipal.TabIndex = 0;
+            //
+            // labTitulo
+            //
+            this.labTitulo.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labTitulo.AutoSize = true;
+            this.labTitulo.Font = new System.Drawing.Font("Arial", 24F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))));
+            this.labTitulo.Margin = new System.Windows.Forms.Padding(3, 0, 3, 10);
+            this.labTitulo.Name = "labTitulo";
+            this.labTitulo.Text = "Modelos";
+            //
+            // flpFiltros
+            //
+            this.flpFiltros.AutoSize = true;
+            this.flpFiltros.Controls.Add(this.labEstado);
+            this.flpFiltros.Controls.Add(this.cboEstado);
+            this.flpFiltros.Controls.Add(this.labBuscar);
+            this.flpFiltros.Controls.Add(this.txtBuscar);
+            this.flpFiltros.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpFiltros.Name = "flpFiltros";
+            this.flpFiltros.TabIndex = 1;
+            //
+            // labEstado
+            //
+            this.labEstado.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labEstado.AutoSize = true;
+            this.labEstado.Name = "labEstado";
+            this.labEstado.Text = "Condición:";
+            //
+            // cboEstado
+            //
+            this.cboEstado.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboEstado.Margin = new System.Windows.Forms.Padding(3, 3, 20, 3);
+            this.cboEstado.Name = "cboEstado";
+            this.cboEstado.Size = new System.Drawing.Size(200, 24);
+            this.cboEstado.TabIndex = 0;
+            this.cboEstado.SelectedIndexChanged += new System.EventHandler(this.Filtro_Changed);
+            //
+            // labBuscar
+            //
+            this.labBuscar.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labBuscar.AutoSize = true;
+            this.labBuscar.Name = "labBuscar";
+            this.labBuscar.Text = "Buscar:";
+            //
+            // txtBuscar
+            //
+            this.txtBuscar.Name = "txtBuscar";
+            this.txtBuscar.Size = new System.Drawing.Size(300, 23);
+            this.txtBuscar.TabIndex = 1;
+            this.txtBuscar.TextChanged += new System.EventHandler(this.Filtro_Changed);
+            //
+            // splPrincipal
+            //
+            this.splPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splPrincipal.Name = "splPrincipal";
+            this.splPrincipal.Panel1.Controls.Add(this.dgvModelos);
+            this.splPrincipal.Panel2.Controls.Add(this.tlpDetalle);
+            this.splPrincipal.Panel2.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
+            this.splPrincipal.Size = new System.Drawing.Size(1224, 560);
+            this.splPrincipal.SplitterDistance = 560;
+            this.splPrincipal.TabIndex = 2;
+            //
+            // dgvModelos
+            //
+            this.dgvModelos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colNombre,
+            this.colAlias,
+            this.colEstado,
+            this.colDesde,
+            this.colCantidadMateriales,
+            this.colValorMateriales});
+            this.dgvModelos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvModelos.Name = "dgvModelos";
+            this.dgvModelos.TabIndex = 0;
+            this.dgvModelos.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvModelos_CellDoubleClick);
+            this.dgvModelos.SelectionChanged += new System.EventHandler(this.dgvModelos_SelectionChanged);
+            this.dgvModelos.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvModelos_KeyDown);
+            //
+            // colNombre
+            //
+            this.colNombre.DataPropertyName = "Nombre";
+            this.colNombre.FillWeight = 150F;
+            this.colNombre.HeaderText = "Modelo";
+            this.colNombre.MinimumWidth = 120;
+            this.colNombre.Name = "colNombre";
+            //
+            // colAlias
+            //
+            this.colAlias.DataPropertyName = "Alias";
+            this.colAlias.HeaderText = "Alias";
+            this.colAlias.MinimumWidth = 80;
+            this.colAlias.Name = "colAlias";
+            //
+            // colEstado
+            //
+            this.colEstado.DataPropertyName = "Estado";
+            this.colEstado.HeaderText = "Condición";
+            this.colEstado.MinimumWidth = 100;
+            this.colEstado.Name = "colEstado";
+            //
+            // colDesde
+            //
+            this.colDesde.DataPropertyName = "Desde";
+            this.colDesde.DefaultCellStyle.Format = "dd/MM/yyyy";
+            this.colDesde.FillWeight = 70F;
+            this.colDesde.HeaderText = "Desde";
+            this.colDesde.MinimumWidth = 80;
+            this.colDesde.Name = "colDesde";
+            //
+            // colCantidadMateriales
+            //
+            this.colCantidadMateriales.DataPropertyName = "CantidadMateriales";
+            this.colCantidadMateriales.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colCantidadMateriales.FillWeight = 60F;
+            this.colCantidadMateriales.HeaderText = "Materiales";
+            this.colCantidadMateriales.MinimumWidth = 80;
+            this.colCantidadMateriales.Name = "colCantidadMateriales";
+            //
+            // colValorMateriales
+            //
+            this.colValorMateriales.DataPropertyName = "ValorMateriales";
+            this.colValorMateriales.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colValorMateriales.DefaultCellStyle.Format = "N2";
+            this.colValorMateriales.FillWeight = 70F;
+            this.colValorMateriales.HeaderText = "Valor materiales";
+            this.colValorMateriales.MinimumWidth = 90;
+            this.colValorMateriales.Name = "colValorMateriales";
+            //
+            // tlpDetalle
+            //
+            this.tlpDetalle.ColumnCount = 1;
+            this.tlpDetalle.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpDetalle.Controls.Add(this.picFoto, 0, 0);
+            this.tlpDetalle.Controls.Add(this.labMateriales, 0, 1);
+            this.tlpDetalle.Controls.Add(this.dgvMateriales, 0, 2);
+            this.tlpDetalle.Controls.Add(this.flpDetalleBotones, 0, 3);
+            this.tlpDetalle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpDetalle.Name = "tlpDetalle";
+            this.tlpDetalle.RowCount = 4;
+            this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 240F));
+            this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpDetalle.TabIndex = 0;
+            //
+            // picFoto
+            //
+            this.picFoto.BackColor = System.Drawing.Color.White;
+            this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picFoto.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picFoto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picFoto.Name = "picFoto";
+            this.picFoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picFoto.TabStop = false;
+            this.picFoto.DoubleClick += new System.EventHandler(this.picFoto_DoubleClick);
+            //
+            // labMateriales
+            //
+            this.labMateriales.AutoSize = true;
+            this.labMateriales.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold);
+            this.labMateriales.Margin = new System.Windows.Forms.Padding(3, 8, 3, 3);
+            this.labMateriales.Name = "labMateriales";
+            this.labMateriales.Text = "Materiales";
+            //
+            // dgvMateriales
+            //
+            this.dgvMateriales.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colMatFamilia,
+            this.colMatGrupo,
+            this.colMatCaracteristica,
+            this.colMatMedidas,
+            this.colMatFabricante,
+            this.colMatCantidad,
+            this.colMatUnidad,
+            this.colMatSubtotal});
+            this.dgvMateriales.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvMateriales.Name = "dgvMateriales";
+            this.dgvMateriales.TabIndex = 1;
+            //
+            // colMatFamilia
+            //
+            this.colMatFamilia.DataPropertyName = "Familia";
+            this.colMatFamilia.HeaderText = "Familia";
+            this.colMatFamilia.MinimumWidth = 80;
+            this.colMatFamilia.Name = "colMatFamilia";
+            //
+            // colMatGrupo
+            //
+            this.colMatGrupo.DataPropertyName = "Grupo";
+            this.colMatGrupo.HeaderText = "Grupo";
+            this.colMatGrupo.MinimumWidth = 70;
+            this.colMatGrupo.Name = "colMatGrupo";
+            //
+            // colMatCaracteristica
+            //
+            this.colMatCaracteristica.DataPropertyName = "Caracteristica";
+            this.colMatCaracteristica.FillWeight = 140F;
+            this.colMatCaracteristica.HeaderText = "Característica";
+            this.colMatCaracteristica.MinimumWidth = 100;
+            this.colMatCaracteristica.Name = "colMatCaracteristica";
+            //
+            // colMatMedidas
+            //
+            this.colMatMedidas.DataPropertyName = "Medidas";
+            this.colMatMedidas.HeaderText = "Medidas";
+            this.colMatMedidas.MinimumWidth = 70;
+            this.colMatMedidas.Name = "colMatMedidas";
+            //
+            // colMatFabricante
+            //
+            this.colMatFabricante.DataPropertyName = "Fabricante";
+            this.colMatFabricante.HeaderText = "Fabricante";
+            this.colMatFabricante.MinimumWidth = 80;
+            this.colMatFabricante.Name = "colMatFabricante";
+            //
+            // colMatCantidad
+            //
+            this.colMatCantidad.DataPropertyName = "Cantidad";
+            this.colMatCantidad.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colMatCantidad.DefaultCellStyle.Format = "0.###";
+            this.colMatCantidad.FillWeight = 55F;
+            this.colMatCantidad.HeaderText = "Cant.";
+            this.colMatCantidad.MinimumWidth = 50;
+            this.colMatCantidad.Name = "colMatCantidad";
+            //
+            // colMatUnidad
+            //
+            this.colMatUnidad.DataPropertyName = "TipoUnidad";
+            this.colMatUnidad.FillWeight = 60F;
+            this.colMatUnidad.HeaderText = "Unidad";
+            this.colMatUnidad.MinimumWidth = 65;
+            this.colMatUnidad.Name = "colMatUnidad";
+            //
+            // colMatSubtotal
+            //
+            this.colMatSubtotal.DataPropertyName = "Subtotal";
+            this.colMatSubtotal.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            this.colMatSubtotal.DefaultCellStyle.Format = "N2";
+            this.colMatSubtotal.FillWeight = 65F;
+            this.colMatSubtotal.HeaderText = "Subtotal";
+            this.colMatSubtotal.MinimumWidth = 70;
+            this.colMatSubtotal.Name = "colMatSubtotal";
+            //
+            // flpDetalleBotones
+            //
+            this.flpDetalleBotones.AutoSize = true;
+            this.flpDetalleBotones.Controls.Add(this.labTotal);
+            this.flpDetalleBotones.Controls.Add(this.botImprimirMateriales);
+            this.flpDetalleBotones.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpDetalleBotones.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flpDetalleBotones.Name = "flpDetalleBotones";
+            this.flpDetalleBotones.TabIndex = 2;
+            //
+            // labTotal
+            //
+            this.labTotal.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labTotal.AutoSize = true;
+            this.labTotal.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold);
+            this.labTotal.Name = "labTotal";
+            this.labTotal.Text = "Total";
+            //
+            // botImprimirMateriales
+            //
+            this.botImprimirMateriales.Margin = new System.Windows.Forms.Padding(3, 3, 20, 3);
+            this.botImprimirMateriales.Name = "botImprimirMateriales";
+            this.botImprimirMateriales.Size = new System.Drawing.Size(180, 34);
+            this.botImprimirMateriales.TabIndex = 0;
+            this.botImprimirMateriales.Text = "Imprimir materiales";
+            this.botImprimirMateriales.Click += new System.EventHandler(this.botImprimirMateriales_Click);
+            //
+            // labResumen
+            //
+            this.labResumen.AutoSize = true;
+            this.labResumen.Font = new System.Drawing.Font("Arial", 11F, System.Drawing.FontStyle.Bold);
+            this.labResumen.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
+            this.labResumen.Name = "labResumen";
+            this.labResumen.Text = "Resumen";
+            //
+            // flpBotones
+            //
+            this.flpBotones.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.flpBotones.AutoSize = true;
+            this.flpBotones.Controls.Add(this.botNuevo);
+            this.flpBotones.Controls.Add(this.botModificar);
+            this.flpBotones.Controls.Add(this.botEliminar);
+            this.flpBotones.Controls.Add(this.botImprimir);
+            this.flpBotones.Controls.Add(this.botSalir);
+            this.flpBotones.Name = "flpBotones";
+            this.flpBotones.TabIndex = 3;
+            //
+            // botNuevo
+            //
+            this.botNuevo.Margin = new System.Windows.Forms.Padding(6);
+            this.botNuevo.Name = "botNuevo";
+            this.botNuevo.Size = new System.Drawing.Size(150, 44);
+            this.botNuevo.TabIndex = 0;
+            this.botNuevo.Text = "NUEVO";
+            this.botNuevo.Click += new System.EventHandler(this.botNuevo_Click);
+            //
             // botModificar
-            // 
-            this.botModificar.BackColor = System.Drawing.Color.SeaShell;
-            this.botModificar.Enabled = false;
-            this.botModificar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botModificar.ForeColor = System.Drawing.Color.Black;
-            this.botModificar.Location = new System.Drawing.Point(781, 714);
+            //
+            this.botModificar.Margin = new System.Windows.Forms.Padding(6);
             this.botModificar.Name = "botModificar";
-            this.botModificar.Size = new System.Drawing.Size(160, 59);
-            this.botModificar.TabIndex = 4;
+            this.botModificar.Size = new System.Drawing.Size(150, 44);
+            this.botModificar.TabIndex = 1;
             this.botModificar.Text = "MODIFICAR";
-            this.botModificar.UseVisualStyleBackColor = false;
             this.botModificar.Click += new System.EventHandler(this.botModificar_Click);
-            // 
+            //
             // botEliminar
-            // 
-            this.botEliminar.BackColor = System.Drawing.Color.SeaShell;
-            this.botEliminar.Enabled = false;
-            this.botEliminar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botEliminar.ForeColor = System.Drawing.Color.Black;
-            this.botEliminar.Location = new System.Drawing.Point(961, 714);
+            //
+            this.botEliminar.Margin = new System.Windows.Forms.Padding(6);
             this.botEliminar.Name = "botEliminar";
-            this.botEliminar.Size = new System.Drawing.Size(160, 59);
-            this.botEliminar.TabIndex = 5;
+            this.botEliminar.Size = new System.Drawing.Size(150, 44);
+            this.botEliminar.TabIndex = 2;
             this.botEliminar.Text = "ELIMINAR";
-            this.botEliminar.UseVisualStyleBackColor = false;
-            // 
-            // botListados
-            // 
-            this.botListados.BackColor = System.Drawing.Color.BurlyWood;
-            this.botListados.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botListados.ForeColor = System.Drawing.Color.Black;
-            this.botListados.Location = new System.Drawing.Point(1140, 714);
-            this.botListados.Name = "botListados";
-            this.botListados.Size = new System.Drawing.Size(160, 59);
-            this.botListados.TabIndex = 6;
-            this.botListados.Text = "LISTADOS";
-            this.botListados.UseVisualStyleBackColor = false;
-            // 
-            // panIngresoBorra
-            // 
-            this.panIngresoBorra.AccessibleRole = System.Windows.Forms.AccessibleRole.PageTabList;
-            this.panIngresoBorra.BackColor = System.Drawing.Color.DarkSalmon;
-            this.panIngresoBorra.Location = new System.Drawing.Point(216, 532);
-            this.panIngresoBorra.Name = "panIngresoBorra";
-            this.panIngresoBorra.Size = new System.Drawing.Size(170, 109);
-            this.panIngresoBorra.TabIndex = 7;
-            this.panIngresoBorra.Visible = false;
-            // 
-            // botCancelar
-            // 
-            this.botCancelar.BackColor = System.Drawing.Color.DarkKhaki;
-            this.botCancelar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.botCancelar.Location = new System.Drawing.Point(1503, 626);
-            this.botCancelar.Name = "botCancelar";
-            this.botCancelar.Size = new System.Drawing.Size(159, 59);
-            this.botCancelar.TabIndex = 8;
-            this.botCancelar.Text = "CANCELAR";
-            this.botCancelar.UseVisualStyleBackColor = false;
-            this.botCancelar.Visible = false;
-            this.botCancelar.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.Bisque;
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel2.Controls.Add(this.pictureBoxMod);
-            this.panel2.Location = new System.Drawing.Point(351, 282);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1216, 482);
-            this.panel2.TabIndex = 9;
-            // 
-            // pictureBoxMod
-            // 
-            this.pictureBoxMod.Location = new System.Drawing.Point(933, 61);
-            this.pictureBoxMod.Name = "pictureBoxMod";
-            this.pictureBoxMod.Size = new System.Drawing.Size(237, 205);
-            this.pictureBoxMod.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxMod.TabIndex = 10;
-            this.pictureBoxMod.TabStop = false;
-            // 
+            this.botEliminar.Click += new System.EventHandler(this.botEliminar_Click);
+            //
+            // botImprimir
+            //
+            this.botImprimir.Margin = new System.Windows.Forms.Padding(24, 6, 6, 6);
+            this.botImprimir.Name = "botImprimir";
+            this.botImprimir.Size = new System.Drawing.Size(150, 44);
+            this.botImprimir.TabIndex = 3;
+            this.botImprimir.Text = "IMPRIMIR LISTA";
+            this.botImprimir.Click += new System.EventHandler(this.botImprimir_Click);
+            //
+            // botSalir
+            //
+            this.botSalir.Margin = new System.Windows.Forms.Padding(24, 6, 6, 6);
+            this.botSalir.Name = "botSalir";
+            this.botSalir.Size = new System.Drawing.Size(150, 44);
+            this.botSalir.TabIndex = 4;
+            this.botSalir.Text = "SALIR";
+            this.botSalir.Click += new System.EventHandler(this.botSalir_Click);
+            //
             // frmModelos
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaShell;
-            this.ClientSize = new System.Drawing.Size(1801, 849);
-            this.Controls.Add(this.botCancelar);
-            this.Controls.Add(this.panIngresoBorra);
-            this.Controls.Add(this.botListados);
-            this.Controls.Add(this.botEliminar);
-            this.Controls.Add(this.botModificar);
-            this.Controls.Add(this.botIngresar);
-            this.Controls.Add(this.TituloPincipal);
-            this.Controls.Add(this.Salir);
-            this.Controls.Add(this.panel2);
+            this.ClientSize = new System.Drawing.Size(1264, 761);
+            this.Controls.Add(this.tlpPrincipal);
+            this.Font = new System.Drawing.Font("Arial", 10F);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.KeyPreview = true;
             this.Name = "frmModelos";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Modelos";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Shown += new System.EventHandler(this.frmModelos_Shown);
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMod)).EndInit();
+            this.Load += new System.EventHandler(this.frmModelos_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmModelos_KeyDown);
+            this.tlpPrincipal.ResumeLayout(false);
+            this.tlpPrincipal.PerformLayout();
+            this.flpFiltros.ResumeLayout(false);
+            this.flpFiltros.PerformLayout();
+            this.splPrincipal.Panel1.ResumeLayout(false);
+            this.splPrincipal.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splPrincipal)).EndInit();
+            this.splPrincipal.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvModelos)).EndInit();
+            this.tlpDetalle.ResumeLayout(false);
+            this.tlpDetalle.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picFoto)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMateriales)).EndInit();
+            this.flpDetalleBotones.ResumeLayout(false);
+            this.flpDetalleBotones.PerformLayout();
+            this.flpBotones.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Label TituloPincipal;
-        private System.DirectoryServices.DirectoryEntry directoryEntry1;
-        private System.Windows.Forms.Panel panIngresoBorra;
-        public System.Windows.Forms.Button botIngresar;
-        public System.Windows.Forms.Button botModificar;
-        public System.Windows.Forms.Button botEliminar;
-        public System.Windows.Forms.Button botListados;
-        public System.Windows.Forms.Button Salir;
-        private System.Windows.Forms.Button botCancelar;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.PictureBox pictureBoxMod;
+
+        private System.Windows.Forms.TableLayoutPanel tlpPrincipal;
+        private System.Windows.Forms.Label labTitulo;
+        private System.Windows.Forms.FlowLayoutPanel flpFiltros;
+        private System.Windows.Forms.Label labEstado;
+        private System.Windows.Forms.ComboBox cboEstado;
+        private System.Windows.Forms.Label labBuscar;
+        private System.Windows.Forms.TextBox txtBuscar;
+        private System.Windows.Forms.SplitContainer splPrincipal;
+        private System.Windows.Forms.DataGridView dgvModelos;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colNombre;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colAlias;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colEstado;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colDesde;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCantidadMateriales;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colValorMateriales;
+        private System.Windows.Forms.TableLayoutPanel tlpDetalle;
+        private System.Windows.Forms.PictureBox picFoto;
+        private System.Windows.Forms.Label labMateriales;
+        private System.Windows.Forms.DataGridView dgvMateriales;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatFamilia;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatGrupo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatCaracteristica;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatMedidas;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatFabricante;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatCantidad;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatUnidad;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colMatSubtotal;
+        private System.Windows.Forms.FlowLayoutPanel flpDetalleBotones;
+        private System.Windows.Forms.Label labTotal;
+        private System.Windows.Forms.Button botImprimirMateriales;
+        private System.Windows.Forms.Label labResumen;
+        private System.Windows.Forms.FlowLayoutPanel flpBotones;
+        private System.Windows.Forms.Button botNuevo;
+        private System.Windows.Forms.Button botModificar;
+        private System.Windows.Forms.Button botEliminar;
+        private System.Windows.Forms.Button botImprimir;
+        private System.Windows.Forms.Button botSalir;
     }
 }

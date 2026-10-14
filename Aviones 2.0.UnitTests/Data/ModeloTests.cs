@@ -104,6 +104,62 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Guardar_AplicaQuitarCambiarYAgregarJuntos()
+        {
+            var (_, loteA) = CrearMaterialConLote(5m);
+            var (_, loteB) = CrearMaterialConLote(5m, grupo: "Tela");
+            var (_, loteC) = CrearMaterialConLote(5m, grupo: "Cinta");
+            int idModelo = CrearModelo(new LoteAsignado(loteA, 2m), new LoteAsignado(loteB, 2m));
+            var renglones = modelos.ListarMateriales(idModelo);
+            var modelo = modelos.Obtener(idModelo);
+
+            var cambios = new CambiosDeMateriales();
+            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = renglones.Single(r => r.IdLote == loteA).IdMaterialModelo, DevolverAlStock = true });
+            cambios.Cantidades.Add(new CambioDeCantidad { IdMaterialModelo = renglones.Single(r => r.IdLote == loteB).IdMaterialModelo, Cantidad = 3m });
+            cambios.Agregados.Add(new LoteAsignado(loteC, 1.5m));
+            modelos.Guardar(modelo, cambios);
+
+            Assert.AreEqual(5m, DisponibleDe(loteA));
+            Assert.AreEqual(2m, DisponibleDe(loteB));
+            Assert.AreEqual(3.5m, DisponibleDe(loteC));
+            var guardado = modelos.Obtener(idModelo);
+            Assert.AreEqual(2, guardado.CantidadMateriales);
+            Assert.AreEqual(3m * 10m + 1.5m * 10m, guardado.ValorMateriales);
+        }
+
+        [TestMethod]
+        public void Guardar_SiAlgoFallaNoCambiaNada()
+        {
+            var (_, loteA) = CrearMaterialConLote(5m);
+            var (_, loteCorto) = CrearMaterialConLote(1m, grupo: "Tela");
+            int idModelo = CrearModelo(new LoteAsignado(loteA, 2m));
+            var modelo = modelos.Obtener(idModelo);
+            modelo.Nombre = "Otro nombre";
+
+            var cambios = new CambiosDeMateriales();
+            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = modelos.ListarMateriales(idModelo).Single().IdMaterialModelo, DevolverAlStock = true });
+            cambios.Agregados.Add(new LoteAsignado(loteCorto, 4m));
+
+            Assert.ThrowsExactly<StockInsuficienteException>(() => modelos.Guardar(modelo, cambios));
+            Assert.AreEqual("Piper J-3 Cub", modelos.Obtener(idModelo).Nombre);
+            Assert.AreEqual(3m, DisponibleDe(loteA));
+            Assert.AreEqual(1, modelos.ListarMateriales(idModelo).Count);
+        }
+
+        [TestMethod]
+        public void Guardar_NoTocaRenglonesDeOtroModelo()
+        {
+            var (_, lote) = CrearMaterialConLote(5m);
+            int otro = CrearModelo(new LoteAsignado(lote, 1m));
+            int idModelo = CrearModelo();
+            var cambios = new CambiosDeMateriales();
+            cambios.Quitados.Add(new MaterialQuitado { IdMaterialModelo = modelos.ListarMateriales(otro).Single().IdMaterialModelo });
+
+            Assert.ThrowsExactly<ReglaNegocioException>(() => modelos.Guardar(modelos.Obtener(idModelo), cambios));
+            Assert.AreEqual(1, modelos.ListarMateriales(otro).Count);
+        }
+
+        [TestMethod]
         public void Actualizar_GuardaDatosYFecha()
         {
             int idModelo = CrearModelo();

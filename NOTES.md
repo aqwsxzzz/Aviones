@@ -35,6 +35,9 @@ Expected: list of all materials (zero stock included), filters, create / edit / 
 
 ## Modelos
 
+> **Rebuilt on `refactor/data-layer` (2026-10-14).** List of airplanes (filter by condition or text) with total material value; for the selected one its photo and materials with subtotals. One editor for new and existing models: name, alias, condition, date, photo and materials. Materials are picked by lot ("AGREGAR MATERIALES…" stays open to add several), quantities can be changed, and removing one asks if it's recycled. Nothing touches stock until GUARDAR, and everything is saved together or not at all. ELIMINAR asks whether the materials go back to stock. The table below describes the **old** code.
+
+
 Expected: list of airplanes; create one with its material composition (discounting stock); edit; delete.
 
 | Feature | Status | Notes |

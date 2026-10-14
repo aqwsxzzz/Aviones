@@ -1,263 +1,243 @@
-﻿using Aviones_2._0.Common;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Aviones_2._0.Common;
+using Aviones_2._0.Data;
+using Aviones_2._0.Data.Repositorios;
 
 namespace Aviones_2._0.Forms.Modelos
 {
+    /// <summary>Lista de modelos (aviones) con la foto y los materiales del seleccionado.</summary>
     public partial class frmModelos : Form
     {
-        public Componentes componentesGenericos;
-        public DataGridView dgvMateriales { get; set; }
-        public DataGridView dgvModelos { get; set; }
-        public frmModificacionMod frmModificacionMod;
-        public string NuevoOModificacion = "";
-
-        public frmIngreso frmIngreso;
-
-        private List<string> ColumnasDatosAModificar = new List<string>();
-        private List<string> DatosAModificar = new List<string>();
-
-        //Id de modelo en modificacion
-        public string IdModeloEnModificacion = "";
-
-        //Nuevo Modelo
-        public List<string> ListaMateriales = new List<string>();
-
-        public List<string> CantidadDeMaterial = new List<string>();
-        public List<string> CantidadDisponibleActualizada = new List<string>();
-
-        //Modificacion de cantidad de material ya usado en un modelo.
-        public List<string> NuevaCantidadxModelo = new List<string>();
-
-        public List<string> texCantidadVieja = new List<string>();
-        public List<string> IdMaterial = new List<string>();
-
-        //Eliminacion de material reciclable
-        public List<string> CantidadUsadaDeMaterialMod = new List<string>();
-
-        public List<string> IdMaterialReciclableAEliminarMod = new List<string>();
-        public List<string> IdAcopioDeMaterialReciblableAEliminarMod = new List<string>();
-
-        //Eliminacion de material no reciclable
-        public List<string> IdMaterialNoReciclableAEliminarMod = new List<string>();
-
-        private int lastRowIndex = -1;
-        private funcModelos funciones;
+        private readonly ModeloRepositorio modelos = new ModeloRepositorio();
+        private List<Modelo> todos = new List<Modelo>();
+        private bool cargando;
 
         public frmModelos()
         {
             InitializeComponent();
-
-            componentesGenericos = new Componentes();
-
-            this.FormBorderStyle = FormBorderStyle.None;
-
-            dgvModelos = Componentes.CrearDgvModelos();
-            
-
-
-            dgvModelos.Location = new Point(658, 320);
-            dgvModelos.Size = new Size(600, 350);
-            dgvModelos.BackgroundColor = System.Drawing.Color.Bisque;
-            // Asegurar color de fondo de celdas consistente
-            dgvModelos.DefaultCellStyle.BackColor = dgvModelos.BackgroundColor;
-            dgvModelos.EnableHeadersVisualStyles = false;
-            dgvModelos.ColumnHeadersDefaultCellStyle.BackColor = Color.Gray;
-            // Hacer que cuando el encabezado quede seleccionado use mismo fondo que las celdas
-            dgvModelos.ColumnHeadersDefaultCellStyle.SelectionBackColor = dgvModelos.DefaultCellStyle.BackColor;
-            dgvModelos.ColumnHeadersDefaultCellStyle.SelectionForeColor = dgvModelos.ColumnHeadersDefaultCellStyle.ForeColor;
-            // Selección de filas
-            dgvModelos.DefaultCellStyle.SelectionBackColor = Color.CornflowerBlue;
-            dgvModelos.DefaultCellStyle.SelectionForeColor = Color.White;
-
-            funciones = new funcModelos();
-            this.Controls.Add(dgvModelos);
-            funciones.mostrarModelos(dgvModelos);
-
-            dgvModelos.Columns[4].Visible = false;
-           // dgvModelos.BackgroundColor = System.Drawing.Color.SeaShell;
-            dgvModelos.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dgvModelos.BringToFront();
-
-            botIngresar.Location = new Point(612, 955);
-            botModificar.Location = new Point(791, 955);
-            botEliminar.Location = new Point(970, 955);
-            botListados.Location = new Point(1149, 955);
-            Salir.Location = new Point(1557, 955);
-
-
-            dgvModelos.CellClick += new DataGridViewCellEventHandler(dgvModelos_CellClick);
-            dgvModelos.CellMouseEnter += new DataGridViewCellEventHandler(dgvModelos_CellMouseEnter);
+            Estilo.Grilla(dgvModelos);
+            Estilo.Grilla(dgvMateriales);
+            dgvModelos.BackgroundColor = System.Drawing.Color.Linen;
+            dgvMateriales.BackgroundColor = System.Drawing.Color.Linen;
+            Estilo.Botones(botNuevo, botModificar, botEliminar, botImprimir, botImprimirMateriales);
+            Estilo.BotonSecundario(botSalir);
         }
 
-        private void botIngresar_Click(object sender, EventArgs e)
+        private void frmModelos_Load(object sender, EventArgs e)
         {
-            NuevoOModificacion = "Nuevo";
-            frmIngreso = new frmIngreso(this);
-            frmIngreso.StartPosition = FormStartPosition.Manual;
-            frmIngreso.Location = new Point(100, 130);
-            frmIngreso.Show();
-        }
-
-        private void dgvModelos_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
+            splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.45));
+            Mensajes.Intentar(this, () =>
             {
-                // Obtener IdModelo de la fila clicada de forma segura usando e.RowIndex
-                var fila = dgvModelos.Rows[e.RowIndex];
-                string IdModelo = null;
-                if (fila.Cells.Count > 4 && fila.Cells[4].Value != null)
+                var estados = new List<EstadoModelo> { new EstadoModelo { IdEstadoModelo = 0, Nombre = "(Todas)" } };
+                estados.AddRange(new EstadoModeloRepositorio().Listar());
+                cargando = true;
+                cboEstado.DisplayMember = nameof(EstadoModelo.Nombre);
+                cboEstado.ValueMember = nameof(EstadoModelo.IdEstadoModelo);
+                cboEstado.DataSource = estados;
+                cargando = false;
+                CargarModelos();
+            });
+        }
+
+        /// <summary>Lee los modelos de la base y aplica los filtros.</summary>
+        private void CargarModelos(int? seleccionar = null)
+        {
+            int? idSeleccionado = seleccionar ?? ModeloSeleccionado()?.IdModelo;
+            todos = modelos.Listar();
+            MostrarFiltrados(idSeleccionado);
+        }
+
+        private void MostrarFiltrados(int? idSeleccionado)
+        {
+            int idEstado = cboEstado.SelectedValue is int id ? id : 0;
+            string texto = txtBuscar.Text.Trim();
+            var lista = todos
+                .Where(m => idEstado == 0 || m.IdEstadoModelo == idEstado)
+                .Where(m => texto.Length == 0
+                            || (m.Nombre ?? "").IndexOf(texto, StringComparison.CurrentCultureIgnoreCase) >= 0
+                            || (m.Alias ?? "").IndexOf(texto, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                .ToList();
+
+            cargando = true;
+            try
+            {
+                dgvModelos.DataSource = lista;
+                dgvModelos.ClearSelection();
+                var fila = dgvModelos.Rows.Cast<DataGridViewRow>()
+                               .FirstOrDefault(r => ((Modelo)r.DataBoundItem).IdModelo == idSeleccionado)
+                           ?? dgvModelos.Rows.Cast<DataGridViewRow>().FirstOrDefault();
+                if (fila != null)
                 {
-                    IdModelo = fila.Cells[4].Value.ToString();
+                    dgvModelos.CurrentCell = fila.Cells[colNombre.Index];
+                    fila.Selected = true;
                 }
+            }
+            finally
+            {
+                cargando = false;
+            }
 
-                // Intentar establecer una celda válida como CurrentCell para preservar apariencia de selección (azul)
-                try
-                {
-                    DataGridViewCell firstVisibleCell = null;
-                    for (int i = 0; i < fila.Cells.Count; i++)
-                    {
-                        var c = fila.Cells[i];
-                        if (c.Visible)
-                        {
-                            firstVisibleCell = c;
-                            break;
-                        }
-                    }
-                    if (firstVisibleCell != null)
-                    {
-                        dgvModelos.CurrentCell = firstVisibleCell;
-                    }
-                }
-                catch
-                {
-                    // Ignorar errores del control al cambiar CurrentCell
-                }
+            labResumen.Text = $"{lista.Count} modelos   ·   Valor total de materiales: $ {Numeros.Dinero(lista.Sum(m => m.ValorMateriales))}";
+            MostrarDetalle();
+        }
 
-                // botIngresar.Enabled = false;
-                botIngresar.ForeColor = Color.Peru;
-                botIngresar.BackColor = Color.White;
+        private Modelo ModeloSeleccionado() =>
+            dgvModelos.SelectedRows.Count > 0 ? dgvModelos.SelectedRows[0].DataBoundItem as Modelo : null;
 
-                botModificar.Enabled = true;
-                botModificar.BackColor = Color.BurlyWood;
-                botModificar.ForeColor = Color.Black;
+        private void MostrarDetalle()
+        {
+            var m = ModeloSeleccionado();
+            botModificar.Enabled = m != null;
+            botEliminar.Enabled = m != null;
+            botImprimirMateriales.Enabled = m != null;
 
-                botEliminar.Enabled = true;
-                botEliminar.BackColor = Color.BurlyWood;
+            if (m == null)
+            {
+                dgvMateriales.DataSource = null;
+                Imagenes.Mostrar(picFoto, null);
+                labMateriales.Text = "Materiales";
+                labTotal.Text = "";
+                return;
+            }
 
-                botListados.ForeColor = Color.Peru;
-                botListados.BackColor = Color.White;
+            Mensajes.Intentar(this, () =>
+            {
+                var materiales = modelos.ListarMateriales(m.IdModelo);
+                dgvMateriales.DataSource = materiales;
+                labMateriales.Text = $"Materiales de {m.Nombre}" + (string.IsNullOrEmpty(m.Alias) ? "" : $" ({m.Alias})");
+                labTotal.Text = $"Total: $ {Numeros.Dinero(materiales.Sum(x => x.Subtotal))}";
+                Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(modelos.ObtenerFoto(m.IdModelo)));
+            });
+        }
 
-                botCancelar.Visible = true;
-                botCancelar.Location = new Point(1558, 955);
+        private void Filtro_Changed(object sender, EventArgs e)
+        {
+            if (!cargando)
+            {
+                MostrarFiltrados(ModeloSeleccionado()?.IdModelo);
             }
         }
 
-        private void dgvModelos_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        private void dgvModelos_SelectionChanged(object sender, EventArgs e)
         {
-            if (e.RowIndex >= 0) // asegurarse de no estar en el header
+            if (!cargando)
             {
-                // Obtener el valor de la columna con la ruta o nombre de la imagen de forma segura
-                var fila = dgvModelos.Rows[e.RowIndex];
-                if (fila.Cells.Count > 4 && fila.Cells[4].Value != null)
-                {
-                    funciones.BuscarFotoPorIdModelo(fila.Cells[4].Value.ToString(), pictureBoxMod);
-                }
-                else
-                {
-                    // Si no hay id, limpiar o no actualizar la imagen
-                    pictureBoxMod.Image = null;
-                }
+                MostrarDetalle();
+            }
+        }
 
+        private void dgvModelos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                botModificar_Click(sender, e);
+            }
+        }
+
+        private void dgvModelos_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                botModificar_Click(sender, e);
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                e.Handled = true;
+                botEliminar_Click(sender, e);
+            }
+        }
+
+        private void picFoto_DoubleClick(object sender, EventArgs e)
+        {
+            var m = ModeloSeleccionado();
+            if (m != null)
+            {
+                Imagenes.Ampliar(this, picFoto.Image, m.Nombre);
+            }
+        }
+
+        private void botNuevo_Click(object sender, EventArgs e)
+        {
+            using (var editor = new frmModeloEditor(null))
+            {
+                if (editor.ShowDialog(this) == DialogResult.OK)
+                {
+                    Mensajes.Intentar(this, () => CargarModelos(editor.IdModelo));
+                }
             }
         }
 
         private void botModificar_Click(object sender, EventArgs e)
         {
-            if (dgvModelos.CurrentRow != null)
+            var m = ModeloSeleccionado();
+            if (m == null)
             {
-                NuevoOModificacion = "Modificacion";
-                string nombreModelo = Convert.ToString(dgvModelos.CurrentRow.Cells["Modelo"].Value);
-                string nombreAlias = Convert.ToString(dgvModelos.CurrentRow.Cells["Alias"].Value);
-
-                frmModificacionMod = new frmModificacionMod(this, this.frmIngreso, nombreModelo, nombreAlias);
-
-                frmModificacionMod.ShowDialog();
+                return;
+            }
+            using (var editor = new frmModeloEditor(m.IdModelo))
+            {
+                if (editor.ShowDialog(this) == DialogResult.OK)
+                {
+                    Mensajes.Intentar(this, () => CargarModelos(m.IdModelo));
+                }
             }
         }
 
-        private void Salir_Click_1(object sender, EventArgs e)
+        private void botEliminar_Click(object sender, EventArgs e)
         {
-            this.Close();
+            var m = ModeloSeleccionado();
+            if (m == null || !Mensajes.Confirmar(this, $"¿Eliminar el modelo \"{m.Nombre}\"?", "Eliminar modelo"))
+            {
+                return;
+            }
+
+            bool devolver = false;
+            if (m.CantidadMateriales > 0)
+            {
+                var respuesta = MessageBox.Show(this,
+                    $"El modelo usa {m.CantidadMateriales} materiales.\n\n" +
+                    "¿Vuelven al stock?\n\nSí: se devuelven a sus lotes.\nNo: se dan por consumidos.",
+                    "Eliminar modelo", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
+                if (respuesta == DialogResult.Cancel)
+                {
+                    return;
+                }
+                devolver = respuesta == DialogResult.Yes;
+            }
+
+            Mensajes.Intentar(this, () =>
+            {
+                modelos.Eliminar(m.IdModelo, devolver);
+                CargarModelos();
+            });
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void botImprimir_Click(object sender, EventArgs e)
         {
+            ImpresionGrilla.VistaPrevia(this, dgvModelos, "Modelos", labResumen.Text);
+        }
+
+        private void botImprimirMateriales_Click(object sender, EventArgs e)
+        {
+            var m = ModeloSeleccionado();
+            if (m != null)
             {
-                botIngresar.Enabled = true;
-                botIngresar.BackColor = Color.BurlyWood;
-                botIngresar.ForeColor = Color.Black;
-
-                botModificar.Enabled = false;
-                botModificar.BackColor = Color.White;
-                botModificar.ForeColor = Color.Peru;
-
-                botEliminar.Enabled = false;
-                botEliminar.BackColor = Color.White;
-                botEliminar.ForeColor = Color.Peru;
-
-                botListados.Enabled = false;
-                botListados.BackColor = Color.BurlyWood;
-                botListados.ForeColor = Color.Peru;
-
-                botCancelar.Visible = false;
+                ImpresionGrilla.VistaPrevia(this, dgvMateriales, labMateriales.Text, labTotal.Text);
             }
         }
 
-        private void frmModelos_Shown(object sender, EventArgs e)
+        private void botSalir_Click(object sender, EventArgs e) => Close();
+
+        private void frmModelos_KeyDown(object sender, KeyEventArgs e)
         {
-            if (dgvModelos != null)
+            if (e.KeyCode == Keys.Escape)
             {
-                // Para evitar que se entre en modo edición (y aparezca el azul por defecto)
-                dgvModelos.ReadOnly = true;
-                // o: dgvModelos.EditMode = DataGridViewEditMode.EditProgrammatically;
-
-                // Selección de fila completa, sin multiselección
-                dgvModelos.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dgvModelos.MultiSelect = false;
-
-                // Colores de la fila seleccionada
-                dgvModelos.DefaultCellStyle.SelectionBackColor = Color.Tan;   // Fondo de la fila seleccionada
-                dgvModelos.DefaultCellStyle.SelectionForeColor = Color.Black; // Texto de la fila seleccionada
-
-                // (Opcional) Color de fondo normal de todas las filas
-                dgvModelos.DefaultCellStyle.BackColor = Color.White;
-
-                // Desactiva el estilo visual de encabezados si quieres un color personalizado allí
-                dgvModelos.EnableHeadersVisualStyles = false;
-                dgvModelos.ColumnHeadersDefaultCellStyle.BackColor = Color.Peru;
-                dgvModelos.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-                dgvModelos.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.Peru;
-                dgvModelos.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
-
-                // Limpia cualquier selección previa
-                dgvModelos.ClearSelection();
-                dgvModelos.CurrentCell = null;
-
-                // ¡Listo! Sin más eventos extra
-                dgvModelos.Refresh();
+                Close();
             }
         }
-
-
     }
 }

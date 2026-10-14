@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Aviones_2._0.Data
 {
@@ -110,6 +111,36 @@ namespace Aviones_2._0.Data
         public string Estado { get; set; }
 
         public DateTime? Desde { get; set; }
+
+        /// <summary>Cuántos renglones de material tiene; sólo al leer.</summary>
+        public int CantidadMateriales { get; set; }
+
+        /// <summary>Valor de sus materiales (cantidad × precio del lote); sólo al leer.</summary>
+        public decimal ValorMateriales { get; set; }
+    }
+
+    public class CambioDeCantidad
+    {
+        public int IdMaterialModelo { get; set; }
+        public decimal Cantidad { get; set; }
+    }
+
+    public class MaterialQuitado
+    {
+        public int IdMaterialModelo { get; set; }
+
+        /// <summary>true si se recicla y vuelve al lote; false si se da por consumido.</summary>
+        public bool DevolverAlStock { get; set; }
+    }
+
+    /// <summary>Cambios de materiales de un modelo que se guardan juntos.</summary>
+    public class CambiosDeMateriales
+    {
+        public List<LoteAsignado> Agregados { get; } = new List<LoteAsignado>();
+        public List<CambioDeCantidad> Cantidades { get; } = new List<CambioDeCantidad>();
+        public List<MaterialQuitado> Quitados { get; } = new List<MaterialQuitado>();
+
+        public bool HayCambios => Agregados.Count > 0 || Cantidades.Count > 0 || Quitados.Count > 0;
     }
 
     /// <summary>Lo que se pide al armar un modelo: cuánto de qué lote.</summary>
