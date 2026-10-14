@@ -59,8 +59,10 @@ namespace Aviones_2._0
 
         private void Compras_Click(object sender, EventArgs e)
         {
-            frmComprasCom frmCompras = new frmComprasCom();
-            frmCompras.ShowDialog();
+            using (var compras = new frmCompras())
+            {
+                compras.ShowDialog();
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)

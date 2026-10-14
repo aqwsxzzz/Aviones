@@ -11,7 +11,7 @@ namespace Aviones_2._0.UnitTests.Common
     {
         public class Fila
         {
-            public string Nombre { get; set; }
+            public string? Nombre { get; set; }
             public decimal Cantidad { get; set; }
         }
 

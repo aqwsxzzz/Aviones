@@ -71,6 +71,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.botNuevo = new System.Windows.Forms.Button();
             this.botModificar = new System.Windows.Forms.Button();
             this.botEliminar = new System.Windows.Forms.Button();
+            this.botComprar = new System.Windows.Forms.Button();
             this.botFamilias = new System.Windows.Forms.Button();
             this.botTipos = new System.Windows.Forms.Button();
             this.botInforme = new System.Windows.Forms.Button();
@@ -187,7 +188,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.chkAComprar.Margin = new System.Windows.Forms.Padding(3, 3, 20, 3);
             this.chkAComprar.Name = "chkAComprar";
             this.chkAComprar.TabIndex = 5;
-            this.chkAComprar.Text = "A comprar";
+            this.chkAComprar.Text = "Con pedido de compra";
             this.chkAComprar.CheckedChanged += new System.EventHandler(this.Filtro_Changed);
             //
             // botLimpiarFiltros
@@ -341,11 +342,11 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // colAComprar
             //
-            this.colAComprar.DataPropertyName = "CantidadAComprar";
+            this.colAComprar.DataPropertyName = "PedidoPendiente";
             this.colAComprar.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colAComprar.DefaultCellStyle.Format = "0.###";
             this.colAComprar.FillWeight = 60F;
-            this.colAComprar.HeaderText = "A comprar";
+            this.colAComprar.HeaderText = "Pedido";
             this.colAComprar.MinimumWidth = 80;
             this.colAComprar.Name = "colAComprar";
             //
@@ -585,6 +586,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpBotones.Controls.Add(this.botNuevo);
             this.flpBotones.Controls.Add(this.botModificar);
             this.flpBotones.Controls.Add(this.botEliminar);
+            this.flpBotones.Controls.Add(this.botComprar);
             this.flpBotones.Controls.Add(this.botFamilias);
             this.flpBotones.Controls.Add(this.botTipos);
             this.flpBotones.Controls.Add(this.botInforme);
@@ -619,6 +621,15 @@ namespace Aviones_2._0.Forms.Materiales
             this.botEliminar.TabIndex = 2;
             this.botEliminar.Text = "ELIMINAR";
             this.botEliminar.Click += new System.EventHandler(this.botEliminar_Click);
+            //
+            // botComprar
+            //
+            this.botComprar.Margin = new System.Windows.Forms.Padding(6);
+            this.botComprar.Name = "botComprar";
+            this.botComprar.Size = new System.Drawing.Size(132, 44);
+            this.botComprar.TabIndex = 3;
+            this.botComprar.Text = "COMPRAR";
+            this.botComprar.Click += new System.EventHandler(this.botComprar_Click);
             //
             // botFamilias
             //
@@ -761,6 +772,7 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.Button botNuevo;
         private System.Windows.Forms.Button botModificar;
         private System.Windows.Forms.Button botEliminar;
+        private System.Windows.Forms.Button botComprar;
         private System.Windows.Forms.Button botFamilias;
         private System.Windows.Forms.Button botTipos;
         private System.Windows.Forms.Button botInforme;

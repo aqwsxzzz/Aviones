@@ -3,6 +3,7 @@
 
 SET NOCOUNT ON;
 
+DELETE FROM dbo.PedidosCompra;
 DELETE FROM dbo.MaterialesModelo;
 DELETE FROM dbo.Modelos;
 DELETE FROM dbo.Lotes;
@@ -25,7 +26,7 @@ SET IDENTITY_INSERT dbo.TiposUnidad OFF;
 -- Materiales (catálogo) ---------------------------------------------------
 SET IDENTITY_INSERT dbo.Materiales ON;
 INSERT INTO dbo.Materiales
- (IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, CantidadAComprar) VALUES
+ (IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo) VALUES
  (1,  1, N'Cuchilla', N'Acero #11', NULL, NULL, N'X211', 1, 10),
  (2,  1, N'Mango cuchilla', N'Aluminio', N'Plata', NULL, N'X3201', 1, NULL),
  (3,  1, N'Plancha de entelar', N'Termostato regulable', N'Negro', NULL, N'TOPR2100', 1, NULL),
@@ -230,4 +231,19 @@ LEFT JOIN (SELECT IdLote, SUM(Cantidad) AS Usado FROM dbo.MaterialesModelo GROUP
 
 -- Un motor reciclado de un modelo que ya no está: volvió como usado a su lote
 UPDATE dbo.Lotes SET DisponibleUsado = 1 WHERE IdLote = 42;
+
+-- Stock mínimo propio de algunos materiales (el resto usa el mínimo general)
+UPDATE dbo.Materiales SET StockMinimo = NULL;
+UPDATE dbo.Materiales SET StockMinimo = 4  WHERE IdMaterial IN (8, 9);        -- servos
+UPDATE dbo.Materiales SET StockMinimo = 2  WHERE IdMaterial IN (11, 42, 45);  -- LiPo 3S, motor, hélice
+UPDATE dbo.Materiales SET StockMinimo = 5  WHERE IdMaterial IN (21, 22, 23);  -- tablas de balsa
+UPDATE dbo.Materiales SET StockMinimo = 10 WHERE IdMaterial IN (1, 52);       -- cuchillas, bisagras
+UPDATE dbo.Materiales SET StockMinimo = 0  WHERE IdMaterial IN (3, 4, 17);    -- herramientas: no se recompran
+
+-- Pedidos pendientes
+INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, FechaPedido, Nota) VALUES
+ (8,  10, '2026-10-02', N'Para el Mustang y el Corsair'),
+ (44, 1,  '2026-10-05', NULL),
+ (31, 2,  '2026-10-05', N'Rojo para el Extra'),
+ (21, 10, '2026-10-09', N'Preguntar precio en SIG');
 GO

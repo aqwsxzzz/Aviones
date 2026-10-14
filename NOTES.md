@@ -10,7 +10,10 @@ Stock control for building model airplanes:
 
 - **Materiales**: everything in stock (wood, covering, electronics, hardware…), with quantity, value, location and photo.
 - **Modelos**: the airplanes. Each one records which materials (and how much) went into it. Assigning material to a model discounts it from stock.
-- **Compras**: purchasing. Out of scope for now.
+- **Compras**: two lists (rebuilt 2026-10-14):
+  - **Lista de compras**: purchase orders (material + amount + optional note), created with COMPRAR in Materiales or from the critical list. Editable, deletable, printable. Orders have a status (pending / bought / cancelled) so "receiving a purchase" can be added later.
+  - **Stock crítico**: materials with their minimum or less available. Each material can have its own minimum ("Stock mínimo" in the material editor); the rest use a general minimum set on the Compras screen. Red = not ordered yet, green = already ordered.
+  - Both lists print; "Microsoft Print to PDF" in the print dialog saves them as PDF.
 
 ## Materiales
 
@@ -96,6 +99,8 @@ Decision (2026-10-14): **keep stock lots**. A material is a catalog entry; each 
 | `Materiales` | `Materiales` (catalog part) | FK to family and unit type |
 | `Lotes` | `Acopio` | one row per purchase (history). `CompradoUsado`; remaining stock split in `DisponibleNuevo` / `DisponibleUsado`, `nuevo + usado ≤ Cantidad`; new `FechaIngreso` |
 | `Modelos` | `Modelos` | FK to state |
+| `PedidosCompra` | `Materiales.Cantacomprar` | one row per order; `Estado` P/C/X |
+| `Configuracion` | — | general settings (`StockMinimoGeneral`) |
 | `MaterialesModelo` | `MaterialesModelo` | references `IdLote` and `Estado` (taken from new or used stock); deleting a model deletes its rows |
 | `vMaterialesStock` | — | one row per material with its lots summed |
 

@@ -87,7 +87,7 @@ namespace Aviones_2._0.Forms.Materiales
             txtMedidas.Text = m.Medidas;
             txtCodigo.Text = m.Codigo;
             cboUnidad.SelectedValue = m.IdTipoUnidad;
-            txtAComprar.Text = Numeros.Cantidad(m.CantidadAComprar);
+            txtAComprar.Text = Numeros.Cantidad(m.StockMinimo);
         }
 
         private void CargarUnidades(int? seleccionar)
@@ -150,9 +150,10 @@ namespace Aviones_2._0.Forms.Materiales
                 Invalido(cboUnidad, "Elija la unidad de medida.");
                 return;
             }
-            if (!Numeros.TryLeerOpcional(txtAComprar.Text, out decimal? aComprar) || aComprar < 0)
+            // Stock mínimo: vacío usa el mínimo general de Compras
+            if (!Numeros.TryLeerOpcional(txtAComprar.Text, out decimal? stockMinimo) || stockMinimo < 0)
             {
-                Invalido(txtAComprar, "La cantidad a comprar tiene que ser un número.");
+                Invalido(txtAComprar, "El stock mínimo tiene que ser un número (o vacío para usar el general)."); 
                 return;
             }
 
@@ -190,7 +191,7 @@ namespace Aviones_2._0.Forms.Materiales
                 Medidas = Limpio(txtMedidas.Text),
                 Codigo = Limpio(txtCodigo.Text),
                 IdTipoUnidad = idTipoUnidad,
-                CantidadAComprar = aComprar
+                StockMinimo = stockMinimo
             };
 
             if (!ConfirmarSiEstaRepetido(material))

@@ -9,11 +9,15 @@
 --                                         y usado (antes "Acopio")
 --   Modelos                               los aviones
 --   MaterialesModelo                      cuánto de cada lote se usó en cada modelo
+--   PedidosCompra                         lo que hay que comprar (pedidos pendientes)
+--   Configuracion                         valores generales (stock mínimo general)
 
 SET NOCOUNT ON;
 
 DROP VIEW IF EXISTS dbo.vMaterialesStock;
 DROP TABLE IF EXISTS
+    dbo.PedidosCompra,
+    dbo.Configuracion,
     dbo.MaterialesModelo,
     dbo.Lotes,
     dbo.Modelos,
@@ -52,7 +56,8 @@ CREATE TABLE dbo.Materiales (
     Codigo           NVARCHAR(60) NULL,
     IdTipoUnidad     INT NOT NULL CONSTRAINT FK_Materiales_TiposUnidad REFERENCES dbo.TiposUnidad (IdTipoUnidad),
     Imagen           VARBINARY(MAX) NULL,
-    CantidadAComprar DECIMAL(18,3) NULL CONSTRAINT CK_Materiales_CantidadAComprar CHECK (CantidadAComprar >= 0)
+    -- Por debajo de esto (o igual) es stock crítico. Sin dato: se usa el mínimo general.
+    StockMinimo      DECIMAL(18,3) NULL CONSTRAINT CK_Materiales_StockMinimo CHECK (StockMinimo >= 0)
 );
 CREATE INDEX IX_Materiales_IdFamilia ON dbo.Materiales (IdFamilia);
 
@@ -95,6 +100,24 @@ CREATE TABLE dbo.MaterialesModelo (
 );
 CREATE INDEX IX_MaterialesModelo_IdModelo ON dbo.MaterialesModelo (IdModelo);
 CREATE INDEX IX_MaterialesModelo_IdLote ON dbo.MaterialesModelo (IdLote);
+
+-- Pedidos de compra: P pendiente (por comprar), C comprado, X cancelado.
+CREATE TABLE dbo.PedidosCompra (
+    IdPedido     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_PedidosCompra PRIMARY KEY,
+    IdMaterial   INT NOT NULL CONSTRAINT FK_PedidosCompra_Materiales REFERENCES dbo.Materiales (IdMaterial) ON DELETE CASCADE,
+    Cantidad     DECIMAL(18,3) NOT NULL CONSTRAINT CK_PedidosCompra_Cantidad CHECK (Cantidad > 0),
+    FechaPedido  DATE NOT NULL CONSTRAINT DF_PedidosCompra_FechaPedido DEFAULT CAST(GETDATE() AS DATE),
+    Nota         NVARCHAR(200) NULL,
+    Estado       CHAR(1) NOT NULL CONSTRAINT DF_PedidosCompra_Estado DEFAULT 'P'
+                 CONSTRAINT CK_PedidosCompra_Estado CHECK (Estado IN ('P', 'C', 'X')),
+    FechaCierre  DATE NULL
+);
+CREATE INDEX IX_PedidosCompra_IdMaterial ON dbo.PedidosCompra (IdMaterial);
+
+CREATE TABLE dbo.Configuracion (
+    Clave NVARCHAR(50) NOT NULL CONSTRAINT PK_Configuracion PRIMARY KEY,
+    Valor NVARCHAR(200) NULL
+);
 GO
 
 -- Un renglón por material con el stock sumado de todos sus lotes.
@@ -110,7 +133,9 @@ SELECT
     M.Codigo,
     M.IdTipoUnidad,
     T.Nombre                                   AS TipoUnidad,
-    M.CantidadAComprar,
+    M.StockMinimo,
+    ISNULL((SELECT SUM(P.Cantidad) FROM dbo.PedidosCompra P
+            WHERE P.IdMaterial = M.IdMaterial AND P.Estado = 'P'), 0) AS PedidoPendiente,
     COUNT(L.IdLote)                            AS CantidadLotes,
     ISNULL(SUM(L.Cantidad), 0)                 AS Cantidad,
     ISNULL(SUM(L.DisponibleNuevo), 0)          AS DisponibleNuevo,
@@ -122,9 +147,11 @@ JOIN dbo.Familias F     ON F.IdFamilia = M.IdFamilia
 JOIN dbo.TiposUnidad T  ON T.IdTipoUnidad = M.IdTipoUnidad
 LEFT JOIN dbo.Lotes L   ON L.IdMaterial = M.IdMaterial
 GROUP BY M.IdMaterial, M.IdFamilia, F.Nombre, M.Grupo, M.Caracteristica, M.Color, M.Medidas,
-         M.Codigo, M.IdTipoUnidad, T.Nombre, M.CantidadAComprar;
+         M.Codigo, M.IdTipoUnidad, T.Nombre, M.StockMinimo;
 GO
 
 INSERT INTO dbo.EstadosModelo (Nombre) VALUES
     (N'Activo'), (N'En construcción'), (N'En reparación'), (N'Inactivo');
+
+INSERT INTO dbo.Configuracion (Clave, Valor) VALUES (N'StockMinimoGeneral', N'1');
 GO

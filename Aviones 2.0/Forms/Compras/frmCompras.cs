@@ -1,227 +1,260 @@
-using Aviones_2._0.Common;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Aviones_2._0.Forms.Compras;
-using Aviones_2._0.Forms.Materiales;
+using Aviones_2._0.Common;
+using Aviones_2._0.Data;
+using Aviones_2._0.Data.Repositorios;
 
 namespace Aviones_2._0.Forms.Compras
 {
-    public partial class frmComprasCom : Form
+    /// <summary>
+    /// Dos listas: los pedidos de compra pendientes (lo que hay que comprar) y el stock crítico
+    /// (materiales con su mínimo o menos), desde donde se agregan pedidos.
+    /// </summary>
+    public partial class frmCompras : Form
     {
-        public  Componentes componentesGenericos;
-        private frmIngresoCom frmIngresoCom;
-        private funcCompras funcCompras;
-        private frmFaltanteCom frmFaltanteCom;
-        public DataGridView dgvMaterialesacomprar;
-        private frmAvisos componentesAvisos;
+        private readonly CompraRepositorio compras = new CompraRepositorio();
+        private readonly ConfiguracionRepositorio configuracion = new ConfiguracionRepositorio();
+        private List<StockCritico> criticos = new List<StockCritico>();
+        private decimal minimoGeneral;
 
-        public frmComprasCom()
+        public frmCompras()
         {
             InitializeComponent();
-            this.FormBorderStyle = FormBorderStyle.None;
-
-            frmIngresoCom = new frmIngresoCom(this);
-            frmIngresoCom.StartPosition = FormStartPosition.Manual;
-            frmIngresoCom.Location = new Point(100, 130);
-
-
-
-            frmFaltanteCom = new frmFaltanteCom();
-            dgvMaterialesacomprar = Componentes.CrearDgvMateriales();
-            // No añadir el DataGridView de compras al formulario por defecto (evita que aparezca en la esquina)
-            // Se añadirá a Controls sólo cuando sea necesario en los manejadores (botModificaCom / botEliminaCom).
-            funcCompras = new funcCompras();
+            Estilo.Grilla(dgvPedidos);
+            Estilo.Grilla(dgvCriticos);
+            dgvPedidos.BackgroundColor = Color.Honeydew;
+            dgvCriticos.BackgroundColor = Color.Honeydew;
+            Estilo.Botones(botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
+            Estilo.BotonSecundario(botSalir);
+            OrdenGrilla.Habilitar(dgvPedidos, dgvCriticos);
         }
 
-        private void frmComprasCom_Load(object sender, EventArgs e)
+        private void frmCompras_Load(object sender, EventArgs e)
         {
-            botIngresoCom.Location = new Point(37, 50);
-            botModificaCom.Location = new Point(37, 130);
-            botEliminaCom.Location = new Point(37, 210);
-            botFaltanteCom.Location = new Point(37, 290);
-            botSalirCom.Location = new Point(1490, 950);
-            pnaRecuaBotones.Location = new Point(60, 240);
-
-            // Verificar si hay compras pendientes (Cantacomprar > 0) y habilitar botones
-            try
+            splListas.SplitterDistance = splListas.Height / 2;
+            Mensajes.Intentar(this, () =>
             {
-                var conexionHelper = new Common.ConexionSQL();
-                using (var conn = conexionHelper.establecerConexion())
-                {
-                    using (var cmd = new System.Data.SqlClient.SqlCommand(
-                        "SELECT COUNT(*) FROM Materiales WHERE Cantacomprar IS NOT NULL AND CAST(ISNULL(Cantacomprar, 0) AS DECIMAL) > 0", conn))
-                    {
-                        object result = cmd.ExecuteScalar();
-                        int comprasCount = result != null ? int.Parse(result.ToString()) : 0;
-
-                        // Habilitar botones si hay compras pendientes
-                        botModificaCom.Enabled = comprasCount > 0;
-                        botEliminaCom.Enabled = comprasCount > 0;
-                    }
-                }
-                conexionHelper.cerrarconexion();
-            }
-            catch
-            {
-                // Si hay error, dejar los botones deshabilitados
-                botModificaCom.Enabled = false;
-                botEliminaCom.Enabled = false;
-            }
+                minimoGeneral = configuracion.ObtenerStockMinimoGeneral();
+                txtMinimo.Text = Numeros.Cantidad(minimoGeneral);
+                CargarPedidos();
+                CargarCriticos();
+            });
         }
 
-        private void botIngresoCom_Click(object sender, EventArgs e)
-        {
-            botIngresoCom.BackColor = SystemColors.Control;
-            botModificaCom.BackColor = SystemColors.Control;
-            botEliminaCom.BackColor = SystemColors.Control;
-            botFaltanteCom.BackColor = SystemColors.Control;
+        #region Pedidos
 
-            frmIngresoCom.ShowDialog();
+        private PedidoCompra PedidoSeleccionado() =>
+            dgvPedidos.SelectedRows.Count > 0 ? dgvPedidos.SelectedRows[0].DataBoundItem as PedidoCompra : null;
+
+        private void CargarPedidos(int? seleccionar = null)
+        {
+            int? id = seleccionar ?? PedidoSeleccionado()?.IdPedido;
+            var pedidos = compras.ListarPendientes();
+            dgvPedidos.DataSource = OrdenGrilla.Aplicar(dgvPedidos, pedidos);
+            Seleccionar(dgvPedidos, r => ((PedidoCompra)r.DataBoundItem).IdPedido == id);
+
+            decimal total = pedidos.Sum(p => p.CostoEstimado ?? 0m);
+            labTotalPedidos.Text = pedidos.Count == 0
+                ? "No hay nada pendiente de comprar."
+                : $"{pedidos.Count} pedidos   ·   Costo estimado: $ {Numeros.Dinero(total)}"
+                  + (pedidos.Any(p => !p.UltimoPrecio.HasValue) ? " (algunos sin precio)" : "");
+            ActualizarBotones();
         }
 
-        private void botModificaCom_Click(object sender, EventArgs e)
+        private void dgvPedidos_SelectionChanged(object sender, EventArgs e) => ActualizarBotones();
+
+        private void dgvPedidos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            labAvisoCompra.Visible = false;
-            panAvisoCompra.Visible = false;
-
-            // Cargar compras pendientes desde Materiales (Cantacomprar > 0)
-            funcCompras.cargarComprasPendientes(dgvMaterialesacomprar);
-
-            if (dgvMaterialesacomprar.Rows.Count == 0)
+            if (e.RowIndex >= 0)
             {
-                // No hay compras pendientes: mostrar aviso
-                botSalirCom.Enabled = false;
-                botIngresoCom.Enabled = false;
-                botModificaCom.Enabled = false;
-                botEliminaCom.Enabled = false;
-                botFaltanteCom.Enabled = false;
-
-                frmAvisos aviso = new frmAvisos(this);
-                aviso.tipoDeAviso = "Compras sin datos";
-                aviso.ShowDialog();
-            }
-            else
-            {
-                // Mostrar el grid de compras pendientes en la zona superior
-                dgvMaterialesacomprar.Location = new Point(355, 180);
-                dgvMaterialesacomprar.Size = new Size(1300, 415);
-                dgvMaterialesacomprar.EnableHeadersVisualStyles = false;
-                dgvMaterialesacomprar.ColumnHeadersDefaultCellStyle.BackColor = Color.Silver;
-                dgvMaterialesacomprar.BackgroundColor = Color.SteelBlue;
-                // Ajustes de columnas básicos
-                try
-                {
-                    dgvMaterialesacomprar.Columns[1].Width = 140;
-                    dgvMaterialesacomprar.Columns[2].Width = 130;
-                    dgvMaterialesacomprar.Columns[3].Width = 120;
-                    dgvMaterialesacomprar.Columns[4].Width = 100;
-                    dgvMaterialesacomprar.Columns[5].Width = 100;
-                    dgvMaterialesacomprar.Columns[6].Width = 100;
-                }
-                catch { }
-
-                // Mostrar la columna de cantidad a comprar si existe
-                try
-                {
-                    if (dgvMaterialesacomprar.Columns.Contains("CantidadAComprar"))
-                        dgvMaterialesacomprar.Columns["CantidadAComprar"].Visible = true;
-                }
-                catch { }
-
-                dgvMaterialesacomprar.Visible = true;
-                // Asegurar que el control esté en la colección del formulario
-                if (!this.Controls.Contains(dgvMaterialesacomprar))
-                {
-                    this.Controls.Add(dgvMaterialesacomprar);
-                }
-                // Asegurar que el dgv de seleción no se muestre simultáneamente
-                foreach (Control c in this.Controls)
-                {
-                    if (c is DataGridView dgv && dgv != dgvMaterialesacomprar)
-                    {
-                        try { dgv.Visible = false; } catch { }
-                    }
-                }
+                botModificarPedido_Click(sender, e);
             }
         }
 
-        private void botEliminaCom_Click(object sender, EventArgs e)
+        private void dgvPedidos_KeyDown(object sender, KeyEventArgs e)
         {
-            labAvisoCompra.Visible = false;
-            panAvisoCompra.Visible = false;
-
-            // Cargar compras pendientes antes de mostrar
-            funcCompras.cargarComprasPendientes(dgvMaterialesacomprar);
-
-            if (dgvMaterialesacomprar.Rows.Count == 0)
+            if (e.KeyCode == Keys.Enter)
             {
-                botSalirCom.Enabled = false;
-                botIngresoCom.Enabled = false;
-                botModificaCom.Enabled = false;
-                botEliminaCom.Enabled = false;
-                botFaltanteCom.Enabled = false;
+                e.Handled = true;
+                botModificarPedido_Click(sender, e);
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                e.Handled = true;
+                botEliminarPedido_Click(sender, e);
+            }
+        }
 
-                frmAvisos aviso = new frmAvisos(this);
-                aviso.tipoDeAviso = "Eliminación de compra";
-                aviso.ShowDialog();
+        private void botModificarPedido_Click(object sender, EventArgs e)
+        {
+            var pedido = PedidoSeleccionado();
+            if (pedido == null)
+            {
                 return;
             }
-
-            // Configurar y mostrar el grid
-            dgvMaterialesacomprar.Location = new Point(355, 180);
-            dgvMaterialesacomprar.Size = new Size(1300, 415);
-            dgvMaterialesacomprar.EnableHeadersVisualStyles = false;
-            dgvMaterialesacomprar.ColumnHeadersDefaultCellStyle.BackColor = Color.Silver;
-            dgvMaterialesacomprar.BackgroundColor = Color.SteelBlue;
-
-            try
+            using (var dialogo = new frmPedido(pedido))
             {
-                dgvMaterialesacomprar.Columns[1].Width = 140;
-                dgvMaterialesacomprar.Columns[2].Width = 130;
-                dgvMaterialesacomprar.Columns[3].Width = 120;
-                dgvMaterialesacomprar.Columns[4].Width = 100;
-                dgvMaterialesacomprar.Columns[5].Width = 100;
-                dgvMaterialesacomprar.Columns[6].Width = 100;
-            }
-            catch { }
-
-            try
-            {
-                if (dgvMaterialesacomprar.Columns.Contains("CantidadAComprar"))
-                    dgvMaterialesacomprar.Columns["CantidadAComprar"].Visible = true;
-            }
-            catch { }
-
-            dgvMaterialesacomprar.Visible = true;
-            if (!this.Controls.Contains(dgvMaterialesacomprar))
-            {
-                this.Controls.Add(dgvMaterialesacomprar);
-            }
-            foreach (Control c in this.Controls)
-            {
-                if (c is DataGridView dgv && dgv != dgvMaterialesacomprar)
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
                 {
-                    try { dgv.Visible = false; } catch { }
+                    Recargar(pedido.IdPedido);
                 }
             }
         }
 
-        private void botFaltanteCom_Click(object sender, EventArgs e)
+        private void botEliminarPedido_Click(object sender, EventArgs e)
         {
-            frmFaltanteCom.ShowDialog();
+            var pedido = PedidoSeleccionado();
+            if (pedido != null
+                && Mensajes.Confirmar(this, $"¿Sacar de la lista de compras {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} de {pedido.Material}?", "Eliminar pedido")
+                && Mensajes.Intentar(this, () => compras.EliminarPedido(pedido.IdPedido)))
+            {
+                Recargar(null);
+            }
         }
 
-        private void Salir_Click(object sender, EventArgs e)
+        private void botImprimirPedidos_Click(object sender, EventArgs e)
         {
-             this.Close();
+            ImpresionGrilla.VistaPrevia(this, dgvPedidos, "Lista de compras", labTotalPedidos.Text);
+        }
+
+        #endregion
+
+        #region Stock crítico
+
+        private StockCritico CriticoSeleccionado() =>
+            dgvCriticos.SelectedRows.Count > 0 ? dgvCriticos.SelectedRows[0].DataBoundItem as StockCritico : null;
+
+        private void CargarCriticos(int? seleccionar = null)
+        {
+            int? id = seleccionar ?? CriticoSeleccionado()?.IdMaterial;
+            criticos = compras.ListarStockCritico(minimoGeneral);
+            var visibles = chkSoloSinPedido.Checked ? criticos.Where(c => !c.TienePedido).ToList() : criticos;
+            dgvCriticos.DataSource = OrdenGrilla.Aplicar(dgvCriticos, visibles);
+            Seleccionar(dgvCriticos, r => ((StockCritico)r.DataBoundItem).IdMaterial == id);
+
+            int sinPedido = criticos.Count(c => !c.TienePedido);
+            labResumenCriticos.Text = criticos.Count == 0
+                ? "Ningún material está en su mínimo."
+                : $"{criticos.Count} materiales en su mínimo o menos   ·   {sinPedido} sin pedir";
+            ActualizarBotones();
+        }
+
+        private void dgvCriticos_SelectionChanged(object sender, EventArgs e) => ActualizarBotones();
+
+        private void dgvCriticos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                botPedir_Click(sender, e);
+            }
+        }
+
+        private void dgvCriticos_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || !(dgvCriticos.Rows[e.RowIndex].DataBoundItem is StockCritico c))
+            {
+                return;
+            }
+            // Ya pedido: en verde; sin pedir: en rojo
+            e.CellStyle.ForeColor = c.TienePedido ? Color.DarkGreen : Color.Firebrick;
+            if (e.ColumnIndex == colCriPedido.Index && !c.TienePedido)
+            {
+                e.Value = "";
+                e.FormattingApplied = true;
+            }
+        }
+
+        private void botPedir_Click(object sender, EventArgs e)
+        {
+            var critico = CriticoSeleccionado();
+            if (critico == null)
+            {
+                return;
+            }
+            using (var dialogo = new frmPedido(critico.IdMaterial))
+            {
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
+                {
+                    Recargar(null, critico.IdMaterial);
+                }
+            }
+        }
+
+        private void chkSoloSinPedido_CheckedChanged(object sender, EventArgs e)
+        {
+            Mensajes.Intentar(this, () => CargarCriticos());
+        }
+
+        private void txtMinimo_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                botAplicarMinimo_Click(sender, e);
+            }
+        }
+
+        private void botAplicarMinimo_Click(object sender, EventArgs e)
+        {
+            if (!Numeros.TryLeer(txtMinimo.Text, out decimal minimo) || minimo < 0)
+            {
+                Mensajes.Aviso(this, "Escriba un número (0 o más).");
+                txtMinimo.Focus();
+                return;
+            }
+            Mensajes.Intentar(this, () =>
+            {
+                configuracion.GuardarStockMinimoGeneral(minimo);
+                minimoGeneral = minimo;
+                CargarCriticos();
+            });
+        }
+
+        private void botImprimirCriticos_Click(object sender, EventArgs e)
+        {
+            ImpresionGrilla.VistaPrevia(this, dgvCriticos, "Stock crítico", labResumenCriticos.Text);
+        }
+
+        #endregion
+
+        private void Recargar(int? idPedido, int? idMaterialCritico = null)
+        {
+            Mensajes.Intentar(this, () =>
+            {
+                CargarPedidos(idPedido);
+                CargarCriticos(idMaterialCritico);
+            });
+        }
+
+        private static void Seleccionar(DataGridView dgv, Func<DataGridViewRow, bool> condicion)
+        {
+            dgv.ClearSelection();
+            var fila = dgv.Rows.Cast<DataGridViewRow>().FirstOrDefault(condicion) ?? dgv.Rows.Cast<DataGridViewRow>().FirstOrDefault();
+            if (fila != null)
+            {
+                dgv.CurrentCell = fila.Cells.Cast<DataGridViewCell>().First(c => c.Visible);
+                fila.Selected = true;
+            }
+        }
+
+        private void ActualizarBotones()
+        {
+            botModificarPedido.Enabled = PedidoSeleccionado() != null;
+            botEliminarPedido.Enabled = PedidoSeleccionado() != null;
+            botPedir.Enabled = CriticoSeleccionado() != null;
+        }
+
+        private void botSalir_Click(object sender, EventArgs e) => Close();
+
+        private void frmCompras_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Close();
+            }
         }
     }
 }

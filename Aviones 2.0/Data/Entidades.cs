@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Aviones_2._0.Data
 {
@@ -65,7 +66,9 @@ namespace Aviones_2._0.Data
         public string Medidas { get; set; }
         public string Codigo { get; set; }
         public int IdTipoUnidad { get; set; }
-        public decimal? CantidadAComprar { get; set; }
+
+        /// <summary>Con esto o menos disponible es stock crítico. null: se usa el mínimo general.</summary>
+        public decimal? StockMinimo { get; set; }
     }
 
     /// <summary>Un renglón de la vista vMaterialesStock: el material con el stock de todos sus lotes.</summary>
@@ -81,13 +84,20 @@ namespace Aviones_2._0.Data
         public string Codigo { get; set; }
         public int IdTipoUnidad { get; set; }
         public string TipoUnidad { get; set; }
-        public decimal? CantidadAComprar { get; set; }
+        public decimal? StockMinimo { get; set; }
+
+        /// <summary>Suma de los pedidos de compra pendientes.</summary>
+        public decimal PedidoPendiente { get; set; }
+
         public int CantidadLotes { get; set; }
         public decimal Cantidad { get; set; }
         public decimal DisponibleNuevo { get; set; }
         public decimal DisponibleUsado { get; set; }
         public decimal Disponible { get; set; }
         public decimal ValorDisponible { get; set; }
+
+        public string Descripcion => string.Join(" ", new[] { Grupo, Caracteristica, Color, Medidas }
+            .Where(t => !string.IsNullOrWhiteSpace(t)));
     }
 
     public class FiltroMateriales
@@ -98,7 +108,54 @@ namespace Aviones_2._0.Data
         public string Texto { get; set; }
 
         public bool SoloSinStock { get; set; }
+
+        /// <summary>Sólo los que tienen un pedido de compra pendiente.</summary>
         public bool SoloAComprar { get; set; }
+    }
+
+    /// <summary>Un material con stock crítico: disponible menor o igual que su mínimo.</summary>
+    public class StockCritico : MaterialStock
+    {
+        /// <summary>El mínimo que se usó: el del material, o el general si no tiene.</summary>
+        public decimal MinimoAplicado { get; set; }
+
+        public bool TienePedido => PedidoPendiente > 0;
+    }
+
+    public static class EstadosPedido
+    {
+        public const string Pendiente = "P";
+        public const string Comprado = "C";
+        public const string Cancelado = "X";
+    }
+
+    /// <summary>Un pedido de compra: cuánto hay que comprar de un material.</summary>
+    public class PedidoCompra
+    {
+        public int IdPedido { get; set; }
+        public int IdMaterial { get; set; }
+        public string Familia { get; set; }
+        public string Grupo { get; set; }
+        public string Caracteristica { get; set; }
+        public string Color { get; set; }
+        public string Medidas { get; set; }
+        public string Codigo { get; set; }
+        public string TipoUnidad { get; set; }
+        public decimal Cantidad { get; set; }
+        public DateTime FechaPedido { get; set; }
+        public string Nota { get; set; }
+        public string Estado { get; set; }
+
+        /// <summary>Lo que hay disponible ahora del material (nuevo + usado).</summary>
+        public decimal Disponible { get; set; }
+
+        /// <summary>Precio del último lote ingresado, como referencia.</summary>
+        public decimal? UltimoPrecio { get; set; }
+
+        public decimal? CostoEstimado => UltimoPrecio * Cantidad;
+
+        public string Material => string.Join(" ", new[] { Grupo, Caracteristica, Color, Medidas }
+            .Where(t => !string.IsNullOrWhiteSpace(t)));
     }
 
     /// <summary>

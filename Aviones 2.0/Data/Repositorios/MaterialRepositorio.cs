@@ -7,7 +7,7 @@ namespace Aviones_2._0.Data.Repositorios
     public class MaterialRepositorio
     {
         private const string ColumnasMaterial =
-            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, CantidadAComprar";
+            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo";
 
         /// <summary>Todos los materiales (también los sin stock), con el stock sumado de sus lotes.</summary>
         public List<MaterialStock> ListarStock(FiltroMateriales filtro = null)
@@ -35,7 +35,7 @@ namespace Aviones_2._0.Data.Repositorios
             }
             if (filtro.SoloAComprar)
             {
-                condiciones.Add("S.CantidadAComprar > 0");
+                condiciones.Add("S.PedidoPendiente > 0");
             }
 
             string sql = "SELECT * FROM dbo.vMaterialesStock S"
@@ -45,6 +45,16 @@ namespace Aviones_2._0.Data.Repositorios
             using (var cn = Db.Abrir())
             {
                 return cn.Query<MaterialStock>(sql, parametros).ToList();
+            }
+        }
+
+        /// <summary>Un material con su stock sumado.</summary>
+        public MaterialStock ObtenerStock(int idMaterial)
+        {
+            using (var cn = Db.Abrir())
+            {
+                return cn.QuerySingleOrDefault<MaterialStock>(
+                    "SELECT * FROM dbo.vMaterialesStock WHERE IdMaterial = @idMaterial", new { idMaterial });
             }
         }
 
@@ -65,8 +75,8 @@ namespace Aviones_2._0.Data.Repositorios
             using (var tx = cn.BeginTransaction())
             {
                 int id = cn.ExecuteScalar<int>(@"
-                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, CantidadAComprar)
-                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @CantidadAComprar);
+                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo)
+                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @StockMinimo);
                     SELECT CAST(SCOPE_IDENTITY() AS int);", material, tx);
 
                 if (loteInicial != null)
@@ -90,7 +100,7 @@ namespace Aviones_2._0.Data.Repositorios
                     UPDATE dbo.Materiales SET
                         IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
                         Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
-                        CantidadAComprar = @CantidadAComprar
+                        StockMinimo = @StockMinimo
                     WHERE IdMaterial = @IdMaterial", material);
             }
         }
@@ -202,9 +212,9 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 throw new ReglaNegocioException("El grupo del material es obligatorio.");
             }
-            if (m.CantidadAComprar < 0)
+            if (m.StockMinimo < 0)
             {
-                throw new ReglaNegocioException("La cantidad a comprar no puede ser negativa.");
+                throw new ReglaNegocioException("El stock mínimo no puede ser negativo.");
             }
         }
 

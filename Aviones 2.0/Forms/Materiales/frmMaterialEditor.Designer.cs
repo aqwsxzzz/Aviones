@@ -272,7 +272,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.labAComprar.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labAComprar.AutoSize = true;
             this.labAComprar.Name = "labAComprar";
-            this.labAComprar.Text = "A comprar";
+            this.labAComprar.Text = "Stock mínimo";
             //
             // txtAComprar
             //

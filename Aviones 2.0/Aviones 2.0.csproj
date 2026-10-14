@@ -65,34 +65,7 @@
     <Compile Include="Data\Repositorios\ModeloRepositorio.cs" />
     <Compile Include="Data\Repositorios\Stock.cs" />
     <Compile Include="Data\Repositorios\TipoUnidadRepositorio.cs" />
-    <Compile Include="Forms\frmAvisos.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmAvisos.Designer.cs">
-      <DependentUpon>frmAvisos.cs</DependentUpon>
-    </Compile>
     <Compile Include="Common\Componentes.cs" />
-    <Compile Include="Common\ConexionSQL.cs" />
-    <Compile Include="Common\funcGenericas.cs" />
-    <Compile Include="Forms\Compras\frmCompras.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Compras\frmCompras.Designer.cs">
-      <DependentUpon>frmCompras.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Compras\frmFaltanteCom.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Compras\frmFaltanteCom.Designer.cs">
-      <DependentUpon>frmFaltanteCom.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Compras\frmIngresoCom.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\Compras\frmIngresoCom.Designer.cs">
-      <DependentUpon>frmIngresoCom.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\Compras\funcCompras.cs" />
     <Compile Include="PantallaPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,18 +74,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\frmAvisos.resx">
-      <DependentUpon>frmAvisos.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Compras\frmCompras.resx">
-      <DependentUpon>frmCompras.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Compras\frmFaltanteCom.resx">
-      <DependentUpon>frmFaltanteCom.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Compras\frmIngresoCom.resx">
-      <DependentUpon>frmIngresoCom.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PantallaPrincipal.resx">
       <DependentUpon>PantallaPrincipal.cs</DependentUpon>
     </EmbeddedResource>
@@ -208,6 +169,20 @@
     <Compile Include="Forms\Modelos\frmDestino.Designer.cs">
       <DependentUpon>frmDestino.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Compras\frmCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Compras\frmCompras.Designer.cs">
+      <DependentUpon>frmCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Compras\frmPedido.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Compras\frmPedido.Designer.cs">
+      <DependentUpon>frmPedido.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Repositorios\CompraRepositorio.cs" />
+    <Compile Include="Data\Repositorios\ConfiguracionRepositorio.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

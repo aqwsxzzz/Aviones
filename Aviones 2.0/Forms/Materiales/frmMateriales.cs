@@ -6,6 +6,7 @@ using Aviones_2._0.Common;
 using Aviones_2._0.Data;
 using Aviones_2._0.Data.Repositorios;
 using Aviones_2._0.Forms.Comun;
+using Aviones_2._0.Forms.Compras;
 
 namespace Aviones_2._0.Forms.Materiales
 {
@@ -29,7 +30,7 @@ namespace Aviones_2._0.Forms.Materiales
             Estilo.Grilla(dgvMateriales);
             Estilo.Grilla(dgvLotes);
             Estilo.Grilla(dgvUsos);
-            Estilo.Botones(botNuevo, botModificar, botEliminar, botFamilias, botTipos, botInforme, botImprimir,
+            Estilo.Botones(botNuevo, botModificar, botEliminar, botComprar, botFamilias, botTipos, botInforme, botImprimir,
                 botAgregarLote, botModificarLote, botEliminarLote);
             Estilo.BotonSecundario(botSalir);
             dgvLotes.SelectionChanged += (s, e) => ActualizarBotonesLote();
@@ -126,6 +127,7 @@ namespace Aviones_2._0.Forms.Materiales
             bool hay = m != null;
             botModificar.Enabled = hay;
             botEliminar.Enabled = hay;
+            botComprar.Enabled = hay;
             botAgregarLote.Enabled = hay;
 
             if (!hay)
@@ -327,6 +329,22 @@ namespace Aviones_2._0.Forms.Materiales
                     materiales.Eliminar(m.IdMaterial);
                     CargarMateriales();
                 });
+            }
+        }
+
+        private void botComprar_Click(object sender, EventArgs e)
+        {
+            var m = MaterialSeleccionado();
+            if (m == null)
+            {
+                return;
+            }
+            using (var dialogo = new frmPedido(m.IdMaterial))
+            {
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
+                {
+                    Mensajes.Intentar(this, () => CargarMateriales(m.IdMaterial));
+                }
             }
         }
 
