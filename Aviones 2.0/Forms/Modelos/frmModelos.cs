@@ -24,6 +24,7 @@ namespace Aviones_2._0.Forms.Modelos
             dgvMateriales.BackgroundColor = System.Drawing.Color.Linen;
             Estilo.Botones(botNuevo, botModificar, botEliminar, botImprimir, botImprimirMateriales);
             Estilo.BotonSecundario(botSalir);
+            OrdenGrilla.Habilitar(dgvModelos, dgvMateriales);
         }
 
         private void frmModelos_Load(object sender, EventArgs e)
@@ -64,7 +65,7 @@ namespace Aviones_2._0.Forms.Modelos
             cargando = true;
             try
             {
-                dgvModelos.DataSource = lista;
+                dgvModelos.DataSource = OrdenGrilla.Aplicar(dgvModelos, lista);
                 dgvModelos.ClearSelection();
                 var fila = dgvModelos.Rows.Cast<DataGridViewRow>()
                                .FirstOrDefault(r => ((Modelo)r.DataBoundItem).IdModelo == idSeleccionado)
@@ -106,7 +107,7 @@ namespace Aviones_2._0.Forms.Modelos
             Mensajes.Intentar(this, () =>
             {
                 var materiales = modelos.ListarMateriales(m.IdModelo);
-                dgvMateriales.DataSource = materiales;
+                dgvMateriales.DataSource = OrdenGrilla.Aplicar(dgvMateriales, materiales);
                 labMateriales.Text = $"Materiales de {m.Nombre}" + (string.IsNullOrEmpty(m.Alias) ? "" : $" ({m.Alias})");
                 labTotal.Text = $"Total: $ {Numeros.Dinero(materiales.Sum(x => x.Subtotal))}";
                 Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(modelos.ObtenerFoto(m.IdModelo)));

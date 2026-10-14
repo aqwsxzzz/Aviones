@@ -170,6 +170,7 @@
     <Compile Include="Common\Mensajes.cs" />
     <Compile Include="Common\Estilo.cs" />
     <Compile Include="Common\ImpresionGrilla.cs" />
+    <Compile Include="Common\OrdenGrilla.cs" />
     <Compile Include="Forms\Modelos\frmModelos.cs">
       <SubType>Form</SubType>
     </Compile>

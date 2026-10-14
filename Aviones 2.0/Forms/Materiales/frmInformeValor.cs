@@ -22,6 +22,7 @@ namespace Aviones_2._0.Forms.Materiales
         {
             InitializeComponent();
             Estilo.Grilla(dgvFamilias);
+            OrdenGrilla.Habilitar(dgvFamilias);
             Estilo.Botones(botImprimir);
             Estilo.BotonSecundario(botCerrar);
 

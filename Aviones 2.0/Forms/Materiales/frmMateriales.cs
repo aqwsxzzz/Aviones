@@ -33,6 +33,7 @@ namespace Aviones_2._0.Forms.Materiales
                 botAgregarLote, botModificarLote, botEliminarLote);
             Estilo.BotonSecundario(botSalir);
             dgvLotes.SelectionChanged += (s, e) => ActualizarBotonesLote();
+            OrdenGrilla.Habilitar(dgvMateriales, dgvLotes, dgvUsos);
         }
 
         private void frmMateriales_Load(object sender, EventArgs e)
@@ -84,7 +85,7 @@ namespace Aviones_2._0.Forms.Materiales
             cargando = true;
             try
             {
-                dgvMateriales.DataSource = lista;
+                dgvMateriales.DataSource = OrdenGrilla.Aplicar(dgvMateriales, lista);
                 dgvMateriales.ClearSelection();
                 var fila = dgvMateriales.Rows.Cast<DataGridViewRow>()
                     .FirstOrDefault(r => ((MaterialStock)r.DataBoundItem).IdMaterial == idSeleccionado);
@@ -137,11 +138,11 @@ namespace Aviones_2._0.Forms.Materiales
                 Mensajes.Intentar(this, () =>
                 {
                     var listaLotes = lotes.ListarPorMaterial(m.IdMaterial);
-                    dgvLotes.DataSource = listaLotes;
+                    dgvLotes.DataSource = OrdenGrilla.Aplicar(dgvLotes, listaLotes);
                     labLotes.Text = $"Lotes de {Descripcion(m)} ({listaLotes.Count})";
 
                     var usos = materiales.ListarUsos(m.IdMaterial);
-                    dgvUsos.DataSource = usos;
+                    dgvUsos.DataSource = OrdenGrilla.Aplicar(dgvUsos, usos);
                     labUsos.Text = usos.Count == 0 ? "No se usa en ningún modelo" : $"Usado en {usos.Select(u => u.IdModelo).Distinct().Count()} modelos";
 
                     Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(materiales.ObtenerImagen(m.IdMaterial)));

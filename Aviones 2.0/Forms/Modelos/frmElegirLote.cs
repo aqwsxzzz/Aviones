@@ -46,6 +46,7 @@ namespace Aviones_2._0.Forms.Modelos
             Estilo.Grilla(dgvLotes);
             dgvMateriales.BackgroundColor = System.Drawing.Color.Linen;
             dgvLotes.BackgroundColor = System.Drawing.Color.Linen;
+            OrdenGrilla.Habilitar(dgvMateriales, dgvLotes);
             Estilo.Botones(botAgregar);
             Estilo.BotonSecundario(botListo);
         }
@@ -79,7 +80,7 @@ namespace Aviones_2._0.Forms.Modelos
                 m.Disponible = Math.Max(0, m.Disponible - usoPendienteMaterial(m.IdMaterial));
             }
             conStock = conStock.Where(m => m.Disponible > 0).ToList();
-            dgvMateriales.DataSource = conStock;
+            dgvMateriales.DataSource = OrdenGrilla.Aplicar(dgvMateriales, conStock);
             CargarLotes();
         }
 
@@ -102,7 +103,7 @@ namespace Aviones_2._0.Forms.Modelos
                 .Select(l => new LoteVista { Lote = l, Disponible = l.Disponible - usoPendiente(l.IdLote) })
                 .Where(v => v.Disponible > 0)
                 .ToList();
-            dgvLotes.DataSource = vistas;
+            dgvLotes.DataSource = OrdenGrilla.Aplicar(dgvLotes, vistas);
             labLotes.Text = vistas.Count == 1
                 ? $"Lote de {Descripcion(m)}"
                 : $"Lotes de {Descripcion(m)} ({vistas.Count}): elija de cuál se usa";

@@ -75,6 +75,45 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void BuscarIguales_IgnoraMayusculasYEspaciosPeroNoSeEncuentraASiMismo()
+        {
+            var (idMaterial, _) = CrearMaterialConLote(1m);   // Plástico / Monokote
+            var parecido = new Material
+            {
+                IdFamilia = IdFamilia, Grupo = "  plástico ", Caracteristica = "MONOKOTE", IdTipoUnidad = IdMetros
+            };
+
+            Assert.AreEqual(idMaterial, materiales.BuscarIguales(parecido).Single().IdMaterial);
+
+            parecido.IdMaterial = idMaterial;   // al modificarse no es repetido de sí mismo
+            Assert.AreEqual(0, materiales.BuscarIguales(parecido).Count);
+        }
+
+        [TestMethod]
+        public void BuscarIguales_DistintoColorOFamiliaNoEsRepetido()
+        {
+            CrearMaterialConLote(1m);
+            int otraFamilia = new FamiliaRepositorio().Crear("Adhesivos");
+
+            Assert.AreEqual(0, materiales.BuscarIguales(new Material
+                { IdFamilia = IdFamilia, Grupo = "Plástico", Caracteristica = "Monokote", Color = "Rojo", IdTipoUnidad = IdMetros }).Count);
+            Assert.AreEqual(0, materiales.BuscarIguales(new Material
+                { IdFamilia = otraFamilia, Grupo = "Plástico", Caracteristica = "Monokote", IdTipoUnidad = IdMetros }).Count);
+        }
+
+        [TestMethod]
+        public void Crear_GuardaTextoSinEspaciosDeMas()
+        {
+            int id = materiales.Crear(new Material
+                { IdFamilia = IdFamilia, Grupo = "  Balsa ", Caracteristica = "Tabla   1/16", Color = "  ", IdTipoUnidad = IdMetros });
+
+            var guardado = materiales.Obtener(id);
+            Assert.AreEqual("Balsa", guardado.Grupo);
+            Assert.AreEqual("Tabla 1/16", guardado.Caracteristica);
+            Assert.IsNull(guardado.Color);
+        }
+
+        [TestMethod]
         public void Imagen_SeGuardaYSeBorra()
         {
             var (idMaterial, _) = CrearMaterialConLote(1m);

@@ -128,6 +128,40 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
+        /// <summary>
+        /// Materiales que describen lo mismo: misma familia, grupo, característica, color, medidas y código
+        /// (sin distinguir mayúsculas ni espacios de más; vacío y sin dato cuentan igual).
+        /// Sirve para avisar antes de crear un repetido.
+        /// </summary>
+        public List<MaterialStock> BuscarIguales(Material m)
+        {
+            using (var cn = Db.Abrir())
+            {
+                return cn.Query<MaterialStock>(@"
+                    SELECT * FROM dbo.vMaterialesStock S
+                    WHERE S.IdFamilia = @IdFamilia
+                      AND S.IdMaterial <> @IdMaterial
+                      AND LOWER(LTRIM(RTRIM(ISNULL(S.Grupo, ''))))          = @grupo
+                      AND LOWER(LTRIM(RTRIM(ISNULL(S.Caracteristica, '')))) = @caracteristica
+                      AND LOWER(LTRIM(RTRIM(ISNULL(S.Color, ''))))          = @color
+                      AND LOWER(LTRIM(RTRIM(ISNULL(S.Medidas, ''))))        = @medidas
+                      AND LOWER(LTRIM(RTRIM(ISNULL(S.Codigo, ''))))         = @codigo",
+                    new
+                    {
+                        m.IdFamilia,
+                        m.IdMaterial,
+                        grupo = Normalizar(m.Grupo),
+                        caracteristica = Normalizar(m.Caracteristica),
+                        color = Normalizar(m.Color),
+                        medidas = Normalizar(m.Medidas),
+                        codigo = Normalizar(m.Codigo)
+                    }).ToList();
+            }
+        }
+
+        private static string Normalizar(string texto) =>
+            System.Text.RegularExpressions.Regex.Replace((texto ?? "").Trim(), @"\s+", " ").ToLowerInvariant();
+
         /// <summary>Grupos ya usados, para sugerirlos al escribir.</summary>
         public List<string> ListarGrupos()
         {
@@ -157,6 +191,13 @@ namespace Aviones_2._0.Data.Repositorios
 
         private static void Validar(Material m)
         {
+            // Texto prolijo: sin espacios de más, y vacío se guarda como sin dato
+            m.Grupo = Limpiar(m.Grupo);
+            m.Caracteristica = Limpiar(m.Caracteristica);
+            m.Color = Limpiar(m.Color);
+            m.Medidas = Limpiar(m.Medidas);
+            m.Codigo = Limpiar(m.Codigo);
+
             if (string.IsNullOrWhiteSpace(m.Grupo))
             {
                 throw new ReglaNegocioException("El grupo del material es obligatorio.");
@@ -169,6 +210,12 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 throw new ReglaNegocioException("La cantidad a comprar no puede ser negativa.");
             }
+        }
+
+        private static string Limpiar(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return null;
+            return System.Text.RegularExpressions.Regex.Replace(texto.Trim(), @"\s+", " ");
         }
 
         private static string EscaparLike(string texto) =>

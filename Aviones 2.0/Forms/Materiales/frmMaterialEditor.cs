@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Aviones_2._0.Common;
@@ -194,6 +195,11 @@ namespace Aviones_2._0.Forms.Materiales
                 CantidadAComprar = aComprar
             };
 
+            if (!ConfirmarSiEstaRepetido(material))
+            {
+                return;
+            }
+
             bool guardado = Mensajes.Intentar(this, () =>
             {
                 if (EsNuevo)
@@ -215,6 +221,33 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 DialogResult = DialogResult.OK;
             }
+        }
+
+        /// <summary>
+        /// Avisa si ya hay un material igual. Una compra nueva de algo que ya existe
+        /// conviene cargarla como lote del material existente.
+        /// </summary>
+        private bool ConfirmarSiEstaRepetido(Material material)
+        {
+            List<MaterialStock> iguales = null;
+            if (!Mensajes.Intentar(this, () => iguales = materiales.BuscarIguales(material)))
+            {
+                return false;
+            }
+            if (iguales.Count == 0)
+            {
+                return true;
+            }
+
+            var igual = iguales[0];
+            string descripcion = string.Join(" ", new[] { igual.Familia, igual.Grupo, igual.Caracteristica, igual.Color, igual.Medidas, igual.Codigo }
+                .Where(t => !string.IsNullOrWhiteSpace(t)));
+            string pregunta = $"Ya existe un material igual:\n\n    {descripcion}\n"
+                + $"    ({igual.CantidadLotes} lotes, {Numeros.Cantidad(igual.Disponible)} {igual.TipoUnidad} disponibles)\n\n"
+                + (EsNuevo
+                    ? "Si es una compra nueva, conviene cancelar y usar \"Agregar lote\" en ese material.\n\n¿Crear otro material igual de todos modos?"
+                    : "¿Guardar igual? Van a quedar dos materiales con la misma descripción.");
+            return Mensajes.Confirmar(this, pregunta, "Material repetido");
         }
 
         private void Invalido(Control control, string mensaje)
