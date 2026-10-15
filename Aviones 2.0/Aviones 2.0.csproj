@@ -205,12 +205,6 @@
     <None Include="App.Debug.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Prueba.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Prueba1.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Buscar.jpeg" />
   </ItemGroup>
   <ItemGroup>
@@ -275,9 +269,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Se va1.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\la iguanas 1.jpg" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DB\Migraciones\*.sql">

@@ -12,7 +12,7 @@ namespace Aviones_2._0.Common
         private const int LadoMaximo = 1200;
 
         /// <summary>Pide un archivo de imagen. Devuelve null si se cancela.</summary>
-        public static byte[] Elegir(IWin32Window dueño)
+        public static byte[] Elegir(IWin32Window dueño, int ladoMaximo = LadoMaximo)
         {
             using (var dialogo = new OpenFileDialog
             {
@@ -26,7 +26,7 @@ namespace Aviones_2._0.Common
                 }
                 try
                 {
-                    return LeerArchivo(dialogo.FileName);
+                    return LeerArchivo(dialogo.FileName, ladoMaximo);
                 }
                 catch (Exception ex) when (ex is OutOfMemoryException || ex is ArgumentException || ex is IOException)
                 {
@@ -41,11 +41,11 @@ namespace Aviones_2._0.Common
         /// Lee la imagen y la achica si es muy grande, para no llenar la base.
         /// Si tiene transparencia se guarda como PNG, si no como JPEG.
         /// </summary>
-        public static byte[] LeerArchivo(string ruta)
+        public static byte[] LeerArchivo(string ruta, int ladoMaximo = LadoMaximo)
         {
             using (var original = Image.FromFile(ruta))
             {
-                double escala = Math.Min(1.0, (double)LadoMaximo / Math.Max(original.Width, original.Height));
+                double escala = Math.Min(1.0, (double)ladoMaximo / Math.Max(original.Width, original.Height));
                 int ancho = Math.Max(1, (int)(original.Width * escala));
                 int alto = Math.Max(1, (int)(original.Height * escala));
                 bool transparente = Image.IsAlphaPixelFormat(original.PixelFormat);

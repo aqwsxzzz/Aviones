@@ -33,6 +33,7 @@
             this.Compras = new System.Windows.Forms.Button();
             this.Salir = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.botFondo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -92,14 +93,24 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::Aviones_2._0.Properties.Resources.la_iguanas_1;
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox1.Location = new System.Drawing.Point(-4, -3);
+            this.pictureBox1.BackColor = System.Drawing.Color.SteelBlue;
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1939, 1083);
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            // 
+            // botFondo
+            // 
+            this.botFondo.BackColor = System.Drawing.Color.Gainsboro;
+            this.botFondo.Font = new System.Drawing.Font("Arial", 9F);
+            this.botFondo.Margin = new System.Windows.Forms.Padding(4);
+            this.botFondo.Name = "botFondo";
+            this.botFondo.Size = new System.Drawing.Size(130, 34);
+            this.botFondo.TabIndex = 5;
+            this.botFondo.Text = "Cambiar fondo...";
+            this.botFondo.UseVisualStyleBackColor = false;
+            this.botFondo.Click += new System.EventHandler(this.botFondo_Click);
             // 
             // PantallaPrincipal
             // 
@@ -107,6 +118,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(1884, 1061);
+            this.Controls.Add(this.botFondo);
             this.Controls.Add(this.Salir);
             this.Controls.Add(this.Compras);
             this.Controls.Add(this.Modelos);
@@ -131,6 +143,7 @@
         private System.Windows.Forms.Button Compras;
         private System.Windows.Forms.Button Salir;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Button botFondo;
     }
 }
 
