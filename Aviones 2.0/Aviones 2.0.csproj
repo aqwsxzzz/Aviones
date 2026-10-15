@@ -33,6 +33,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <!-- Al desarrollar se usa el SQL Server local; la versión publicada usa LocalDB (App.config) -->
+    <AppConfig>App.Debug.config</AppConfig>
+  </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Aviones_2._0.Program</StartupObject>
   </PropertyGroup>
@@ -47,7 +51,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -56,6 +63,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Db.cs" />
+    <Compile Include="Data\Migrador.cs" />
+    <Compile Include="Instalacion\Actualizador.cs" />
+    <Compile Include="Instalacion\Descargas.cs" />
+    <Compile Include="Instalacion\frmProgreso.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Instalacion\Instalador.cs" />
+    <Compile Include="Instalacion\Requisitos.cs" />
+    <Compile Include="Instalacion\Rutas.cs" />
     <Compile Include="Data\Entidades.cs" />
     <Compile Include="Data\Errores.cs" />
     <Compile Include="Data\Repositorios\EstadoModeloRepositorio.cs" />
@@ -186,6 +202,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="App.Debug.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Prueba.jpg" />
@@ -263,7 +280,9 @@
     <None Include="Resources\la iguanas 1.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DB\schema.sql" />
+    <EmbeddedResource Include="DB\Migraciones\*.sql">
+      <LogicalName>Migraciones.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
     <None Include="DB\seed.sql" />
     <None Include="DB\reset.ps1" />
   </ItemGroup>

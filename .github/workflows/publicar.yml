@@ -1,0 +1,50 @@
+# Publica una versión del programa al subir una etiqueta "vX.Y.Z".
+# La etiqueta anotada lleva las novedades, que el programa muestra al ofrecer la actualización:
+#   git tag -a v0.2.0 -m "Novedades..."   y   git push origin v0.2.0
+name: Publicar versión
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Número de versión desde la etiqueta
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "La etiqueta tiene que ser vX.Y.Z (es '${{ github.ref_name }}')" }
+          $info = 'Aviones 2.0/Properties/AssemblyInfo.cs'
+          (Get-Content $info) -replace '^\[assembly: Assembly(File)?Version\("[^"]*"\)\]', "[assembly: Assembly`$1Version(""$version.0"")]" |
+            Set-Content $info -Encoding utf8
+          Select-String -Path $info -Pattern 'Version\('
+          "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Compilar
+        run: msbuild "Aviones 2.0/Aviones 2.0.csproj" /restore /p:Configuration=Release /v:minimal
+
+      - name: Empaquetar
+        shell: pwsh
+        run: |
+          $bin = 'Aviones 2.0/bin/Release'
+          $archivos = Get-ChildItem $bin -Exclude *.pdb, *.xml
+          Compress-Archive -Path $archivos.FullName -DestinationPath "Aviones-$env:VERSION.zip"
+
+      - name: Publicar en Releases
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $etiqueta = '${{ github.ref_name }}'
+          git fetch --force origin "refs/tags/${etiqueta}:refs/tags/${etiqueta}"
+          git tag -l --format='%(contents)' $etiqueta | Out-File notas.md -Encoding utf8
+          gh release create $etiqueta "Aviones-$env:VERSION.zip" --title "Aviones $env:VERSION" --notes-file notas.md

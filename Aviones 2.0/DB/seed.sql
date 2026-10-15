@@ -1,5 +1,5 @@
--- Datos de prueba para Aviones (taller de aeromodelismo).
--- Borra todos los datos (menos EstadosModelo) y vuelve a cargar. Ejecutar después de schema.sql.
+﻿-- Datos de prueba para Aviones (taller de aeromodelismo).
+-- Borra todos los datos (menos EstadosModelo) y vuelve a cargar. Lo carga reset.ps1 después de las migraciones.
 
 SET NOCOUNT ON;
 

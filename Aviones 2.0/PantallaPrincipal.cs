@@ -21,6 +21,7 @@ namespace Aviones_2._0
         public PantallaPrincipal()
         {
             InitializeComponent();
+            Text = "Aviones " + Instalacion.Rutas.Version;
 
             //Procedimiento para que no parpadee la imagen de fondo
             this.DoubleBuffered = true;

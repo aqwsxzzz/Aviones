@@ -1,6 +1,4 @@
 using System.Data.SqlClient;
-using System.IO;
-using System.Text.RegularExpressions;
 using Aviones_2._0.Data;
 using Aviones_2._0.Data.Repositorios;
 
@@ -33,18 +31,18 @@ namespace Aviones_2._0.UnitTests.Data
             }
 
             Db.ConnectionString = Servidor + ";Initial Catalog=" + NombreBase;
-            string carpetaPruebas = Path.GetDirectoryName(typeof(BaseDePrueba).Assembly.Location)!;
-            string schema = File.ReadAllText(Path.Combine(carpetaPruebas, "DB", "schema.sql"));
             using (var cn = Db.Abrir())
             {
-                foreach (string lote in Regex.Split(schema, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase))
-                {
-                    if (!string.IsNullOrWhiteSpace(lote))
-                    {
-                        new SqlCommand(lote, cn).ExecuteNonQuery();
-                    }
-                }
+                // Base vacía: se borra todo y se vuelve a armar con las migraciones, como en una instalación nueva
+                new SqlCommand(@"
+                    DECLARE @sql NVARCHAR(MAX) = N'';
+                    SELECT @sql += N'ALTER TABLE ' + QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)) + N'.' + QUOTENAME(OBJECT_NAME(parent_object_id))
+                                 + N' DROP CONSTRAINT ' + QUOTENAME(name) + N';' FROM sys.foreign_keys;
+                    SELECT @sql += N'DROP VIEW ' + QUOTENAME(SCHEMA_NAME(schema_id)) + N'.' + QUOTENAME(name) + N';' FROM sys.views;
+                    SELECT @sql += N'DROP TABLE ' + QUOTENAME(SCHEMA_NAME(schema_id)) + N'.' + QUOTENAME(name) + N';' FROM sys.tables;
+                    EXEC (@sql);", cn).ExecuteNonQuery();
             }
+            Migrador.Actualizar(Db.ConnectionString);
 
             IdFamilia = new FamiliaRepositorio().Crear("Revestimientos");
             IdMetros = new TipoUnidadRepositorio().Crear("Metros");

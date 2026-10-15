@@ -1,6 +1,6 @@
--- Esquema de la base de datos Aviones.
--- Borra y vuelve a crear todas las tablas (también las del esquema anterior).
--- Ejecutar contra la base deseada; lo más simple es usar reset.ps1.
+-- Migración 1: esquema inicial de la base Aviones.
+-- Las migraciones se aplican solas al abrir el programa (Data\Migrador.cs), en orden y una sola vez.
+-- Nunca se cambia una migración ya publicada: los cambios van en una migración nueva.
 --
 --   Familias, TiposUnidad, EstadosModelo  tablas de referencia
 --   Materiales                            qué es cada material (catálogo)
@@ -13,23 +13,6 @@
 --   Configuracion                         valores generales (stock mínimo general)
 
 SET NOCOUNT ON;
-
-DROP VIEW IF EXISTS dbo.vMaterialesStock;
-DROP TABLE IF EXISTS
-    dbo.PedidosCompra,
-    dbo.Configuracion,
-    dbo.MaterialesModelo,
-    dbo.Lotes,
-    dbo.Modelos,
-    dbo.EstadosModelo,
-    dbo.Materiales,
-    dbo.TiposUnidad,
-    dbo.Familias,
-    -- tablas del esquema anterior
-    dbo.Familiares,
-    dbo.Acopio,
-    dbo.Acopio_Historial;
-GO
 
 CREATE TABLE dbo.Familias (
     IdFamilia INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Familias PRIMARY KEY,

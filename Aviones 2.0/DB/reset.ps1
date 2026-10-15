@@ -1,6 +1,8 @@
-# Crea (si no existe) la base, aplica schema.sql y carga seed.sql.
-#   .\reset.ps1                       -> base Aviones con datos de prueba
+# Borra la base, la vuelve a crear con las migraciones del programa y carga los datos de prueba.
+# Usa el programa compilado (bin\Debug), así las migraciones son exactamente las que aplica él.
+#   .\reset.ps1                                   -> base Aviones en el SQL Server local, con datos de prueba
 #   .\reset.ps1 -Database Aviones_Test -NoSeed
+#   .\reset.ps1 -Server '(localdb)\MSSQLLocalDB'   -> la base de LocalDB (como la del usuario)
 param(
     [string]$Server = 'localhost',
     [string]$Database = 'Aviones',
@@ -8,17 +10,30 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$sqlcmd = (Get-Command sqlcmd -ErrorAction SilentlyContinue).Source
-if (-not $sqlcmd) { $sqlcmd = 'C:\Program Files\SqlCmd\sqlcmd.exe' }
+$bin = Join-Path $PSScriptRoot '..\bin\Debug'
+if (-not (Test-Path "$bin\Aviones 2.0.exe")) { throw "Compile el programa primero (falta $bin\Aviones 2.0.exe)." }
 
-function Invoke-Sql([string[]]$sqlArgs) {
-    & $sqlcmd -S $Server -E -C -b @sqlArgs
-    if ($LASTEXITCODE -ne 0) { throw "sqlcmd failed: $($sqlArgs -join ' ')" }
-}
+$cs = "Data Source=$Server;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=60"
+$cn = New-Object System.Data.SqlClient.SqlConnection "$cs;Initial Catalog=master"
+$cn.Open()
+$cmd = $cn.CreateCommand()
+$cmd.CommandText = "IF DB_ID(@db) IS NOT NULL BEGIN DECLARE @sql NVARCHAR(MAX) = N'ALTER DATABASE ' + QUOTENAME(@db) + N' SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE ' + QUOTENAME(@db); EXEC (@sql); END"
+[void]$cmd.Parameters.AddWithValue('@db', $Database)
+[void]$cmd.ExecuteNonQuery()
+$cn.Close()
 
-Invoke-Sql @('-Q', "IF DB_ID(N'$Database') IS NULL CREATE DATABASE [$Database];")
-Invoke-Sql @('-d', $Database, '-i', (Join-Path $PSScriptRoot 'schema.sql'))
+[void][System.Reflection.Assembly]::LoadFrom("$bin\Dapper.dll")
+$asm = [System.Reflection.Assembly]::LoadFrom("$bin\Aviones 2.0.exe")
+$migrador = $asm.GetType('Aviones_2._0.Data.Migrador')
+$resultado = $migrador::Actualizar("$cs;Initial Catalog=$Database", $null, $null)
+Write-Host "Migraciones aplicadas: $($resultado.Aplicadas.Count)"
+
 if (-not $NoSeed) {
-    Invoke-Sql @('-d', $Database, '-i', (Join-Path $PSScriptRoot 'seed.sql'))
+    $cn = New-Object System.Data.SqlClient.SqlConnection "$cs;Initial Catalog=$Database"
+    $cn.Open()
+    foreach ($lote in $migrador::Lotes([System.IO.File]::ReadAllText((Join-Path $PSScriptRoot 'seed.sql')))) {
+        $cmd = $cn.CreateCommand(); $cmd.CommandText = $lote; [void]$cmd.ExecuteNonQuery()
+    }
+    $cn.Close()
 }
 Write-Host "Base '$Database' lista."
