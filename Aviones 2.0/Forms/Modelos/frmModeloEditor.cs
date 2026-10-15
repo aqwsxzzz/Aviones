@@ -27,6 +27,8 @@ namespace Aviones_2._0.Forms.Modelos
         /// <summary>Materiales guardados que se quitaron en esta edición, con cuánto vuelve de cada uno.</summary>
         private readonly List<(FilaMaterial Fila, Devolucion Devolucion)> quitados = new List<(FilaMaterial, Devolucion)>();
 
+        /// <summary>Lugar máximo para la foto; la caja se ajusta a la forma de cada imagen.</summary>
+        private readonly Size fotoMaxima;
         private byte[] foto;
         private bool fotoCambiada;
         private bool modificado;
@@ -40,6 +42,8 @@ namespace Aviones_2._0.Forms.Modelos
         public frmModeloEditor(int? idModelo)
         {
             InitializeComponent();
+            Imagenes.MarcarSinImagen(picFoto);
+            fotoMaxima = picFoto.Size;
             this.idModelo = idModelo;
             Estilo.Grilla(dgvMateriales);
             dgvMateriales.BackgroundColor = Color.Linen;
@@ -98,7 +102,7 @@ namespace Aviones_2._0.Forms.Modelos
                     }
 
                     foto = modelos.ObtenerFoto(idModelo.Value);
-                    Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(foto));
+                    Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(foto), fotoMaxima);
                 }
             });
 
@@ -298,7 +302,7 @@ namespace Aviones_2._0.Forms.Modelos
                 foto = nueva;
                 fotoCambiada = true;
                 modificado = true;
-                Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(foto));
+                Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(foto), fotoMaxima);
             }
         }
 
@@ -307,7 +311,7 @@ namespace Aviones_2._0.Forms.Modelos
             foto = null;
             fotoCambiada = true;
             modificado = true;
-            Imagenes.Mostrar(picFoto, null);
+            Imagenes.Mostrar(picFoto, null, fotoMaxima);
         }
 
         private void Datos_Changed(object sender, EventArgs e)

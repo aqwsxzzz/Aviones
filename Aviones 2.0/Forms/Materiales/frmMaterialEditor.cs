@@ -12,6 +12,8 @@ namespace Aviones_2._0.Forms.Materiales
     /// <summary>Alta o modificación de un material. En el alta se puede cargar también el primer lote.</summary>
     public partial class frmMaterialEditor : Form
     {
+        /// <summary>Lugar máximo para la foto; la caja se ajusta a la forma de cada imagen.</summary>
+        private readonly System.Drawing.Size fotoMaxima;
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private readonly LoteRepositorio lotes = new LoteRepositorio();
         private readonly TipoUnidadRepositorio tipos = new TipoUnidadRepositorio();
@@ -29,6 +31,8 @@ namespace Aviones_2._0.Forms.Materiales
         public frmMaterialEditor(int? idMaterial, int? idFamiliaSugerida)
         {
             InitializeComponent();
+            Imagenes.MarcarSinImagen(picImagen);
+            fotoMaxima = picImagen.Size;
             this.idMaterial = idMaterial;
             this.idFamiliaSugerida = idFamiliaSugerida;
             Estilo.Botones(botGuardar);
@@ -66,7 +70,7 @@ namespace Aviones_2._0.Forms.Materiales
                     MostrarMaterial(materiales.Obtener(idMaterial.Value)
                         ?? throw new ReglaNegocioException("El material ya no existe."));
                     imagen = materiales.ObtenerImagen(idMaterial.Value);
-                    Imagenes.Mostrar(picImagen, Imagenes.DesdeBytes(imagen));
+                    Imagenes.Mostrar(picImagen, Imagenes.DesdeBytes(imagen), fotoMaxima);
                 }
             });
 
@@ -122,7 +126,7 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 imagen = nueva;
                 imagenCambiada = true;
-                Imagenes.Mostrar(picImagen, Imagenes.DesdeBytes(imagen));
+                Imagenes.Mostrar(picImagen, Imagenes.DesdeBytes(imagen), fotoMaxima);
             }
         }
 
@@ -130,7 +134,7 @@ namespace Aviones_2._0.Forms.Materiales
         {
             imagen = null;
             imagenCambiada = true;
-            Imagenes.Mostrar(picImagen, null);
+            Imagenes.Mostrar(picImagen, null, fotoMaxima);
         }
 
         private void botGuardar_Click(object sender, EventArgs e)

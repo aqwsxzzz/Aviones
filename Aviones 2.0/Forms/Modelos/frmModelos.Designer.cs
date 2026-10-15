@@ -226,6 +226,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.tlpDetalle.Controls.Add(this.flpDetalleBotones, 0, 3);
             this.tlpDetalle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpDetalle.Name = "tlpDetalle";
+            this.tlpDetalle.SizeChanged += new System.EventHandler(this.tlpDetalle_SizeChanged);
             this.tlpDetalle.RowCount = 4;
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 240F));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
@@ -238,7 +239,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.picFoto.BackColor = System.Drawing.Color.White;
             this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.picFoto.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picFoto.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picFoto.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.picFoto.Name = "picFoto";
             this.picFoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picFoto.TabStop = false;

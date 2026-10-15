@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Aviones_2._0.Common;
@@ -18,6 +19,7 @@ namespace Aviones_2._0.Forms.Modelos
         public frmModelos()
         {
             InitializeComponent();
+            Imagenes.MarcarSinImagen(picFoto);
             Estilo.Grilla(dgvModelos);
             Estilo.Grilla(dgvMateriales);
             dgvModelos.BackgroundColor = System.Drawing.Color.Linen;
@@ -98,7 +100,7 @@ namespace Aviones_2._0.Forms.Modelos
             if (m == null)
             {
                 dgvMateriales.DataSource = null;
-                Imagenes.Mostrar(picFoto, null);
+                MostrarFoto(null);
                 labMateriales.Text = "Materiales";
                 labTotal.Text = "";
                 return;
@@ -110,7 +112,7 @@ namespace Aviones_2._0.Forms.Modelos
                 dgvMateriales.DataSource = OrdenGrilla.Aplicar(dgvMateriales, materiales);
                 labMateriales.Text = $"Materiales de {m.Nombre}" + (string.IsNullOrEmpty(m.Alias) ? "" : $" ({m.Alias})");
                 labTotal.Text = $"Total: $ {Numeros.Dinero(materiales.Sum(x => x.Subtotal))}";
-                Imagenes.Mostrar(picFoto, Imagenes.DesdeBytes(modelos.ObtenerFoto(m.IdModelo)));
+                MostrarFoto(Imagenes.DesdeBytes(modelos.ObtenerFoto(m.IdModelo)));
             });
         }
 
@@ -151,6 +153,22 @@ namespace Aviones_2._0.Forms.Modelos
                 botEliminar_Click(sender, e);
             }
         }
+
+        private void MostrarFoto(Image foto)
+        {
+            Imagenes.Mostrar(picFoto, foto);
+            AjustarFoto();
+        }
+
+        /// <summary>La foto toma la forma de la imagen dentro de su lugar; sin foto lo ocupa entero con "Sin imagen".</summary>
+        private void AjustarFoto()
+        {
+            Imagenes.AjustarCaja(picFoto, new Size(
+                tlpDetalle.ClientSize.Width - picFoto.Margin.Horizontal,
+                (int)tlpDetalle.RowStyles[0].Height - picFoto.Margin.Vertical));
+        }
+
+        private void tlpDetalle_SizeChanged(object sender, EventArgs e) => AjustarFoto();
 
         private void picFoto_DoubleClick(object sender, EventArgs e)
         {
