@@ -145,6 +145,9 @@ namespace Aviones_2._0.Data
         public DateTime FechaPedido { get; set; }
         public string Nota { get; set; }
         public string Estado { get; set; }
+        public DateTime? FechaCierre { get; set; }
+        public decimal? CantidadRecibida { get; set; }
+        public int? IdLote { get; set; }
 
         /// <summary>Lo que hay disponible ahora del material (nuevo + usado).</summary>
         public decimal Disponible { get; set; }

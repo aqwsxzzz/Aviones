@@ -98,6 +98,130 @@ namespace Aviones_2._0.UnitTests.Data
             Assert.ThrowsExactly<ReglaNegocioException>(() => compras.CrearPedido(servo, 0m, null));
         }
 
+        private static Lote Recibido(decimal cantidad, decimal valor = 12m) =>
+            new Lote { Cantidad = cantidad, ValorUnitario = valor, Fabricante = "Hitec" };
+
+        private static decimal? Valor(string sql, object datos)
+        {
+            using (var cn = Db.Abrir())
+            {
+                return Dapper.SqlMapper.ExecuteScalar<decimal?>(cn, sql, datos);
+            }
+        }
+
+        [TestMethod]
+        public void Recibir_TodoCierraElPedidoEIngresaUnLote()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, null);
+
+            int idLote = compras.Recibir(id, Recibido(10m), esperarResto: false);
+
+            var pedido = compras.Obtener(id);
+            Assert.AreEqual(EstadosPedido.Comprado, pedido.Estado);
+            Assert.AreEqual(10m, pedido.CantidadRecibida);
+            Assert.AreEqual(idLote, pedido.IdLote);
+            Assert.IsNotNull(pedido.FechaCierre);
+            Assert.AreEqual(0, compras.ListarPendientes().Count);
+
+            var lote = new LoteRepositorio().Obtener(idLote);
+            Assert.AreEqual(servo, lote.IdMaterial);
+            Assert.AreEqual(10m, lote.DisponibleNuevo);
+            Assert.AreEqual(12m, lote.ValorUnitario);
+            Assert.AreEqual(12m, materiales.ObtenerStock(servo).Disponible);
+        }
+
+        [TestMethod]
+        public void Recibir_MenosYSeEsperaElResto()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, "para el Cub");
+
+            int idLote = compras.Recibir(id, Recibido(4m), esperarResto: true);
+
+            var pendiente = compras.ListarPendientes().Single();
+            Assert.AreEqual(id, pendiente.IdPedido);
+            Assert.AreEqual(6m, pendiente.Cantidad);
+            Assert.AreEqual(6m, materiales.ObtenerStock(servo).PedidoPendiente);
+            Assert.AreEqual(6m, materiales.ObtenerStock(servo).Disponible);
+            // Lo recibido queda como pedido cerrado aparte, con la misma nota
+            Assert.AreEqual(4m, Valor("SELECT CantidadRecibida FROM dbo.PedidosCompra WHERE Estado = 'C' AND IdLote = @idLote AND Nota = 'para el Cub'", new { idLote }));
+
+            compras.Recibir(id, Recibido(6m), esperarResto: true);
+            Assert.AreEqual(0, compras.ListarPendientes().Count);
+            Assert.AreEqual(12m, materiales.ObtenerStock(servo).Disponible);
+        }
+
+        [TestMethod]
+        public void Recibir_MenosYSeCierraElPedido()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, null);
+
+            compras.Recibir(id, Recibido(5m), esperarResto: false);
+
+            var pedido = compras.Obtener(id);
+            Assert.AreEqual(EstadosPedido.Comprado, pedido.Estado);
+            Assert.AreEqual(10m, pedido.Cantidad);
+            Assert.AreEqual(5m, pedido.CantidadRecibida);
+            Assert.AreEqual(0m, materiales.ObtenerStock(servo).PedidoPendiente);
+            Assert.AreEqual(7m, materiales.ObtenerStock(servo).Disponible);
+        }
+
+        [TestMethod]
+        public void Recibir_MasDeLoPedidoCierra()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, null);
+
+            compras.Recibir(id, Recibido(12m), esperarResto: true);
+
+            Assert.AreEqual(12m, compras.Obtener(id).CantidadRecibida);
+            Assert.AreEqual(0, compras.ListarPendientes().Count);
+        }
+
+        [TestMethod]
+        public void Recibir_UsadoEntraComoUsado()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 3m, null);
+            var recibido = Recibido(3m);
+            recibido.CompradoUsado = true;
+
+            int idLote = compras.Recibir(id, recibido, esperarResto: false);
+
+            Assert.AreEqual(3m, new LoteRepositorio().Obtener(idLote).DisponibleUsado);
+        }
+
+        [TestMethod]
+        public void Recibir_SoloPedidosPendientesYCantidadPositiva()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, null);
+
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.Recibir(id, Recibido(0m), false));
+            compras.Recibir(id, Recibido(10m), false);
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.Recibir(id, Recibido(10m), false));
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.ModificarPedido(id, 3m, null));
+            // Nada se ingresó de más
+            Assert.AreEqual(12m, materiales.ObtenerStock(servo).Disponible);
+        }
+
+        [TestMethod]
+        public void Recibido_SeBorraElLoteOElMaterial()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 10m, null);
+            int idLote = compras.Recibir(id, Recibido(10m), false);
+
+            new LoteRepositorio().Eliminar(idLote);
+            Assert.IsNull(compras.Obtener(id).IdLote);
+            Assert.AreEqual(10m, compras.Obtener(id).CantidadRecibida);
+
+            materiales.Eliminar(servo);
+            Assert.IsNull(compras.Obtener(id));
+        }
+
         [TestMethod]
         public void MinimoGeneral_SeGuardaYSeLee()
         {

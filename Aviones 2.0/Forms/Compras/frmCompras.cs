@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Aviones_2._0.Common;
 using Aviones_2._0.Data;
 using Aviones_2._0.Data.Repositorios;
+using Aviones_2._0.Forms.Materiales;
 
 namespace Aviones_2._0.Forms.Compras
 {
@@ -27,7 +28,7 @@ namespace Aviones_2._0.Forms.Compras
             Estilo.Grilla(dgvCriticos);
             dgvPedidos.BackgroundColor = Color.Honeydew;
             dgvCriticos.BackgroundColor = Color.Honeydew;
-            Estilo.Botones(botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
+            Estilo.Botones(botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
             Estilo.BotonSecundario(botSalir);
             OrdenGrilla.Habilitar(dgvPedidos, dgvCriticos);
         }
@@ -85,6 +86,22 @@ namespace Aviones_2._0.Forms.Compras
             {
                 e.Handled = true;
                 botEliminarPedido_Click(sender, e);
+            }
+        }
+
+        private void botRecibirPedido_Click(object sender, EventArgs e)
+        {
+            var pedido = PedidoSeleccionado();
+            if (pedido == null)
+            {
+                return;
+            }
+            using (var dialogo = new frmLoteEditor(pedido))
+            {
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
+                {
+                    Recargar(null);
+                }
             }
         }
 
@@ -242,6 +259,7 @@ namespace Aviones_2._0.Forms.Compras
 
         private void ActualizarBotones()
         {
+            botRecibirPedido.Enabled = PedidoSeleccionado() != null;
             botModificarPedido.Enabled = PedidoSeleccionado() != null;
             botEliminarPedido.Enabled = PedidoSeleccionado() != null;
             botPedir.Enabled = CriticoSeleccionado() != null;

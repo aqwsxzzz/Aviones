@@ -110,7 +110,10 @@ CREATE TABLE dbo.PedidosCompra (
     Nota         NVARCHAR(200) NULL,
     Estado       CHAR(1) NOT NULL CONSTRAINT DF_PedidosCompra_Estado DEFAULT 'P'
                  CONSTRAINT CK_PedidosCompra_Estado CHECK (Estado IN ('P', 'C', 'X')),
-    FechaCierre  DATE NULL
+    FechaCierre  DATE NULL,
+    -- Al recibir: cuánto llegó y el lote que se ingresó con eso
+    CantidadRecibida DECIMAL(18,3) NULL,
+    IdLote       INT NULL CONSTRAINT FK_PedidosCompra_Lotes REFERENCES dbo.Lotes (IdLote)
 );
 CREATE INDEX IX_PedidosCompra_IdMaterial ON dbo.PedidosCompra (IdMaterial);
 

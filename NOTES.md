@@ -11,7 +11,8 @@ Stock control for building model airplanes:
 - **Materiales**: everything in stock (wood, covering, electronics, hardware…), with quantity, value, location and photo.
 - **Modelos**: the airplanes. Each one records which materials (and how much) went into it. Assigning material to a model discounts it from stock.
 - **Compras**: two lists (rebuilt 2026-10-14):
-  - **Lista de compras**: purchase orders (material + amount + optional note), created with COMPRAR in Materiales or from the critical list. Editable, deletable, printable. Orders have a status (pending / bought / cancelled) so "receiving a purchase" can be added later.
+  - **Lista de compras**: purchase orders (material + amount + optional note), created with COMPRAR in Materiales or from the critical list. Editable, deletable, printable. Orders have a status (pending / bought / cancelled).
+  - **Recibir**: confirms a pending order arrived. Asks the amount received (pre-filled with the ordered amount), price, supplier, location and new/used; the received amount enters stock as a new lot linked to the order. If less arrived, it asks: keep waiting for the rest (the order stays pending for the difference; the received part is stored as a separate closed order) or close the order as is.
   - **Stock crítico**: materials with their minimum or less available. Each material can have its own minimum ("Stock mínimo" in the material editor); the rest use a general minimum set on the Compras screen. Red = not ordered yet, green = already ordered.
   - Both lists print; "Microsoft Print to PDF" in the print dialog saves them as PDF.
 
@@ -99,7 +100,7 @@ Decision (2026-10-14): **keep stock lots**. A material is a catalog entry; each 
 | `Materiales` | `Materiales` (catalog part) | FK to family and unit type |
 | `Lotes` | `Acopio` | one row per purchase (history). `CompradoUsado`; remaining stock split in `DisponibleNuevo` / `DisponibleUsado`, `nuevo + usado ≤ Cantidad`; new `FechaIngreso` |
 | `Modelos` | `Modelos` | FK to state |
-| `PedidosCompra` | `Materiales.Cantacomprar` | one row per order; `Estado` P/C/X |
+| `PedidosCompra` | `Materiales.Cantacomprar` | one row per order; `Estado` P/C/X; when received: `CantidadRecibida`, `IdLote` |
 | `Configuracion` | — | general settings (`StockMinimoGeneral`) |
 | `MaterialesModelo` | `MaterialesModelo` | references `IdLote` and `Estado` (taken from new or used stock); deleting a model deletes its rows |
 | `vMaterialesStock` | — | one row per material with its lots summed |

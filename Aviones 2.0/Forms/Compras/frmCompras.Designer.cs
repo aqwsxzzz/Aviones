@@ -34,6 +34,7 @@ namespace Aviones_2._0.Forms.Compras
             this.colPedCosto = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.flpPedidos = new System.Windows.Forms.FlowLayoutPanel();
+            this.botRecibirPedido = new System.Windows.Forms.Button();
             this.botModificarPedido = new System.Windows.Forms.Button();
             this.botEliminarPedido = new System.Windows.Forms.Button();
             this.botImprimirPedidos = new System.Windows.Forms.Button();
@@ -248,6 +249,7 @@ namespace Aviones_2._0.Forms.Compras
             // flpPedidos
             //
             this.flpPedidos.AutoSize = true;
+            this.flpPedidos.Controls.Add(this.botRecibirPedido);
             this.flpPedidos.Controls.Add(this.botModificarPedido);
             this.flpPedidos.Controls.Add(this.botEliminarPedido);
             this.flpPedidos.Controls.Add(this.botImprimirPedidos);
@@ -255,6 +257,14 @@ namespace Aviones_2._0.Forms.Compras
             this.flpPedidos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpPedidos.Name = "flpPedidos";
             this.flpPedidos.TabIndex = 1;
+            //
+            // botRecibirPedido
+            //
+            this.botRecibirPedido.Name = "botRecibirPedido";
+            this.botRecibirPedido.Size = new System.Drawing.Size(150, 38);
+            this.botRecibirPedido.TabIndex = 0;
+            this.botRecibirPedido.Text = "RECIBIR";
+            this.botRecibirPedido.Click += new System.EventHandler(this.botRecibirPedido_Click);
             //
             // botModificarPedido
             //
@@ -559,6 +569,7 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedCosto;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedNota;
         private System.Windows.Forms.FlowLayoutPanel flpPedidos;
+        private System.Windows.Forms.Button botRecibirPedido;
         private System.Windows.Forms.Button botModificarPedido;
         private System.Windows.Forms.Button botEliminarPedido;
         private System.Windows.Forms.Button botImprimirPedidos;

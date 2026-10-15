@@ -118,6 +118,7 @@ namespace Aviones_2._0.Data.Repositorios
                     DELETE MM FROM dbo.MaterialesModelo MM
                     JOIN dbo.Lotes L ON L.IdLote = MM.IdLote
                     WHERE L.IdMaterial = @idMaterial", new { idMaterial }, tx);
+                cn.Execute("DELETE FROM dbo.PedidosCompra WHERE IdMaterial = @idMaterial", new { idMaterial }, tx);
                 cn.Execute("DELETE FROM dbo.Materiales WHERE IdMaterial = @idMaterial", new { idMaterial }, tx);
                 tx.Commit();
             }

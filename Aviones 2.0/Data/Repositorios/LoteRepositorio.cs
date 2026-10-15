@@ -81,7 +81,13 @@ namespace Aviones_2._0.Data.Repositorios
                 {
                     throw new ReglaNegocioException($"El lote se usa en {usos} modelos; quítelo de ellos primero.");
                 }
-                cn.Execute("DELETE FROM dbo.Lotes WHERE IdLote = @idLote", new { idLote });
+                using (var tx = cn.BeginTransaction())
+                {
+                    // El pedido recibido sigue en el historial, sin el lote
+                    cn.Execute("UPDATE dbo.PedidosCompra SET IdLote = NULL WHERE IdLote = @idLote", new { idLote }, tx);
+                    cn.Execute("DELETE FROM dbo.Lotes WHERE IdLote = @idLote", new { idLote }, tx);
+                    tx.Commit();
+                }
             }
         }
 

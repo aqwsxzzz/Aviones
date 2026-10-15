@@ -10,6 +10,7 @@ namespace Aviones_2._0.Data.Repositorios
         private const string SelectPedido = @"
             SELECT P.IdPedido, P.IdMaterial, F.Nombre AS Familia, M.Grupo, M.Caracteristica, M.Color, M.Medidas, M.Codigo,
                    T.Nombre AS TipoUnidad, P.Cantidad, P.FechaPedido, P.Nota, P.Estado,
+                   P.FechaCierre, P.CantidadRecibida, P.IdLote,
                    S.Disponible,
                    (SELECT TOP 1 L.ValorUnitario FROM dbo.Lotes L
                      WHERE L.IdMaterial = P.IdMaterial ORDER BY L.FechaIngreso DESC, L.IdLote DESC) AS UltimoPrecio
@@ -96,6 +97,52 @@ namespace Aviones_2._0.Data.Repositorios
             using (var cn = Db.Abrir())
             {
                 cn.Execute("DELETE FROM dbo.PedidosCompra WHERE IdPedido = @idPedido AND Estado = 'P'", new { idPedido });
+            }
+        }
+
+        /// <summary>
+        /// Registra que llegó lo pedido (o parte): ingresa un lote con lo recibido y cierra el pedido.
+        /// Si llegó menos y <paramref name="esperarResto"/>, el pedido sigue pendiente por lo que falta
+        /// y lo recibido queda como un pedido cerrado aparte. Devuelve el lote ingresado.
+        /// </summary>
+        public int Recibir(int idPedido, Lote recibido, bool esperarResto)
+        {
+            if (recibido.Cantidad <= 0)
+            {
+                throw new ReglaNegocioException("La cantidad recibida tiene que ser mayor que cero.");
+            }
+            using (var cn = Db.Abrir())
+            using (var tx = cn.BeginTransaction())
+            {
+                var pedido = cn.QuerySingleOrDefault<PedidoCompra>(
+                    "SELECT IdPedido, IdMaterial, Cantidad, FechaPedido, Nota FROM dbo.PedidosCompra WITH (UPDLOCK) WHERE IdPedido = @idPedido AND Estado = 'P'",
+                    new { idPedido }, tx);
+                if (pedido == null)
+                {
+                    throw new ReglaNegocioException("El pedido ya no está pendiente.");
+                }
+
+                recibido.IdMaterial = pedido.IdMaterial;
+                int idLote = LoteRepositorio.Insertar(cn, tx, recibido);
+                var datos = new { idPedido, recibida = recibido.Cantidad, idLote, fecha = recibido.FechaIngreso.Date };
+
+                if (esperarResto && recibido.Cantidad < pedido.Cantidad)
+                {
+                    cn.Execute("UPDATE dbo.PedidosCompra SET Cantidad = Cantidad - @recibida WHERE IdPedido = @idPedido", datos, tx);
+                    cn.Execute(@"
+                        INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, FechaPedido, Nota, Estado, FechaCierre, CantidadRecibida, IdLote)
+                        SELECT IdMaterial, @recibida, FechaPedido, Nota, 'C', @fecha, @recibida, @idLote
+                        FROM dbo.PedidosCompra WHERE IdPedido = @idPedido", datos, tx);
+                }
+                else
+                {
+                    cn.Execute(@"
+                        UPDATE dbo.PedidosCompra
+                        SET Estado = 'C', FechaCierre = @fecha, CantidadRecibida = @recibida, IdLote = @idLote
+                        WHERE IdPedido = @idPedido", datos, tx);
+                }
+                tx.Commit();
+                return idLote;
             }
         }
 

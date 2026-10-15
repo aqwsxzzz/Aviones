@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using Aviones_2._0.Common;
 using Aviones_2._0.Data;
@@ -6,12 +7,17 @@ using Aviones_2._0.Data.Repositorios;
 
 namespace Aviones_2._0.Forms.Materiales
 {
-    /// <summary>Alta o corrección de un lote (un ingreso de stock de un material).</summary>
+    /// <summary>
+    /// Alta o corrección de un lote (un ingreso de stock de un material).
+    /// También sirve para recibir un pedido de compra: lo que llega entra como un lote nuevo.
+    /// </summary>
     public partial class frmLoteEditor : Form
     {
         private readonly LoteRepositorio lotes = new LoteRepositorio();
         private readonly int idMaterial;
         private readonly Lote lote;
+        private readonly PedidoCompra pedido;
+        private readonly CompraRepositorio compras = new CompraRepositorio();
 
         /// <param name="lote">null para un lote nuevo.</param>
         public frmLoteEditor(int idMaterial, string descripcionMaterial, Lote lote)
@@ -25,6 +31,13 @@ namespace Aviones_2._0.Forms.Materiales
             Estilo.EnterAvanza(this);
         }
 
+        /// <summary>Recibir un pedido de compra pendiente.</summary>
+        public frmLoteEditor(PedidoCompra pedido)
+            : this(pedido.IdMaterial, pedido.Material, null)
+        {
+            this.pedido = pedido;
+        }
+
         private void frmLoteEditor_Load(object sender, EventArgs e)
         {
             Mensajes.Intentar(this, () =>
@@ -33,6 +46,30 @@ namespace Aviones_2._0.Forms.Materiales
                 txtUbicacion.AutoCompleteCustomSource.AddRange(lotes.ListarUbicaciones().ToArray());
             });
 
+            if (pedido != null)
+            {
+                Text = "Recibir pedido";
+                botGuardar.Text = "RECIBIR";
+                labCantidad.Text = "Recibido *";
+                dtpFecha.Value = DateTime.Today;
+                txtCantidad.Text = Numeros.Cantidad(pedido.Cantidad);
+                if (pedido.UltimoPrecio.HasValue)
+                {
+                    txtValor.Text = Numeros.Dinero(pedido.UltimoPrecio.Value);
+                }
+                // Lo más probable es que venga del mismo lugar que la última vez
+                Mensajes.Intentar(this, () =>
+                {
+                    var ultimo = lotes.ListarPorMaterial(pedido.IdMaterial).LastOrDefault();
+                    txtFabricante.Text = ultimo?.Fabricante;
+                    txtUbicacion.Text = ultimo?.Ubicacion;
+                });
+                labUso.Text = $"Pedido: {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} el {pedido.FechaPedido:dd/MM/yyyy}"
+                    + (string.IsNullOrEmpty(pedido.Nota) ? "" : $" ({pedido.Nota})")
+                    + ".\nLo recibido entra al stock como un lote nuevo.";
+                ActiveControl = txtCantidad;
+                return;
+            }
             if (lote == null)
             {
                 Text = "Nuevo ingreso";
@@ -73,6 +110,14 @@ namespace Aviones_2._0.Forms.Materiales
                 return;
             }
 
+            bool faltaResto = FaltaResto();
+            if (faltaResto && !radEsperarResto.Checked && !radCerrarPedido.Checked)
+            {
+                Mensajes.Aviso(this, "Llegó menos de lo pedido: elija si sigue esperando el resto o se cierra el pedido.");
+                radEsperarResto.Focus();
+                return;
+            }
+
             var datos = new Lote
             {
                 IdLote = lote?.IdLote ?? 0,
@@ -87,13 +132,30 @@ namespace Aviones_2._0.Forms.Materiales
 
             bool guardado = Mensajes.Intentar(this, () =>
             {
-                if (lote == null) lotes.Crear(datos);
+                if (pedido != null) compras.Recibir(pedido.IdPedido, datos, faltaResto && radEsperarResto.Checked);
+                else if (lote == null) lotes.Crear(datos);
                 else lotes.Actualizar(datos);
             });
             if (guardado)
             {
                 DialogResult = DialogResult.OK;
             }
+        }
+
+        /// <summary>Recibiendo un pedido, llegó menos de lo pedido.</summary>
+        private bool FaltaResto() =>
+            pedido != null && Numeros.TryLeer(txtCantidad.Text, out decimal recibido) && recibido > 0 && recibido < pedido.Cantidad;
+
+        private void txtCantidad_TextChanged(object sender, EventArgs e)
+        {
+            bool falta = FaltaResto();
+            if (falta)
+            {
+                Numeros.TryLeer(txtCantidad.Text, out decimal recibido);
+                radEsperarResto.Text = $"Sigo esperando el resto ({Numeros.Cantidad(pedido.Cantidad - recibido)} {pedido.TipoUnidad})";
+            }
+            labResto.Visible = falta;
+            flpResto.Visible = falta;
         }
     }
 }
