@@ -296,8 +296,8 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // picImagen
             //
-            this.picImagen.BackColor = System.Drawing.Color.White;
-            this.picImagen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picImagen.BackColor = System.Drawing.Color.Transparent;
+            this.picImagen.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.picImagen.Name = "picImagen";
             this.picImagen.Size = new System.Drawing.Size(220, 220);
             this.picImagen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;

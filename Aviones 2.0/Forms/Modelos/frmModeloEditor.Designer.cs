@@ -183,8 +183,8 @@ namespace Aviones_2._0.Forms.Modelos
             //
             // picFoto
             //
-            this.picFoto.BackColor = System.Drawing.Color.White;
-            this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picFoto.BackColor = System.Drawing.Color.Transparent;
+            this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.picFoto.Name = "picFoto";
             this.picFoto.Size = new System.Drawing.Size(260, 200);
             this.picFoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;

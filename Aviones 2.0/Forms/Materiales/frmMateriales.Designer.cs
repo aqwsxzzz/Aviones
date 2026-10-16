@@ -383,8 +383,8 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // picFoto
             //
-            this.picFoto.BackColor = System.Drawing.Color.White;
-            this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picFoto.BackColor = System.Drawing.Color.Transparent;
+            this.picFoto.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.picFoto.Cursor = System.Windows.Forms.Cursors.Hand;
             this.picFoto.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.picFoto.Name = "picFoto";
