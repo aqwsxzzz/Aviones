@@ -48,14 +48,23 @@ namespace Aviones_2._0.UnitTests.Data
         [TestMethod]
         public void BaseAnteriorALasMigraciones_SeMarcaConElEsquemaInicial()
         {
+            // Una base de antes: sólo el esquema inicial, sin tabla de migraciones
+            BorrarTodo();
             using (var cn = Db.Abrir())
             {
-                new SqlCommand("DROP TABLE dbo.Migraciones", cn).ExecuteNonQuery();
+                foreach (string lote in Migrador.Lotes(Migrador.Todas().First().Script))
+                {
+                    new SqlCommand(lote, cn).ExecuteNonQuery();
+                }
             }
 
-            Migrador.Actualizar(Db.ConnectionString);
+            var resultado = Migrador.Actualizar(Db.ConnectionString);
 
             Assert.AreEqual(1, Contar("SELECT COUNT(*) FROM dbo.Migraciones WHERE Numero = 1"));
+            Assert.AreEqual(Migrador.Todas().Count, Contar("SELECT COUNT(*) FROM dbo.Migraciones"));
+            CollectionAssert.DoesNotContain(resultado.Aplicadas.Select(m => m.Numero).ToList(), 1);
+            // Ya tenía datos (el esquema inicial): antes de cambiarla se hizo una copia
+            Assert.IsNotNull(resultado.Copia);
         }
 
         [TestMethod]

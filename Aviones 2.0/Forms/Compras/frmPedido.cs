@@ -16,6 +16,9 @@ namespace Aviones_2._0.Forms.Compras
         private readonly CompraRepositorio compras = new CompraRepositorio();
         private readonly int idMaterial;
         private readonly PedidoCompra pedido;
+        /// <summary>Costo estimado del resto de la lista de compras (sin este pedido).</summary>
+        private decimal totalOtros;
+        private bool otrosSinPrecio;
 
         /// <summary>Pedido nuevo para un material.</summary>
         public frmPedido(int idMaterial) : this(idMaterial, null) { }
@@ -41,6 +44,14 @@ namespace Aviones_2._0.Forms.Compras
                         ?? throw new ReglaNegocioException("El material ya no existe.");
                 decimal minimo = m.StockMinimo ?? new ConfiguracionRepositorio().ObtenerStockMinimoGeneral();
                 var otros = compras.ListarPendientesDe(idMaterial).Where(p => p.IdPedido != pedido?.IdPedido).ToList();
+
+                decimal? ultimo = compras.UltimoPrecio(idMaterial);
+                var resto = compras.ListarPendientes().Where(p => p.IdPedido != pedido?.IdPedido).ToList();
+                totalOtros = resto.Sum(p => p.CostoEstimado ?? 0m);
+                otrosSinPrecio = resto.Any(p => !p.Precio.HasValue);
+                labUltimoPrecio.Text = ultimo.HasValue ? $"por unidad (última compra: $ {Numeros.Dinero(ultimo.Value)})" : "por unidad (nunca se compró)";
+                decimal? precio = pedido?.PrecioEstimado ?? ultimo;
+                txtPrecio.Text = precio.HasValue ? Numeros.Dinero(precio.Value) : "";
 
                 labMaterial.Text = $"{m.Familia}: {m.Descripcion}" + (string.IsNullOrEmpty(m.Codigo) ? "" : $" ({m.Codigo})");
                 labUnidad.Text = m.TipoUnidad;
@@ -75,6 +86,7 @@ namespace Aviones_2._0.Forms.Compras
                 DialogResult = DialogResult.Cancel;
                 return;
             }
+            MostrarTotales();
             ActiveControl = txtCantidad;
             txtCantidad.SelectAll();
         }
@@ -88,15 +100,35 @@ namespace Aviones_2._0.Forms.Compras
                 return;
             }
 
+            if (!Numeros.TryLeerOpcional(txtPrecio.Text, out decimal? precio) || precio < 0)
+            {
+                Mensajes.Aviso(this, "El precio estimado tiene que ser un número (o vacío).");
+                txtPrecio.Focus();
+                return;
+            }
+
             bool guardado = Mensajes.Intentar(this, () =>
             {
-                if (pedido == null) compras.CrearPedido(idMaterial, cantidad, txtNota.Text);
-                else compras.ModificarPedido(pedido.IdPedido, cantidad, txtNota.Text);
+                if (pedido == null) compras.CrearPedido(idMaterial, cantidad, txtNota.Text, precio);
+                else compras.ModificarPedido(pedido.IdPedido, cantidad, txtNota.Text, precio);
             });
             if (guardado)
             {
                 DialogResult = DialogResult.OK;
             }
+        }
+
+        private void Importe_TextChanged(object sender, EventArgs e) => MostrarTotales();
+
+        /// <summary>Lo que cuesta este pedido y cómo queda el total de la lista, mientras se escribe.</summary>
+        private void MostrarTotales()
+        {
+            bool hayCantidad = Numeros.TryLeer(txtCantidad.Text, out decimal cantidad) && cantidad > 0;
+            bool hayPrecio = Numeros.TryLeer(txtPrecio.Text, out decimal precio) && precio >= 0;
+            decimal este = hayCantidad && hayPrecio ? cantidad * precio : 0m;
+            labTotales.Text = (hayPrecio ? $"Este pedido: $ {Numeros.Dinero(este)}" : "Este pedido: sin precio")
+                + $"   ·   Total de la lista: $ {Numeros.Dinero(totalOtros + este)}"
+                + (otrosSinPrecio ? " (algunos sin precio)" : "");
         }
     }
 }

@@ -220,11 +220,11 @@ namespace Aviones_2._0.Forms.Compras
             //
             // colPedPrecio
             //
-            this.colPedPrecio.DataPropertyName = "UltimoPrecio";
+            this.colPedPrecio.DataPropertyName = "Precio";
             this.colPedPrecio.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colPedPrecio.DefaultCellStyle.Format = "N2";
             this.colPedPrecio.FillWeight = 60F;
-            this.colPedPrecio.HeaderText = "Últ. precio";
+            this.colPedPrecio.HeaderText = "Precio est.";
             this.colPedPrecio.MinimumWidth = 70;
             this.colPedPrecio.Name = "colPedPrecio";
             //

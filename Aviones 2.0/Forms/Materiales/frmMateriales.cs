@@ -32,7 +32,7 @@ namespace Aviones_2._0.Forms.Materiales
             Estilo.Grilla(dgvMateriales);
             Estilo.Grilla(dgvLotes);
             Estilo.Grilla(dgvUsos);
-            Estilo.Botones(botNuevo, botModificar, botEliminar, botComprar, botFamilias, botTipos, botInforme, botImprimir,
+            Estilo.Botones(botNuevo, botModificar, botEliminar, botComprar, botInforme, botImprimir,
                 botAgregarLote, botModificarLote, botEliminarLote);
             Estilo.BotonSecundario(botSalir);
             dgvLotes.SelectionChanged += (s, e) => ActualizarBotonesLote();
@@ -41,7 +41,7 @@ namespace Aviones_2._0.Forms.Materiales
 
         private void frmMateriales_Load(object sender, EventArgs e)
         {
-            splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.62));
+            splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.72));
             Mensajes.Intentar(this, () =>
             {
                 CargarFamilias();
@@ -297,11 +297,20 @@ namespace Aviones_2._0.Forms.Materiales
             int? familia = cboFamilia.SelectedValue is int id && id > 0 ? id : (int?)null;
             using (var editor = new frmMaterialEditor(null, familia))
             {
-                if (editor.ShowDialog(this) == DialogResult.OK)
+                bool guardado = editor.ShowDialog(this) == DialogResult.OK;
+                Mensajes.Intentar(this, () =>
                 {
-                    LimpiarFiltros();
-                    Mensajes.Intentar(this, () => CargarMateriales(editor.IdMaterial));
-                }
+                    CargarFamilias();
+                    if (guardado)
+                    {
+                        LimpiarFiltros();
+                        CargarMateriales(editor.IdMaterial);
+                    }
+                    else
+                    {
+                        CargarMateriales();
+                    }
+                });
             }
         }
 
@@ -314,10 +323,12 @@ namespace Aviones_2._0.Forms.Materiales
             }
             using (var editor = new frmMaterialEditor(m.IdMaterial, null))
             {
-                if (editor.ShowDialog(this) == DialogResult.OK)
+                editor.ShowDialog(this);
+                Mensajes.Intentar(this, () =>
                 {
-                    Mensajes.Intentar(this, () => CargarMateriales(m.IdMaterial));
-                }
+                    CargarFamilias();
+                    CargarMateriales(m.IdMaterial);
+                });
             }
         }
 
@@ -433,37 +444,7 @@ namespace Aviones_2._0.Forms.Materiales
 
         #endregion
 
-        #region Familias, unidades, informe, impresión
-
-        private void botFamilias_Click(object sender, EventArgs e)
-        {
-            using (var editor = new frmListaEditable("Familias",
-                () => familias.Listar().Select(f => new ItemLista(f.IdFamilia, f.Nombre)),
-                nombre => familias.Crear(nombre),
-                (id, nombre) => familias.Renombrar(id, nombre),
-                id => familias.Eliminar(id)))
-            {
-                editor.ShowDialog(this);
-            }
-            Mensajes.Intentar(this, () =>
-            {
-                CargarFamilias();
-                CargarMateriales();
-            });
-        }
-
-        private void botTipos_Click(object sender, EventArgs e)
-        {
-            using (var editor = new frmListaEditable("Unidades de medida",
-                () => tipos.Listar().Select(t => new ItemLista(t.IdTipoUnidad, t.Nombre)),
-                nombre => tipos.Crear(nombre),
-                (id, nombre) => tipos.Renombrar(id, nombre),
-                id => tipos.Eliminar(id)))
-            {
-                editor.ShowDialog(this);
-            }
-            Mensajes.Intentar(this, () => CargarMateriales());
-        }
+        #region Informe e impresión
 
         private void botInforme_Click(object sender, EventArgs e)
         {

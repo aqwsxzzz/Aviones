@@ -21,6 +21,8 @@ namespace Aviones_2._0
         private Componentes componentesGenericosPrin;
         /// <summary>Foto de fondo elegida en esta computadora; null: fondo liso.</summary>
         private Image fondo;
+        /// <summary>Color del borde de la foto: rellena lo que la foto no cubre.</summary>
+        private Color colorBorde;
         private static string ArchivoFondo => Path.Combine(Path.GetDirectoryName(Instalacion.Rutas.Datos), "fondo.jpg");
 
         public PantallaPrincipal()
@@ -97,6 +99,7 @@ namespace Aviones_2._0
                 if (File.Exists(ArchivoFondo))
                 {
                     fondo = Imagenes.DesdeBytes(File.ReadAllBytes(ArchivoFondo));
+                    colorBorde = fondo is Bitmap foto ? ColorDelBorde(foto) : Color.SteelBlue;
                 }
             }
             catch (IOException) { }
@@ -133,7 +136,10 @@ namespace Aviones_2._0
             }
         }
 
-        /// <summary>La foto cubre toda la pantalla sin deformarse (se recorta lo que sobra); sin foto, un degradé.</summary>
+        /// <summary>
+        /// La foto entera, lo más grande que entre sin deformarse ni recortarse; lo que sobra a los costados
+        /// se pinta con el color del borde de la foto. Sin foto, un degradé.
+        /// </summary>
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             var area = pictureBox1.ClientRectangle;
@@ -145,10 +151,37 @@ namespace Aviones_2._0
                 }
                 return;
             }
-            float escala = Math.Max((float)area.Width / fondo.Width, (float)area.Height / fondo.Height);
+            using (var relleno = new SolidBrush(colorBorde))
+            {
+                e.Graphics.FillRectangle(relleno, area);
+            }
+            float escala = Math.Min((float)area.Width / fondo.Width, (float)area.Height / fondo.Height);
             float ancho = fondo.Width * escala, alto = fondo.Height * escala;
             e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
             e.Graphics.DrawImage(fondo, (area.Width - ancho) / 2, (area.Height - alto) / 2, ancho, alto);
+        }
+
+        /// <summary>Promedio de los píxeles del contorno de la foto.</summary>
+        private static Color ColorDelBorde(Bitmap foto)
+        {
+            long r = 0, g = 0, b = 0, n = 0;
+            int pasoX = Math.Max(1, foto.Width / 50), pasoY = Math.Max(1, foto.Height / 50);
+            void Sumar(int x, int y)
+            {
+                var c = foto.GetPixel(x, y);
+                r += c.R; g += c.G; b += c.B; n++;
+            }
+            for (int x = 0; x < foto.Width; x += pasoX)
+            {
+                Sumar(x, 0);
+                Sumar(x, foto.Height - 1);
+            }
+            for (int y = 0; y < foto.Height; y += pasoY)
+            {
+                Sumar(0, y);
+                Sumar(foto.Width - 1, y);
+            }
+            return Color.FromArgb((int)(r / n), (int)(g / n), (int)(b / n));
         }
 
         #endregion

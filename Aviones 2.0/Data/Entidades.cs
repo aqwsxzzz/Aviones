@@ -155,7 +155,12 @@ namespace Aviones_2._0.Data
         /// <summary>Precio del último lote ingresado, como referencia.</summary>
         public decimal? UltimoPrecio { get; set; }
 
-        public decimal? CostoEstimado => UltimoPrecio * Cantidad;
+        /// <summary>Precio que se espera pagar; sin dato, el último precio.</summary>
+        public decimal? PrecioEstimado { get; set; }
+
+        public decimal? Precio => PrecioEstimado ?? UltimoPrecio;
+
+        public decimal? CostoEstimado => Precio * Cantidad;
 
         public string Material => string.Join(" ", new[] { Grupo, Caracteristica, Color, Medidas }
             .Where(t => !string.IsNullOrWhiteSpace(t)));

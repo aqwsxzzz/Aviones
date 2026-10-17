@@ -437,7 +437,7 @@ namespace Aviones_2._0.Forms.Modelos
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.SeaShell;
+            this.BackColor = System.Drawing.Color.Bisque;
             this.ClientSize = new System.Drawing.Size(1264, 761);
             this.Controls.Add(this.tlpPrincipal);
             this.Font = new System.Drawing.Font("Arial", 10F);

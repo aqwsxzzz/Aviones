@@ -24,6 +24,11 @@ namespace Aviones_2._0.Forms.Compras
             this.flpCantidad = new System.Windows.Forms.FlowLayoutPanel();
             this.txtCantidad = new System.Windows.Forms.TextBox();
             this.labUnidad = new System.Windows.Forms.Label();
+            this.labPrecio = new System.Windows.Forms.Label();
+            this.flpPrecio = new System.Windows.Forms.FlowLayoutPanel();
+            this.txtPrecio = new System.Windows.Forms.TextBox();
+            this.labUltimoPrecio = new System.Windows.Forms.Label();
+            this.labTotales = new System.Windows.Forms.Label();
             this.labNota = new System.Windows.Forms.Label();
             this.txtNota = new System.Windows.Forms.TextBox();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
@@ -31,6 +36,7 @@ namespace Aviones_2._0.Forms.Compras
             this.botGuardar = new System.Windows.Forms.Button();
             this.tlpPrincipal.SuspendLayout();
             this.flpCantidad.SuspendLayout();
+            this.flpPrecio.SuspendLayout();
             this.flpBotones.SuspendLayout();
             this.SuspendLayout();
             //
@@ -44,13 +50,18 @@ namespace Aviones_2._0.Forms.Compras
             this.tlpPrincipal.Controls.Add(this.labStock, 0, 1);
             this.tlpPrincipal.Controls.Add(this.labCantidad, 0, 2);
             this.tlpPrincipal.Controls.Add(this.flpCantidad, 1, 2);
-            this.tlpPrincipal.Controls.Add(this.labNota, 0, 3);
-            this.tlpPrincipal.Controls.Add(this.txtNota, 1, 3);
-            this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 4);
+            this.tlpPrincipal.Controls.Add(this.labPrecio, 0, 3);
+            this.tlpPrincipal.Controls.Add(this.flpPrecio, 1, 3);
+            this.tlpPrincipal.Controls.Add(this.labNota, 0, 4);
+            this.tlpPrincipal.Controls.Add(this.txtNota, 1, 4);
+            this.tlpPrincipal.Controls.Add(this.labTotales, 0, 5);
+            this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 6);
             this.tlpPrincipal.Location = new System.Drawing.Point(0, 0);
             this.tlpPrincipal.Name = "tlpPrincipal";
             this.tlpPrincipal.Padding = new System.Windows.Forms.Padding(16);
-            this.tlpPrincipal.RowCount = 5;
+            this.tlpPrincipal.RowCount = 7;
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
@@ -58,6 +69,7 @@ namespace Aviones_2._0.Forms.Compras
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpPrincipal.SetColumnSpan(this.labMaterial, 2);
             this.tlpPrincipal.SetColumnSpan(this.labStock, 2);
+            this.tlpPrincipal.SetColumnSpan(this.labTotales, 2);
             this.tlpPrincipal.SetColumnSpan(this.flpBotones, 2);
             this.tlpPrincipal.TabIndex = 0;
             //
@@ -102,6 +114,7 @@ namespace Aviones_2._0.Forms.Compras
             this.txtCantidad.Size = new System.Drawing.Size(110, 26);
             this.txtCantidad.TabIndex = 0;
             this.txtCantidad.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtCantidad.TextChanged += new System.EventHandler(this.Importe_TextChanged);
             //
             // labUnidad
             //
@@ -109,6 +122,47 @@ namespace Aviones_2._0.Forms.Compras
             this.labUnidad.AutoSize = true;
             this.labUnidad.Name = "labUnidad";
             this.labUnidad.Text = "Unidades";
+            //
+            // labPrecio
+            //
+            this.labPrecio.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labPrecio.AutoSize = true;
+            this.labPrecio.Name = "labPrecio";
+            this.labPrecio.Text = "Precio estimado";
+            //
+            // flpPrecio
+            //
+            this.flpPrecio.AutoSize = true;
+            this.flpPrecio.Controls.Add(this.txtPrecio);
+            this.flpPrecio.Controls.Add(this.labUltimoPrecio);
+            this.flpPrecio.Margin = new System.Windows.Forms.Padding(0);
+            this.flpPrecio.Name = "flpPrecio";
+            this.flpPrecio.TabIndex = 1;
+            //
+            // txtPrecio
+            //
+            this.txtPrecio.Name = "txtPrecio";
+            this.txtPrecio.Size = new System.Drawing.Size(110, 23);
+            this.txtPrecio.TabIndex = 0;
+            this.txtPrecio.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.txtPrecio.TextChanged += new System.EventHandler(this.Importe_TextChanged);
+            //
+            // labUltimoPrecio
+            //
+            this.labUltimoPrecio.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labUltimoPrecio.AutoSize = true;
+            this.labUltimoPrecio.ForeColor = System.Drawing.Color.DarkSlateGray;
+            this.labUltimoPrecio.Name = "labUltimoPrecio";
+            this.labUltimoPrecio.Text = "por unidad";
+            //
+            // labTotales
+            //
+            this.labTotales.AutoSize = true;
+            this.labTotales.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
+            this.labTotales.Margin = new System.Windows.Forms.Padding(3, 10, 3, 4);
+            this.labTotales.MaximumSize = new System.Drawing.Size(490, 0);
+            this.labTotales.Name = "labTotales";
+            this.labTotales.Text = "";
             //
             // labNota
             //
@@ -122,7 +176,7 @@ namespace Aviones_2._0.Forms.Compras
             this.txtNota.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtNota.MaxLength = 200;
             this.txtNota.Name = "txtNota";
-            this.txtNota.TabIndex = 1;
+            this.txtNota.TabIndex = 2;
             //
             // flpBotones
             //
@@ -175,6 +229,8 @@ namespace Aviones_2._0.Forms.Compras
             this.tlpPrincipal.PerformLayout();
             this.flpCantidad.ResumeLayout(false);
             this.flpCantidad.PerformLayout();
+            this.flpPrecio.ResumeLayout(false);
+            this.flpPrecio.PerformLayout();
             this.flpBotones.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -190,6 +246,11 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.FlowLayoutPanel flpCantidad;
         private System.Windows.Forms.TextBox txtCantidad;
         private System.Windows.Forms.Label labUnidad;
+        private System.Windows.Forms.Label labPrecio;
+        private System.Windows.Forms.FlowLayoutPanel flpPrecio;
+        private System.Windows.Forms.TextBox txtPrecio;
+        private System.Windows.Forms.Label labUltimoPrecio;
+        private System.Windows.Forms.Label labTotales;
         private System.Windows.Forms.Label labNota;
         private System.Windows.Forms.TextBox txtNota;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;

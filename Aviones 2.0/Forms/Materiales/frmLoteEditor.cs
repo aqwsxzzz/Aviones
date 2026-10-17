@@ -53,9 +53,9 @@ namespace Aviones_2._0.Forms.Materiales
                 labCantidad.Text = "Recibido *";
                 dtpFecha.Value = DateTime.Today;
                 txtCantidad.Text = Numeros.Cantidad(pedido.Cantidad);
-                if (pedido.UltimoPrecio.HasValue)
+                if (pedido.Precio.HasValue)
                 {
-                    txtValor.Text = Numeros.Dinero(pedido.UltimoPrecio.Value);
+                    txtValor.Text = Numeros.Dinero(pedido.Precio.Value);
                 }
                 // Lo más probable es que venga del mismo lugar que la última vez
                 Mensajes.Intentar(this, () =>

@@ -92,6 +92,22 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Pedidos_PrecioEstimadoReemplazaAlUltimo()
+        {
+            int servo = CrearMaterial("Servo", 2m, precio: 3.5m);
+            int conPrecio = compras.CrearPedido(servo, 10m, null, precioEstimado: 4m);
+            int sinPrecio = compras.CrearPedido(servo, 2m, null);
+
+            Assert.AreEqual(40m, compras.Obtener(conPrecio).CostoEstimado);
+            Assert.AreEqual(7m, compras.Obtener(sinPrecio).CostoEstimado);
+            Assert.AreEqual(3.5m, compras.UltimoPrecio(servo));
+
+            compras.ModificarPedido(conPrecio, 10m, null, precioEstimado: null);
+            Assert.AreEqual(35m, compras.Obtener(conPrecio).CostoEstimado);
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.ModificarPedido(conPrecio, 10m, null, -1m));
+        }
+
+        [TestMethod]
         public void Pedidos_CantidadTieneQueSerPositiva()
         {
             int servo = CrearMaterial("Servo", 2m);

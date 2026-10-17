@@ -72,8 +72,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.botModificar = new System.Windows.Forms.Button();
             this.botEliminar = new System.Windows.Forms.Button();
             this.botComprar = new System.Windows.Forms.Button();
-            this.botFamilias = new System.Windows.Forms.Button();
-            this.botTipos = new System.Windows.Forms.Button();
             this.botInforme = new System.Windows.Forms.Button();
             this.botImprimir = new System.Windows.Forms.Button();
             this.botSalir = new System.Windows.Forms.Button();
@@ -289,7 +287,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispNuevo.DefaultCellStyle.Format = "0.###";
             this.colDispNuevo.FillWeight = 55F;
             this.colDispNuevo.HeaderText = "Nuevo";
-            this.colDispNuevo.MinimumWidth = 55;
+            this.colDispNuevo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colDispNuevo.MinimumWidth = 40;
+            this.colDispNuevo.Width = 56;
             this.colDispNuevo.Name = "colDispNuevo";
             //
             // colDispUsado
@@ -299,7 +299,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispUsado.DefaultCellStyle.Format = "0.###";
             this.colDispUsado.FillWeight = 55F;
             this.colDispUsado.HeaderText = "Usado";
-            this.colDispUsado.MinimumWidth = 55;
+            this.colDispUsado.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colDispUsado.MinimumWidth = 40;
+            this.colDispUsado.Width = 56;
             this.colDispUsado.Name = "colDispUsado";
             //
             // colUnidad
@@ -317,7 +319,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colCantidad.DefaultCellStyle.Format = "0.###";
             this.colCantidad.FillWeight = 55F;
             this.colCantidad.HeaderText = "Cant.";
-            this.colCantidad.MinimumWidth = 55;
+            this.colCantidad.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colCantidad.MinimumWidth = 40;
+            this.colCantidad.Width = 56;
             this.colCantidad.Name = "colCantidad";
             //
             // colDisponible
@@ -326,8 +330,11 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDisponible.DefaultCellStyle.Format = "0.###";
             this.colDisponible.FillWeight = 65F;
-            this.colDisponible.HeaderText = "Disponible total";
-            this.colDisponible.MinimumWidth = 80;
+            this.colDisponible.HeaderText = "Disp.";
+            this.colDisponible.ToolTipText = "Disponible total (nuevo + usado)";
+            this.colDisponible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colDisponible.MinimumWidth = 40;
+            this.colDisponible.Width = 56;
             this.colDisponible.Name = "colDisponible";
             //
             // colValorDisponible
@@ -347,7 +354,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colAComprar.DefaultCellStyle.Format = "0.###";
             this.colAComprar.FillWeight = 60F;
             this.colAComprar.HeaderText = "Pedido";
-            this.colAComprar.MinimumWidth = 80;
+            this.colAComprar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colAComprar.MinimumWidth = 40;
+            this.colAComprar.Width = 56;
             this.colAComprar.Name = "colAComprar";
             //
             // colLotes
@@ -356,7 +365,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLotes.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colLotes.FillWeight = 40F;
             this.colLotes.HeaderText = "Lotes";
-            this.colLotes.MinimumWidth = 50;
+            this.colLotes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colLotes.MinimumWidth = 40;
+            this.colLotes.Width = 56;
             this.colLotes.Name = "colLotes";
             //
             // tlpDetalle
@@ -439,7 +450,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteCantidad.DefaultCellStyle.Format = "0.###";
             this.colLoteCantidad.FillWeight = 60F;
             this.colLoteCantidad.HeaderText = "Cant.";
-            this.colLoteCantidad.MinimumWidth = 50;
+            this.colLoteCantidad.MinimumWidth = 36;
+            this.colLoteCantidad.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colLoteCantidad.Width = 46;
             this.colLoteCantidad.Name = "colLoteCantidad";
             //
             // colLoteCompra
@@ -457,7 +470,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteNuevo.DefaultCellStyle.Format = "0.###";
             this.colLoteNuevo.FillWeight = 50F;
             this.colLoteNuevo.HeaderText = "Nuevo";
-            this.colLoteNuevo.MinimumWidth = 50;
+            this.colLoteNuevo.MinimumWidth = 36;
+            this.colLoteNuevo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colLoteNuevo.Width = 46;
             this.colLoteNuevo.Name = "colLoteNuevo";
             //
             // colLoteUsado
@@ -467,7 +482,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteUsado.DefaultCellStyle.Format = "0.###";
             this.colLoteUsado.FillWeight = 50F;
             this.colLoteUsado.HeaderText = "Usado";
-            this.colLoteUsado.MinimumWidth = 50;
+            this.colLoteUsado.MinimumWidth = 36;
+            this.colLoteUsado.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colLoteUsado.Width = 46;
             this.colLoteUsado.Name = "colLoteUsado";
             //
             // colLoteValor
@@ -486,7 +503,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colLoteFecha.DefaultCellStyle.Format = "dd/MM/yyyy";
             this.colLoteFecha.FillWeight = 75F;
             this.colLoteFecha.HeaderText = "Ingreso";
-            this.colLoteFecha.MinimumWidth = 75;
+            this.colLoteFecha.MinimumWidth = 84;
             this.colLoteFecha.Name = "colLoteFecha";
             //
             // flpBotonesLote
@@ -588,8 +605,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpBotones.Controls.Add(this.botModificar);
             this.flpBotones.Controls.Add(this.botEliminar);
             this.flpBotones.Controls.Add(this.botComprar);
-            this.flpBotones.Controls.Add(this.botFamilias);
-            this.flpBotones.Controls.Add(this.botTipos);
             this.flpBotones.Controls.Add(this.botInforme);
             this.flpBotones.Controls.Add(this.botImprimir);
             this.flpBotones.Controls.Add(this.botSalir);
@@ -631,24 +646,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.botComprar.TabIndex = 3;
             this.botComprar.Text = "COMPRAR";
             this.botComprar.Click += new System.EventHandler(this.botComprar_Click);
-            //
-            // botFamilias
-            //
-            this.botFamilias.Margin = new System.Windows.Forms.Padding(24, 6, 6, 6);
-            this.botFamilias.Name = "botFamilias";
-            this.botFamilias.Size = new System.Drawing.Size(132, 44);
-            this.botFamilias.TabIndex = 3;
-            this.botFamilias.Text = "FAMILIAS";
-            this.botFamilias.Click += new System.EventHandler(this.botFamilias_Click);
-            //
-            // botTipos
-            //
-            this.botTipos.Margin = new System.Windows.Forms.Padding(6);
-            this.botTipos.Name = "botTipos";
-            this.botTipos.Size = new System.Drawing.Size(132, 44);
-            this.botTipos.TabIndex = 4;
-            this.botTipos.Text = "UNIDADES";
-            this.botTipos.Click += new System.EventHandler(this.botTipos_Click);
             //
             // botInforme
             //
@@ -774,8 +771,6 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.Button botModificar;
         private System.Windows.Forms.Button botEliminar;
         private System.Windows.Forms.Button botComprar;
-        private System.Windows.Forms.Button botFamilias;
-        private System.Windows.Forms.Button botTipos;
         private System.Windows.Forms.Button botInforme;
         private System.Windows.Forms.Button botImprimir;
         private System.Windows.Forms.Button botSalir;

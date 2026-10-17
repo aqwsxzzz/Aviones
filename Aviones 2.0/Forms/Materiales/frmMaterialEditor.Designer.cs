@@ -19,7 +19,9 @@ namespace Aviones_2._0.Forms.Materiales
         {
             this.tlpPrincipal = new System.Windows.Forms.TableLayoutPanel();
             this.labFamilia = new System.Windows.Forms.Label();
+            this.flpFamilia = new System.Windows.Forms.FlowLayoutPanel();
             this.cboFamilia = new System.Windows.Forms.ComboBox();
+            this.botFamilias = new System.Windows.Forms.Button();
             this.labGrupo = new System.Windows.Forms.Label();
             this.txtGrupo = new System.Windows.Forms.TextBox();
             this.labCaracteristica = new System.Windows.Forms.Label();
@@ -61,6 +63,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.botGuardar = new System.Windows.Forms.Button();
             this.tlpPrincipal.SuspendLayout();
             this.flpEstado.SuspendLayout();
+            this.flpFamilia.SuspendLayout();
             this.flpUnidad.SuspendLayout();
             this.flpImagen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picImagen)).BeginInit();
@@ -76,7 +79,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 440F));
             this.tlpPrincipal.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 240F));
             this.tlpPrincipal.Controls.Add(this.labFamilia, 0, 0);
-            this.tlpPrincipal.Controls.Add(this.cboFamilia, 1, 0);
+            this.tlpPrincipal.Controls.Add(this.flpFamilia, 1, 0);
             this.tlpPrincipal.Controls.Add(this.flpImagen, 2, 0);
             this.tlpPrincipal.Controls.Add(this.labGrupo, 0, 1);
             this.tlpPrincipal.Controls.Add(this.txtGrupo, 1, 1);
@@ -123,12 +126,30 @@ namespace Aviones_2._0.Forms.Materiales
             this.labFamilia.Name = "labFamilia";
             this.labFamilia.Text = "Familia *";
             //
+            // flpFamilia
+            //
+            this.flpFamilia.AutoSize = true;
+            this.flpFamilia.Controls.Add(this.cboFamilia);
+            this.flpFamilia.Controls.Add(this.botFamilias);
+            this.flpFamilia.Margin = new System.Windows.Forms.Padding(0);
+            this.flpFamilia.Name = "flpFamilia";
+            this.flpFamilia.TabIndex = 0;
+            //
             // cboFamilia
             //
-            this.cboFamilia.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboFamilia.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboFamilia.Name = "cboFamilia";
+            this.cboFamilia.Size = new System.Drawing.Size(280, 24);
             this.cboFamilia.TabIndex = 0;
+            //
+            // botFamilias
+            //
+            this.botFamilias.AutoSize = true;
+            this.botFamilias.Name = "botFamilias";
+            this.botFamilias.TabIndex = 1;
+            this.botFamilias.TabStop = false;
+            this.botFamilias.Text = "Editar familias…";
+            this.botFamilias.Click += new System.EventHandler(this.botFamilias_Click);
             //
             // labGrupo
             //
@@ -487,6 +508,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.PerformLayout();
             this.flpEstado.ResumeLayout(false);
             this.flpEstado.PerformLayout();
+            this.flpFamilia.ResumeLayout(false);
+            this.flpFamilia.PerformLayout();
             this.flpUnidad.ResumeLayout(false);
             this.flpUnidad.PerformLayout();
             this.flpImagen.ResumeLayout(false);
@@ -504,7 +527,9 @@ namespace Aviones_2._0.Forms.Materiales
 
         private System.Windows.Forms.TableLayoutPanel tlpPrincipal;
         private System.Windows.Forms.Label labFamilia;
+        private System.Windows.Forms.FlowLayoutPanel flpFamilia;
         private System.Windows.Forms.ComboBox cboFamilia;
+        private System.Windows.Forms.Button botFamilias;
         private System.Windows.Forms.Label labGrupo;
         private System.Windows.Forms.TextBox txtGrupo;
         private System.Windows.Forms.Label labCaracteristica;

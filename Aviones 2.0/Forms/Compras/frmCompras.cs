@@ -61,7 +61,7 @@ namespace Aviones_2._0.Forms.Compras
             labTotalPedidos.Text = pedidos.Count == 0
                 ? "No hay nada pendiente de comprar."
                 : $"{pedidos.Count} pedidos   ·   Costo estimado: $ {Numeros.Dinero(total)}"
-                  + (pedidos.Any(p => !p.UltimoPrecio.HasValue) ? " (algunos sin precio)" : "");
+                  + (pedidos.Any(p => !p.Precio.HasValue) ? " (algunos sin precio)" : "");
             ActualizarBotones();
         }
 

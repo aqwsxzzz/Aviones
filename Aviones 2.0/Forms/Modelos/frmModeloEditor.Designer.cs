@@ -377,7 +377,7 @@ namespace Aviones_2._0.Forms.Modelos
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.SeaShell;
+            this.BackColor = System.Drawing.Color.Bisque;
             this.CancelButton = this.botCancelar;
             this.ClientSize = new System.Drawing.Size(1150, 760);
             this.Controls.Add(this.tlpPrincipal);

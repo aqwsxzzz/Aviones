@@ -10,7 +10,7 @@ namespace Aviones_2._0.Data.Repositorios
         private const string SelectPedido = @"
             SELECT P.IdPedido, P.IdMaterial, F.Nombre AS Familia, M.Grupo, M.Caracteristica, M.Color, M.Medidas, M.Codigo,
                    T.Nombre AS TipoUnidad, P.Cantidad, P.FechaPedido, P.Nota, P.Estado,
-                   P.FechaCierre, P.CantidadRecibida, P.IdLote,
+                   P.FechaCierre, P.CantidadRecibida, P.IdLote, P.PrecioEstimado,
                    S.Disponible,
                    (SELECT TOP 1 L.ValorUnitario FROM dbo.Lotes L
                      WHERE L.IdMaterial = P.IdMaterial ORDER BY L.FechaIngreso DESC, L.IdLote DESC) AS UltimoPrecio
@@ -63,27 +63,39 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        public int CrearPedido(int idMaterial, decimal cantidad, string nota)
+        /// <summary>Último precio pagado por el material (del lote más reciente); null si nunca se compró.</summary>
+        public decimal? UltimoPrecio(int idMaterial)
         {
-            Validar(cantidad);
+            using (var cn = Db.Abrir())
+            {
+                return cn.ExecuteScalar<decimal?>(
+                    "SELECT TOP 1 ValorUnitario FROM dbo.Lotes WHERE IdMaterial = @idMaterial ORDER BY FechaIngreso DESC, IdLote DESC",
+                    new { idMaterial });
+            }
+        }
+
+        /// <param name="precioEstimado">Precio por unidad que se espera pagar; null para usar el último precio.</param>
+        public int CrearPedido(int idMaterial, decimal cantidad, string nota, decimal? precioEstimado = null)
+        {
+            Validar(cantidad, precioEstimado);
             using (var cn = Db.Abrir())
             {
                 return cn.ExecuteScalar<int>(@"
-                    INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, Nota) VALUES (@idMaterial, @cantidad, @nota);
+                    INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, Nota, PrecioEstimado) VALUES (@idMaterial, @cantidad, @nota, @precioEstimado);
                     SELECT CAST(SCOPE_IDENTITY() AS int);",
-                    new { idMaterial, cantidad, nota = Limpiar(nota) });
+                    new { idMaterial, cantidad, nota = Limpiar(nota), precioEstimado });
             }
         }
 
         /// <summary>Corrige un pedido pendiente.</summary>
-        public void ModificarPedido(int idPedido, decimal cantidad, string nota)
+        public void ModificarPedido(int idPedido, decimal cantidad, string nota, decimal? precioEstimado = null)
         {
-            Validar(cantidad);
+            Validar(cantidad, precioEstimado);
             using (var cn = Db.Abrir())
             {
                 int filas = cn.Execute(
-                    "UPDATE dbo.PedidosCompra SET Cantidad = @cantidad, Nota = @nota WHERE IdPedido = @idPedido AND Estado = 'P'",
-                    new { idPedido, cantidad, nota = Limpiar(nota) });
+                    "UPDATE dbo.PedidosCompra SET Cantidad = @cantidad, Nota = @nota, PrecioEstimado = @precioEstimado WHERE IdPedido = @idPedido AND Estado = 'P'",
+                    new { idPedido, cantidad, nota = Limpiar(nota), precioEstimado });
                 if (filas == 0)
                 {
                     throw new ReglaNegocioException("El pedido ya no está pendiente.");
@@ -146,11 +158,15 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        private static void Validar(decimal cantidad)
+        private static void Validar(decimal cantidad, decimal? precioEstimado = null)
         {
             if (cantidad <= 0)
             {
                 throw new ReglaNegocioException("La cantidad a comprar tiene que ser mayor que cero.");
+            }
+            if (precioEstimado < 0)
+            {
+                throw new ReglaNegocioException("El precio estimado no puede ser negativo.");
             }
         }
 

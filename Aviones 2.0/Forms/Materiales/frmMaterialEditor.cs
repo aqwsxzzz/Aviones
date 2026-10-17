@@ -17,6 +17,7 @@ namespace Aviones_2._0.Forms.Materiales
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private readonly LoteRepositorio lotes = new LoteRepositorio();
         private readonly TipoUnidadRepositorio tipos = new TipoUnidadRepositorio();
+        private readonly FamiliaRepositorio familias = new FamiliaRepositorio();
 
         private readonly int? idMaterial;
         private readonly int? idFamiliaSugerida;
@@ -46,9 +47,7 @@ namespace Aviones_2._0.Forms.Materiales
         {
             bool ok = Mensajes.Intentar(this, () =>
             {
-                cboFamilia.DisplayMember = nameof(Familia.Nombre);
-                cboFamilia.ValueMember = nameof(Familia.IdFamilia);
-                cboFamilia.DataSource = new FamiliaRepositorio().Listar();
+                CargarFamilias(null);
                 CargarUnidades(null);
 
                 txtGrupo.AutoCompleteCustomSource.AddRange(materiales.ListarGrupos().ToArray());
@@ -102,6 +101,31 @@ namespace Aviones_2._0.Forms.Materiales
             if (seleccionar.HasValue)
             {
                 cboUnidad.SelectedValue = seleccionar.Value;
+            }
+        }
+
+        private void CargarFamilias(int? seleccionar)
+        {
+            cboFamilia.DisplayMember = nameof(Familia.Nombre);
+            cboFamilia.ValueMember = nameof(Familia.IdFamilia);
+            cboFamilia.DataSource = familias.Listar();
+            if (seleccionar.HasValue)
+            {
+                cboFamilia.SelectedValue = seleccionar.Value;
+            }
+        }
+
+        private void botFamilias_Click(object sender, EventArgs e)
+        {
+            int? actual = cboFamilia.SelectedValue as int?;
+            using (var editor = new frmListaEditable("Familias",
+                () => familias.Listar().Select(f => new ItemLista(f.IdFamilia, f.Nombre)),
+                nombre => familias.Crear(nombre),
+                (id, nombre) => familias.Renombrar(id, nombre),
+                id => familias.Eliminar(id)))
+            {
+                editor.ShowDialog(this);
+                Mensajes.Intentar(this, () => CargarFamilias(editor.UltimoCreado ?? actual));
             }
         }
 

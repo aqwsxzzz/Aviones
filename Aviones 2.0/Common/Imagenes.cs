@@ -120,7 +120,7 @@ namespace Aviones_2._0.Common
                 Math.Max(1, (int)Math.Round(imagen.Height * escala)) + borde.Height);
         }
 
-        /// <summary>Sin imagen, la caja muestra una cámara tachada y "Sin imagen" sobre fondo oscuro.</summary>
+        /// <summary>Sin imagen, la caja muestra una cámara tachada y "Sin imagen", tenues, sobre el color de la pantalla.</summary>
         public static void MarcarSinImagen(PictureBox caja)
         {
             caja.Paint += DibujarSinImagen;
@@ -136,10 +136,10 @@ namespace Aviones_2._0.Common
             }
             var g = e.Graphics;
             var r = caja.ClientRectangle;
-            g.Clear(Color.FromArgb(34, 34, 34));
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            Color fondo = ColorDeFondo(caja);
 
-            float u = Math.Min(r.Width / 5f, r.Height / 4.2f);
+            float u = Math.Min(r.Width / 6f, r.Height / 5f);
             if (u < 4)
             {
                 return;
@@ -147,9 +147,10 @@ namespace Aviones_2._0.Common
             float cx = r.Width / 2f;
             float cy = r.Height / 2f - u * 0.5f;
             var cuerpo = new RectangleF(cx - 1.5f * u, cy - u, 3f * u, 2f * u);
-            var gris = Color.FromArgb(150, 150, 150);
+            // Gris semitransparente: se ve sobre cualquier color de pantalla sin llamar la atención
+            var gris = Color.FromArgb(70, 40, 40, 40);
 
-            using (var trazo = new Pen(gris, Math.Max(2f, u / 7f)) { LineJoin = LineJoin.Round })
+            using (var trazo = new Pen(gris, Math.Max(1.5f, u / 10f)) { LineJoin = LineJoin.Round })
             {
                 // Cámara: cuerpo, visor y lente
                 g.DrawRectangle(trazo, cuerpo.X, cuerpo.Y, cuerpo.Width, cuerpo.Height);
@@ -163,19 +164,32 @@ namespace Aviones_2._0.Common
                 // Tachado, con un borde del color del fondo para que se distinga
                 var desde = new PointF(cuerpo.Left - 0.2f * u, cuerpo.Top - 0.6f * u);
                 var hasta = new PointF(cuerpo.Right + 0.2f * u, cuerpo.Bottom + 0.3f * u);
-                using (var borde = new Pen(Color.FromArgb(34, 34, 34), trazo.Width * 3f))
+                using (var borde = new Pen(fondo, trazo.Width * 3f))
                 {
                     g.DrawLine(borde, desde, hasta);
                 }
                 g.DrawLine(trazo, desde, hasta);
             }
 
-            using (var letra = new Font("Arial", Math.Max(8f, u * 0.38f), FontStyle.Bold, GraphicsUnit.Pixel))
+            using (var letra = new Font("Arial", Math.Max(8f, u * 0.36f), FontStyle.Regular, GraphicsUnit.Pixel))
             using (var pincel = new SolidBrush(gris))
             using (var centrado = new StringFormat { Alignment = StringAlignment.Center })
             {
                 g.DrawString("SIN IMAGEN", letra, pincel, new RectangleF(0, cuerpo.Bottom + 0.55f * u, r.Width, u), centrado);
             }
+        }
+
+        /// <summary>El color que se ve detrás de un control transparente: el del primer contenedor con color propio.</summary>
+        private static Color ColorDeFondo(Control control)
+        {
+            for (var c = control; c != null; c = c.Parent)
+            {
+                if (c.BackColor.A == 255)
+                {
+                    return c.BackColor;
+                }
+            }
+            return SystemColors.Control;
         }
 
         /// <summary>Muestra la imagen a pantalla completa; se cierra con un clic o Esc.</summary>

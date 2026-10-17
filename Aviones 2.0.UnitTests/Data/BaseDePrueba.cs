@@ -31,9 +31,19 @@ namespace Aviones_2._0.UnitTests.Data
             }
 
             Db.ConnectionString = Servidor + ";Initial Catalog=" + NombreBase;
+            // Base vacía: se borra todo y se vuelve a armar con las migraciones, como en una instalación nueva
+            BorrarTodo();
+            Migrador.Actualizar(Db.ConnectionString);
+
+            IdFamilia = new FamiliaRepositorio().Crear("Revestimientos");
+            IdMetros = new TipoUnidadRepositorio().Crear("Metros");
+        }
+
+        /// <summary>Borra todas las tablas y vistas de la base de prueba.</summary>
+        protected static void BorrarTodo()
+        {
             using (var cn = Db.Abrir())
             {
-                // Base vacía: se borra todo y se vuelve a armar con las migraciones, como en una instalación nueva
                 new SqlCommand(@"
                     DECLARE @sql NVARCHAR(MAX) = N'';
                     SELECT @sql += N'ALTER TABLE ' + QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)) + N'.' + QUOTENAME(OBJECT_NAME(parent_object_id))
@@ -42,10 +52,6 @@ namespace Aviones_2._0.UnitTests.Data
                     SELECT @sql += N'DROP TABLE ' + QUOTENAME(SCHEMA_NAME(schema_id)) + N'.' + QUOTENAME(name) + N';' FROM sys.tables;
                     EXEC (@sql);", cn).ExecuteNonQuery();
             }
-            Migrador.Actualizar(Db.ConnectionString);
-
-            IdFamilia = new FamiliaRepositorio().Crear("Revestimientos");
-            IdMetros = new TipoUnidadRepositorio().Crear("Metros");
         }
 
         /// <summary>Crea un material con un lote y devuelve (IdMaterial, IdLote).</summary>
