@@ -48,6 +48,42 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Lote_MuestraLosNombresDeSusListas()
+        {
+            var (_, idLote) = CrearMaterialConLote(1m, fabricante: "Hitec", ubicacion: "Estante");
+
+            var lote = lotes.Obtener(idLote);
+            Assert.AreEqual("Hitec", lote.Fabricante);
+            Assert.AreEqual("Estante", lote.Ubicacion);
+
+            lote.IdFabricante = null;
+            lotes.Actualizar(lote);
+            Assert.IsNull(lotes.Obtener(idLote).Fabricante);
+            Assert.AreEqual("Estante", lote.Ubicacion);
+        }
+
+        [TestMethod]
+        public void ListaLote_RenombrarCambiaTodosLosLotesYNoSeBorraEnUso()
+        {
+            var fabricantes = ListaLoteRepositorio.Fabricantes();
+            var (_, uno) = CrearMaterialConLote(1m, fabricante: "Hitek");
+            var (_, otro) = CrearMaterialConLote(1m, grupo: "Tela", fabricante: "Hitek");
+            int id = lotes.Obtener(uno).IdFabricante!.Value;
+
+            fabricantes.Renombrar(id, "  Hitec ");
+            Assert.AreEqual("Hitec", lotes.Obtener(uno).Fabricante);
+            Assert.AreEqual("Hitec", lotes.Obtener(otro).Fabricante);
+
+            Assert.ThrowsExactly<ReglaNegocioException>(() => fabricantes.Eliminar(id));
+            Assert.ThrowsExactly<ReglaNegocioException>(() => fabricantes.Crear("hitec"));
+            Assert.ThrowsExactly<ReglaNegocioException>(() => fabricantes.Crear("  "));
+
+            int libre = fabricantes.Crear("Futaba");
+            fabricantes.Eliminar(libre);
+            CollectionAssert.AreEqual(new[] { "Hitec" }, fabricantes.Listar().Select(f => f.Nombre).ToList());
+        }
+
+        [TestMethod]
         public void Eliminar_BorraLotesYUsosEnModelos()
         {
             var (idMaterial, idLote) = CrearMaterialConLote(5m);

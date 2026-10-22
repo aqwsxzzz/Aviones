@@ -15,7 +15,6 @@ namespace Aviones_2._0.Forms.Materiales
         /// <summary>Lugar máximo para la foto; la caja se ajusta a la forma de cada imagen.</summary>
         private readonly System.Drawing.Size fotoMaxima;
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
-        private readonly LoteRepositorio lotes = new LoteRepositorio();
         private readonly TipoUnidadRepositorio tipos = new TipoUnidadRepositorio();
         private readonly FamiliaRepositorio familias = new FamiliaRepositorio();
 
@@ -33,6 +32,8 @@ namespace Aviones_2._0.Forms.Materiales
         {
             InitializeComponent();
             Imagenes.MarcarSinImagen(picImagen);
+            selFabricante.Configurar(ListaLoteRepositorio.Fabricantes(), "Fabricantes");
+            selUbicacion.Configurar(ListaLoteRepositorio.Ubicaciones(), "Ubicaciones");
             fotoMaxima = picImagen.Size;
             this.idMaterial = idMaterial;
             this.idFamiliaSugerida = idFamiliaSugerida;
@@ -51,8 +52,8 @@ namespace Aviones_2._0.Forms.Materiales
                 CargarUnidades(null);
 
                 txtGrupo.AutoCompleteCustomSource.AddRange(materiales.ListarGrupos().ToArray());
-                txtFabricante.AutoCompleteCustomSource.AddRange(lotes.ListarFabricantes().ToArray());
-                txtUbicacion.AutoCompleteCustomSource.AddRange(lotes.ListarUbicaciones().ToArray());
+                selFabricante.Cargar(null);
+                selUbicacion.Cargar(null);
 
                 if (EsNuevo)
                 {
@@ -200,8 +201,8 @@ namespace Aviones_2._0.Forms.Materiales
                 }
                 primerLote = new Lote
                 {
-                    Fabricante = Limpio(txtFabricante.Text),
-                    Ubicacion = Limpio(txtUbicacion.Text),
+                    IdFabricante = selFabricante.Valor,
+                    IdUbicacion = selUbicacion.Valor,
                     Cantidad = cantidad,
                     CompradoUsado = radUsado.Checked,
                     ValorUnitario = valor ?? 0m,

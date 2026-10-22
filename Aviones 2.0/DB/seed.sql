@@ -98,8 +98,15 @@ SET IDENTITY_INSERT dbo.Materiales OFF;
 -- Lotes: el lote principal de cada material tiene el mismo número que el material;
 -- los lotes 101+ son segundas compras (otra marca, precio o ubicación).
 -- Lo disponible se calcula al final según lo usado en modelos.
-SET IDENTITY_INSERT dbo.Lotes ON;
-INSERT INTO dbo.Lotes (IdLote, IdMaterial, Fabricante, Ubicacion, Cantidad, DisponibleNuevo, ValorUnitario) VALUES
+-- Los lotes traen el fabricante y la ubicación escritos; de ahí salen las dos listas
+CREATE TABLE #Lotes (
+    IdLote INT NOT NULL PRIMARY KEY, IdMaterial INT NOT NULL,
+    Fabricante NVARCHAR(100) NULL, Ubicacion NVARCHAR(100) NULL,
+    Cantidad DECIMAL(18,3) NOT NULL, CompradoUsado BIT NOT NULL DEFAULT 0,
+    DisponibleNuevo DECIMAL(18,3) NOT NULL DEFAULT 0, DisponibleUsado DECIMAL(18,3) NOT NULL DEFAULT 0,
+    ValorUnitario DECIMAL(18,2) NOT NULL DEFAULT 0, FechaIngreso DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE)
+);
+INSERT INTO #Lotes (IdLote, IdMaterial, Fabricante, Ubicacion, Cantidad, DisponibleNuevo, ValorUnitario) VALUES
  (1, 1, N'X-Acto', N'Cajón herramientas', 20, 20, 0.60),
  (2, 2, N'X-Acto', N'Escritorio', 2, 2, 6.50),
  (3, 3, N'Top Flite', N'Estante', 1, 1, 35.00),
@@ -172,7 +179,22 @@ INSERT INTO dbo.Lotes (IdLote, IdMaterial, Fabricante, Ubicacion, Cantidad, Disp
  (103, 30, N'Top Flite', N'Bolsa Macro', 1.8, 1.8, 13.50),
  (104, 11, N'Tattu', N'Bolsa LiPo', 2, 2, 28.00),
  (105, 42, N'Racerstar', N'Caja motores', 1, 1, 11.00);
+INSERT INTO dbo.Fabricantes (Nombre)
+SELECT MIN(LTRIM(RTRIM(Fabricante))) FROM #Lotes WHERE LTRIM(RTRIM(ISNULL(Fabricante, N''))) <> N''
+GROUP BY LTRIM(RTRIM(Fabricante)) ORDER BY 1;
+
+INSERT INTO dbo.Ubicaciones (Nombre)
+SELECT MIN(LTRIM(RTRIM(Ubicacion))) FROM #Lotes WHERE LTRIM(RTRIM(ISNULL(Ubicacion, N''))) <> N''
+GROUP BY LTRIM(RTRIM(Ubicacion)) ORDER BY 1;
+
+SET IDENTITY_INSERT dbo.Lotes ON;
+INSERT INTO dbo.Lotes (IdLote, IdMaterial, IdFabricante, IdUbicacion, Cantidad, CompradoUsado, DisponibleNuevo, DisponibleUsado, ValorUnitario, FechaIngreso)
+SELECT T.IdLote, T.IdMaterial, F.IdFabricante, U.IdUbicacion, T.Cantidad, T.CompradoUsado, T.DisponibleNuevo, T.DisponibleUsado, T.ValorUnitario, T.FechaIngreso
+FROM #Lotes T
+LEFT JOIN dbo.Fabricantes F ON F.Nombre = LTRIM(RTRIM(T.Fabricante))
+LEFT JOIN dbo.Ubicaciones U ON U.Nombre = LTRIM(RTRIM(T.Ubicacion));
 SET IDENTITY_INSERT dbo.Lotes OFF;
+DROP TABLE #Lotes;
 
 -- Compras de material usado
 UPDATE dbo.Lotes SET CompradoUsado = 1, DisponibleNuevo = 0, DisponibleUsado = Cantidad

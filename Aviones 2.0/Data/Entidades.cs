@@ -11,6 +11,14 @@ namespace Aviones_2._0.Data
         public override string ToString() => Nombre;
     }
 
+    /// <summary>Un elemento de una lista simple de nombres (fabricantes, ubicaciones).</summary>
+    public class ElementoLista
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public override string ToString() => Nombre;
+    }
+
     public class TipoUnidad
     {
         public int IdTipoUnidad { get; set; }
@@ -174,8 +182,15 @@ namespace Aviones_2._0.Data
     {
         public int IdLote { get; set; }
         public int IdMaterial { get; set; }
+        public int? IdFabricante { get; set; }
+        public int? IdUbicacion { get; set; }
+
+        /// <summary>Nombre del fabricante, sólo para mostrar (se guarda IdFabricante).</summary>
         public string Fabricante { get; set; }
+
+        /// <summary>Nombre de la ubicación, sólo para mostrar (se guarda IdUbicacion).</summary>
         public string Ubicacion { get; set; }
+
         public decimal Cantidad { get; set; }
 
         /// <summary>Se compró usado: todo entra como usado.</summary>

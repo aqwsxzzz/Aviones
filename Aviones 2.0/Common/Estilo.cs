@@ -62,6 +62,11 @@ namespace Aviones_2._0.Common
             form.KeyDown += (s, e) =>
             {
                 var activo = form.ActiveControl;
+                // Dentro de un control compuesto (como el selector de una lista), el campo es el de adentro
+                while (activo is ContainerControl contenedor && contenedor.ActiveControl != null)
+                {
+                    activo = contenedor.ActiveControl;
+                }
                 bool esCampo = activo is TextBoxBase || activo is ComboBox || activo is DateTimePicker
                                || activo is RadioButton || activo is CheckBox;
                 if (e.KeyCode == Keys.Enter && esCampo && !(activo is TextBoxBase t && t.Multiline))

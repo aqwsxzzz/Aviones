@@ -68,6 +68,36 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Migracion3_ArmaLasListasConLoQueEstabaEscrito()
+        {
+            // Una base con sólo el esquema inicial y lotes con el fabricante y la ubicación escritos a mano
+            BorrarTodo();
+            using (var cn = Db.Abrir())
+            {
+                foreach (string lote in Migrador.Lotes(Migrador.Todas().First().Script))
+                {
+                    new SqlCommand(lote, cn).ExecuteNonQuery();
+                }
+                new SqlCommand(@"
+                    INSERT INTO dbo.Familias (Nombre) VALUES (N'Electrónica');
+                    INSERT INTO dbo.TiposUnidad (Nombre) VALUES (N'Unidades');
+                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, IdTipoUnidad) VALUES (1, N'Servo', 1);
+                    INSERT INTO dbo.Lotes (IdMaterial, Fabricante, Ubicacion, Cantidad) VALUES
+                        (1, N'Hitec', N'Estante', 1), (1, N' hitec ', N'Estante', 1), (1, N'Hitec', NULL, 1),
+                        (1, N'', N'  Cajón', 1), (1, NULL, N'cajón', 1);", cn).ExecuteNonQuery();
+            }
+
+            Migrador.Actualizar(Db.ConnectionString);
+
+            Assert.AreEqual(1, Contar("SELECT COUNT(*) FROM dbo.Fabricantes WHERE Nombre = N'Hitec' COLLATE Latin1_General_BIN"));
+            Assert.AreEqual(1, Contar("SELECT COUNT(*) FROM dbo.Fabricantes"));
+            Assert.AreEqual(2, Contar("SELECT COUNT(*) FROM dbo.Ubicaciones"));
+            Assert.AreEqual(3, Contar("SELECT COUNT(*) FROM dbo.Lotes WHERE IdFabricante IS NOT NULL"));
+            Assert.AreEqual(4, Contar("SELECT COUNT(*) FROM dbo.Lotes WHERE IdUbicacion IS NOT NULL"));
+            Assert.AreEqual(0, Contar("SELECT COUNT(*) FROM sys.columns WHERE object_id = OBJECT_ID(N'dbo.Lotes') AND name IN (N'Fabricante', N'Ubicacion')"));
+        }
+
+        [TestMethod]
         public void Lotes_SeSeparanPorGo()
         {
             var lotes = Migrador.Lotes("SELECT 1;\r\nGO\r\n  go  \r\nSELECT 2;\nGO\n").ToList();

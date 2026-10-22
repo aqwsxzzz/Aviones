@@ -115,7 +115,7 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         private static Lote Recibido(decimal cantidad, decimal valor = 12m) =>
-            new Lote { Cantidad = cantidad, ValorUnitario = valor, Fabricante = "Hitec" };
+            new Lote { Cantidad = cantidad, ValorUnitario = valor, IdFabricante = IdDe(ListaLoteRepositorio.Fabricantes(), "Hitec") };
 
         private static decimal? Valor(string sql, object datos)
         {

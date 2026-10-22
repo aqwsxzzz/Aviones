@@ -49,9 +49,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.grpLote = new System.Windows.Forms.GroupBox();
             this.tlpLote = new System.Windows.Forms.TableLayoutPanel();
             this.labFabricante = new System.Windows.Forms.Label();
-            this.txtFabricante = new System.Windows.Forms.TextBox();
+            this.selFabricante = new Aviones_2._0.Forms.Comun.SelectorLista();
             this.labUbicacion = new System.Windows.Forms.Label();
-            this.txtUbicacion = new System.Windows.Forms.TextBox();
+            this.selUbicacion = new Aviones_2._0.Forms.Comun.SelectorLista();
             this.labCantidad = new System.Windows.Forms.Label();
             this.txtCantidad = new System.Windows.Forms.TextBox();
             this.labValor = new System.Windows.Forms.Label();
@@ -362,9 +362,9 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpLote.Controls.Add(this.labFabricante, 0, 0);
-            this.tlpLote.Controls.Add(this.txtFabricante, 1, 0);
+            this.tlpLote.Controls.Add(this.selFabricante, 1, 0);
             this.tlpLote.Controls.Add(this.labUbicacion, 2, 0);
-            this.tlpLote.Controls.Add(this.txtUbicacion, 3, 0);
+            this.tlpLote.Controls.Add(this.selUbicacion, 3, 0);
             this.tlpLote.Controls.Add(this.labCantidad, 0, 1);
             this.tlpLote.Controls.Add(this.txtCantidad, 1, 1);
             this.tlpLote.Controls.Add(this.labValor, 2, 1);
@@ -388,14 +388,11 @@ namespace Aviones_2._0.Forms.Materiales
             this.labFabricante.Name = "labFabricante";
             this.labFabricante.Text = "Fabricante";
             //
-            // txtFabricante
+            // selFabricante
             //
-            this.txtFabricante.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.txtFabricante.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.txtFabricante.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtFabricante.MaxLength = 100;
-            this.txtFabricante.Name = "txtFabricante";
-            this.txtFabricante.TabIndex = 0;
+            this.selFabricante.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selFabricante.Name = "selFabricante";
+            this.selFabricante.TabIndex = 0;
             //
             // labUbicacion
             //
@@ -405,14 +402,11 @@ namespace Aviones_2._0.Forms.Materiales
             this.labUbicacion.Name = "labUbicacion";
             this.labUbicacion.Text = "Ubicación";
             //
-            // txtUbicacion
+            // selUbicacion
             //
-            this.txtUbicacion.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.txtUbicacion.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.txtUbicacion.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtUbicacion.MaxLength = 100;
-            this.txtUbicacion.Name = "txtUbicacion";
-            this.txtUbicacion.TabIndex = 1;
+            this.selUbicacion.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selUbicacion.Name = "selUbicacion";
+            this.selUbicacion.TabIndex = 1;
             //
             // labCantidad
             //
@@ -557,9 +551,9 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.GroupBox grpLote;
         private System.Windows.Forms.TableLayoutPanel tlpLote;
         private System.Windows.Forms.Label labFabricante;
-        private System.Windows.Forms.TextBox txtFabricante;
+        private Aviones_2._0.Forms.Comun.SelectorLista selFabricante;
         private System.Windows.Forms.Label labUbicacion;
-        private System.Windows.Forms.TextBox txtUbicacion;
+        private Aviones_2._0.Forms.Comun.SelectorLista selUbicacion;
         private System.Windows.Forms.Label labCantidad;
         private System.Windows.Forms.TextBox txtCantidad;
         private System.Windows.Forms.Label labValor;

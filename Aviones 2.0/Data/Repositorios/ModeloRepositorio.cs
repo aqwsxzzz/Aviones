@@ -129,13 +129,14 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 return cn.Query<MaterialDeModelo>(@"
                     SELECT MM.IdMaterialModelo, MM.IdModelo, MM.IdLote, MM.Estado, M.IdMaterial, F.Nombre AS Familia,
-                           M.Grupo, M.Caracteristica, M.Color, M.Medidas, M.Codigo, L.Fabricante,
+                           M.Grupo, M.Caracteristica, M.Color, M.Medidas, M.Codigo, FA.Nombre AS Fabricante,
                            T.Nombre AS TipoUnidad, MM.Cantidad, L.ValorUnitario
                     FROM dbo.MaterialesModelo MM
                     JOIN dbo.Lotes L        ON L.IdLote = MM.IdLote
                     JOIN dbo.Materiales M   ON M.IdMaterial = L.IdMaterial
                     JOIN dbo.Familias F     ON F.IdFamilia = M.IdFamilia
                     JOIN dbo.TiposUnidad T  ON T.IdTipoUnidad = M.IdTipoUnidad
+                    LEFT JOIN dbo.Fabricantes FA ON FA.IdFabricante = L.IdFabricante
                     WHERE MM.IdModelo = @idModelo
                     ORDER BY F.Nombre, M.Grupo, M.Caracteristica", new { idModelo }).ToList();
             }

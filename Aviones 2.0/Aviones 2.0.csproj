@@ -76,6 +76,7 @@
     <Compile Include="Data\Errores.cs" />
     <Compile Include="Data\Repositorios\EstadoModeloRepositorio.cs" />
     <Compile Include="Data\Repositorios\FamiliaRepositorio.cs" />
+    <Compile Include="Data\Repositorios\ListaLoteRepositorio.cs" />
     <Compile Include="Data\Repositorios\LoteRepositorio.cs" />
     <Compile Include="Data\Repositorios\MaterialRepositorio.cs" />
     <Compile Include="Data\Repositorios\ModeloRepositorio.cs" />
@@ -135,6 +136,9 @@
     </Compile>
     <Compile Include="Forms\Materiales\frmInformeValor.Designer.cs">
       <DependentUpon>frmInformeValor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Comun\SelectorLista.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Forms\Comun\frmListaEditable.cs">
       <SubType>Form</SubType>

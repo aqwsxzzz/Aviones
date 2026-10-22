@@ -23,6 +23,8 @@ namespace Aviones_2._0.Forms.Materiales
         public frmLoteEditor(int idMaterial, string descripcionMaterial, Lote lote)
         {
             InitializeComponent();
+            selFabricante.Configurar(ListaLoteRepositorio.Fabricantes(), "Fabricantes");
+            selUbicacion.Configurar(ListaLoteRepositorio.Ubicaciones(), "Ubicaciones");
             this.idMaterial = idMaterial;
             this.lote = lote;
             labMaterial.Text = descripcionMaterial;
@@ -42,8 +44,8 @@ namespace Aviones_2._0.Forms.Materiales
         {
             Mensajes.Intentar(this, () =>
             {
-                txtFabricante.AutoCompleteCustomSource.AddRange(lotes.ListarFabricantes().ToArray());
-                txtUbicacion.AutoCompleteCustomSource.AddRange(lotes.ListarUbicaciones().ToArray());
+                selFabricante.Cargar(lote?.IdFabricante);
+                selUbicacion.Cargar(lote?.IdUbicacion);
             });
 
             if (pedido != null)
@@ -61,8 +63,8 @@ namespace Aviones_2._0.Forms.Materiales
                 Mensajes.Intentar(this, () =>
                 {
                     var ultimo = lotes.ListarPorMaterial(pedido.IdMaterial).LastOrDefault();
-                    txtFabricante.Text = ultimo?.Fabricante;
-                    txtUbicacion.Text = ultimo?.Ubicacion;
+                    selFabricante.Valor = ultimo?.IdFabricante;
+                    selUbicacion.Valor = ultimo?.IdUbicacion;
                 });
                 labUso.Text = $"Pedido: {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} el {pedido.FechaPedido:dd/MM/yyyy}"
                     + (string.IsNullOrEmpty(pedido.Nota) ? "" : $" ({pedido.Nota})")
@@ -79,8 +81,6 @@ namespace Aviones_2._0.Forms.Materiales
             else
             {
                 Text = "Modificar lote";
-                txtFabricante.Text = lote.Fabricante;
-                txtUbicacion.Text = lote.Ubicacion;
                 txtCantidad.Text = Numeros.Cantidad(lote.Cantidad);
                 txtValor.Text = Numeros.Dinero(lote.ValorUnitario);
                 dtpFecha.Value = lote.FechaIngreso;
@@ -92,7 +92,7 @@ namespace Aviones_2._0.Forms.Materiales
                     + "\nSi cambia la cantidad, lo disponible " + (lote.CompradoUsado ? "usado" : "nuevo")
                     + " cambia en la misma diferencia.";
             }
-            ActiveControl = txtFabricante;
+            ActiveControl = selFabricante;
         }
 
         private void botGuardar_Click(object sender, EventArgs e)
@@ -122,8 +122,8 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 IdLote = lote?.IdLote ?? 0,
                 IdMaterial = idMaterial,
-                Fabricante = string.IsNullOrWhiteSpace(txtFabricante.Text) ? null : txtFabricante.Text.Trim(),
-                Ubicacion = string.IsNullOrWhiteSpace(txtUbicacion.Text) ? null : txtUbicacion.Text.Trim(),
+                IdFabricante = selFabricante.Valor,
+                IdUbicacion = selUbicacion.Valor,
                 Cantidad = cantidad,
                 CompradoUsado = radCompraUsado.Checked,
                 ValorUnitario = valor ?? 0m,

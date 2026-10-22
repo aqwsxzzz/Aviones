@@ -1,4 +1,5 @@
 using System.Data.SqlClient;
+using System.Linq;
 using Aviones_2._0.Data;
 using Aviones_2._0.Data.Repositorios;
 
@@ -58,12 +59,22 @@ namespace Aviones_2._0.UnitTests.Data
         protected (int IdMaterial, int IdLote) CrearMaterialConLote(decimal cantidad, decimal valor = 10m,
             string grupo = "Plástico", string fabricante = "Top Flite", string ubicacion = "Bolsa Macro")
         {
-            var lote = new Lote { Cantidad = cantidad, ValorUnitario = valor, Fabricante = fabricante, Ubicacion = ubicacion };
+            var lote = new Lote
+            {
+                Cantidad = cantidad,
+                ValorUnitario = valor,
+                IdFabricante = IdDe(ListaLoteRepositorio.Fabricantes(), fabricante),
+                IdUbicacion = IdDe(ListaLoteRepositorio.Ubicaciones(), ubicacion)
+            };
             int idMaterial = new MaterialRepositorio().Crear(
                 new Material { IdFamilia = IdFamilia, Grupo = grupo, Caracteristica = "Monokote", IdTipoUnidad = IdMetros },
                 lote);
             return (idMaterial, lote.IdLote);
         }
+
+        /// <summary>El Id del nombre en la lista; si no está, lo agrega. null para ninguno.</summary>
+        protected static int? IdDe(ListaLoteRepositorio lista, string nombre) =>
+            nombre == null ? (int?)null : lista.Listar().FirstOrDefault(x => x.Nombre == nombre)?.Id ?? lista.Crear(nombre);
 
         protected static int EstadoActivo => 1;
 

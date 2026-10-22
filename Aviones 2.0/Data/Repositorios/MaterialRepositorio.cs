@@ -25,8 +25,10 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 condiciones.Add(@"(S.Grupo LIKE @texto OR S.Caracteristica LIKE @texto OR S.Color LIKE @texto
                     OR S.Medidas LIKE @texto OR S.Codigo LIKE @texto
-                    OR EXISTS (SELECT 1 FROM dbo.Lotes L WHERE L.IdMaterial = S.IdMaterial
-                               AND (L.Fabricante LIKE @texto OR L.Ubicacion LIKE @texto)))");
+                    OR EXISTS (SELECT 1 FROM dbo.Lotes L
+                               LEFT JOIN dbo.Fabricantes F ON F.IdFabricante = L.IdFabricante
+                               LEFT JOIN dbo.Ubicaciones U ON U.IdUbicacion = L.IdUbicacion
+                               WHERE L.IdMaterial = S.IdMaterial AND (F.Nombre LIKE @texto OR U.Nombre LIKE @texto)))");
                 parametros.Add("texto", "%" + EscaparLike(filtro.Texto.Trim()) + "%");
             }
             if (filtro.SoloSinStock)
