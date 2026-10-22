@@ -49,8 +49,8 @@ namespace Aviones_2._0.Forms.Modelos
             this.agregar = agregar;
             Estilo.Grilla(dgvMateriales);
             Estilo.Grilla(dgvLotes);
-            dgvMateriales.BackgroundColor = System.Drawing.Color.Linen;
-            dgvLotes.BackgroundColor = System.Drawing.Color.Linen;
+            dgvMateriales.BackgroundColor = BackColor;
+            dgvLotes.BackgroundColor = BackColor;
             OrdenGrilla.Habilitar(dgvMateriales, dgvLotes);
             Estilo.Botones(botAgregar);
             Estilo.BotonSecundario(botListo);

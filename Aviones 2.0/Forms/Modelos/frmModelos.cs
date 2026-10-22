@@ -22,8 +22,8 @@ namespace Aviones_2._0.Forms.Modelos
             Imagenes.MarcarSinImagen(picFoto);
             Estilo.Grilla(dgvModelos);
             Estilo.Grilla(dgvMateriales);
-            dgvModelos.BackgroundColor = System.Drawing.Color.Linen;
-            dgvMateriales.BackgroundColor = System.Drawing.Color.Linen;
+            dgvModelos.BackgroundColor = BackColor;
+            dgvMateriales.BackgroundColor = BackColor;
             Estilo.Botones(botNuevo, botModificar, botEliminar, botImprimir, botImprimirMateriales);
             Estilo.BotonSecundario(botSalir);
             OrdenGrilla.Habilitar(dgvModelos, dgvMateriales);

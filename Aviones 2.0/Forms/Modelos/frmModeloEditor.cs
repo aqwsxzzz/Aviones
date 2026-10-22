@@ -46,7 +46,7 @@ namespace Aviones_2._0.Forms.Modelos
             fotoMaxima = picFoto.Size;
             this.idModelo = idModelo;
             Estilo.Grilla(dgvMateriales);
-            dgvMateriales.BackgroundColor = Color.Linen;
+            dgvMateriales.BackgroundColor = BackColor;
             Estilo.Botones(botAgregarMaterial, botCambiarCantidad, botQuitarMaterial, botGuardar);
             Estilo.BotonSecundario(botCancelar);
             Estilo.EnterAvanza(this);

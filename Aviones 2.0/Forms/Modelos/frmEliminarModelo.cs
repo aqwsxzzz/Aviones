@@ -43,7 +43,7 @@ namespace Aviones_2._0.Forms.Modelos
             dgvMateriales.ReadOnly = false;
             dgvMateriales.SelectionMode = DataGridViewSelectionMode.CellSelect;
             dgvMateriales.EditMode = DataGridViewEditMode.EditOnEnter;
-            dgvMateriales.BackgroundColor = Color.Linen;
+            dgvMateriales.BackgroundColor = BackColor;
             Estilo.Botones(botEliminar);
             botEliminar.BackColor = Color.Firebrick;
             Estilo.BotonSecundario(botCancelar);
