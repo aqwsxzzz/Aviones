@@ -47,6 +47,7 @@ namespace Aviones_2._0.Forms.Compras
             this.labMinimoAyuda = new System.Windows.Forms.Label();
             this.botAplicarMinimo = new System.Windows.Forms.Button();
             this.dgvCriticos = new System.Windows.Forms.DataGridView();
+            this.picCritico = new System.Windows.Forms.PictureBox();
             this.colCriFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCriMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCriCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -72,6 +73,7 @@ namespace Aviones_2._0.Forms.Compras
             this.tlpCriticos.SuspendLayout();
             this.flpCriticosTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCriticos)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCritico)).BeginInit();
             this.flpCriticos.SuspendLayout();
             this.flpBotones.SuspendLayout();
             this.SuspendLayout();
@@ -302,11 +304,15 @@ namespace Aviones_2._0.Forms.Compras
             //
             // tlpCriticos
             //
-            this.tlpCriticos.ColumnCount = 1;
+            this.tlpCriticos.ColumnCount = 2;
             this.tlpCriticos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpCriticos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 320F));
             this.tlpCriticos.Controls.Add(this.flpCriticosTitulo, 0, 0);
+            this.tlpCriticos.SetColumnSpan(this.flpCriticosTitulo, 2);
             this.tlpCriticos.Controls.Add(this.dgvCriticos, 0, 1);
+            this.tlpCriticos.Controls.Add(this.picCritico, 1, 1);
             this.tlpCriticos.Controls.Add(this.flpCriticos, 0, 2);
+            this.tlpCriticos.SetColumnSpan(this.flpCriticos, 2);
             this.tlpCriticos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpCriticos.Name = "tlpCriticos";
             this.tlpCriticos.RowCount = 3;
@@ -383,6 +389,17 @@ namespace Aviones_2._0.Forms.Compras
             this.dgvCriticos.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCriticos_CellDoubleClick);
             this.dgvCriticos.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvCriticos_CellFormatting);
             this.dgvCriticos.SelectionChanged += new System.EventHandler(this.dgvCriticos_SelectionChanged);
+            //
+            // picCritico
+            //
+            this.picCritico.BackColor = System.Drawing.Color.Transparent;
+            this.picCritico.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.picCritico.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picCritico.Margin = new System.Windows.Forms.Padding(12, 0, 0, 0);
+            this.picCritico.Name = "picCritico";
+            this.picCritico.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picCritico.TabStop = false;
+            this.picCritico.DoubleClick += new System.EventHandler(this.picCritico_DoubleClick);
             //
             // colCriFamilia
             //
@@ -543,6 +560,7 @@ namespace Aviones_2._0.Forms.Compras
             this.flpCriticosTitulo.ResumeLayout(false);
             this.flpCriticosTitulo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCriticos)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picCritico)).EndInit();
             this.flpCriticos.ResumeLayout(false);
             this.flpCriticos.PerformLayout();
             this.flpBotones.ResumeLayout(false);
@@ -582,6 +600,7 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.Label labMinimoAyuda;
         private System.Windows.Forms.Button botAplicarMinimo;
         private System.Windows.Forms.DataGridView dgvCriticos;
+        private System.Windows.Forms.PictureBox picCritico;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriFamilia;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriMaterial;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriCodigo;

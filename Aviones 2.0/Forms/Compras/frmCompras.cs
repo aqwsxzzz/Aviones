@@ -18,12 +18,16 @@ namespace Aviones_2._0.Forms.Compras
     {
         private readonly CompraRepositorio compras = new CompraRepositorio();
         private readonly ConfiguracionRepositorio configuracion = new ConfiguracionRepositorio();
+        private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private List<StockCritico> criticos = new List<StockCritico>();
         private decimal minimoGeneral;
+        /// <summary>El material cuya foto se está mostrando, para no volver a leerla.</summary>
+        private int? idFotoCritico;
 
         public frmCompras()
         {
             InitializeComponent();
+            Imagenes.MarcarSinImagen(picCritico);
             Estilo.Grilla(dgvPedidos);
             Estilo.Grilla(dgvCriticos);
             dgvPedidos.BackgroundColor = Color.Honeydew;
@@ -159,7 +163,36 @@ namespace Aviones_2._0.Forms.Compras
             ActualizarBotones();
         }
 
-        private void dgvCriticos_SelectionChanged(object sender, EventArgs e) => ActualizarBotones();
+        private void dgvCriticos_SelectionChanged(object sender, EventArgs e)
+        {
+            ActualizarBotones();
+            MostrarFotoCritico();
+        }
+
+        private void MostrarFotoCritico()
+        {
+            int? id = CriticoSeleccionado()?.IdMaterial;
+            if (id == idFotoCritico)
+            {
+                return;
+            }
+            idFotoCritico = id;
+            Image foto = null;
+            if (id.HasValue)
+            {
+                Mensajes.Intentar(this, () => foto = Imagenes.DesdeBytes(materiales.ObtenerImagen(id.Value)));
+            }
+            Imagenes.Mostrar(picCritico, foto);
+        }
+
+        private void picCritico_DoubleClick(object sender, EventArgs e)
+        {
+            var critico = CriticoSeleccionado();
+            if (critico != null)
+            {
+                Imagenes.Ampliar(this, picCritico.Image, critico.Descripcion);
+            }
+        }
 
         private void dgvCriticos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
