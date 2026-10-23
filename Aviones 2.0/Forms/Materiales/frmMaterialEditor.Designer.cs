@@ -498,6 +498,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Material";
             this.Load += new System.EventHandler(this.frmMaterialEditor_Load);
+            this.Shown += new System.EventHandler(this.frmMaterialEditor_Shown);
             this.tlpPrincipal.ResumeLayout(false);
             this.tlpPrincipal.PerformLayout();
             this.flpEstado.ResumeLayout(false);

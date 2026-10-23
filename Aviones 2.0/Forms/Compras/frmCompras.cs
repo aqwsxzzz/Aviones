@@ -21,6 +21,8 @@ namespace Aviones_2._0.Forms.Compras
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private List<StockCritico> criticos = new List<StockCritico>();
         private decimal minimoGeneral;
+        /// <summary>Naranja oscuro: se lee bien sobre el fondo verde claro.</summary>
+        private static readonly Color YaPedido = Color.FromArgb(200, 85, 0);
         /// <summary>El material cuya foto se está mostrando, para no volver a leerla.</summary>
         private int? idFotoCritico;
 
@@ -32,6 +34,7 @@ namespace Aviones_2._0.Forms.Compras
             Estilo.Grilla(dgvCriticos);
             dgvPedidos.BackgroundColor = Color.Honeydew;
             dgvCriticos.BackgroundColor = Color.Honeydew;
+            dgvCriticos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             Estilo.Botones(botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
             Estilo.BotonSecundario(botSalir);
             OrdenGrilla.Habilitar(dgvPedidos, dgvCriticos);
@@ -208,8 +211,11 @@ namespace Aviones_2._0.Forms.Compras
             {
                 return;
             }
-            // Ya pedido: en verde; sin pedir: en rojo
-            e.CellStyle.ForeColor = c.TienePedido ? Color.DarkGreen : Color.Firebrick;
+            // Lo ya pedido se distingue en naranja; el resto, en el color normal
+            if (c.TienePedido)
+            {
+                e.CellStyle.ForeColor = YaPedido;
+            }
             if (e.ColumnIndex == colCriPedido.Index && !c.TienePedido)
             {
                 e.Value = "";

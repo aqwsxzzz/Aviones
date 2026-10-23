@@ -82,6 +82,16 @@ namespace Aviones_2._0.Forms.Materiales
             ActiveControl = EsNuevo && cboFamilia.SelectedIndex < 0 ? (Control)cboFamilia : txtGrupo;
         }
 
+        private void frmMaterialEditor_Shown(object sender, EventArgs e)
+        {
+            // Material nuevo sin familia: la lista ya abierta para elegirla
+            if (EsNuevo && cboFamilia.SelectedIndex < 0 && cboFamilia.Items.Count > 0)
+            {
+                cboFamilia.Focus();
+                cboFamilia.DroppedDown = true;
+            }
+        }
+
         private void MostrarMaterial(Material m)
         {
             cboFamilia.SelectedValue = m.IdFamilia;

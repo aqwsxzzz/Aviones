@@ -42,8 +42,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.colCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colValorDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colAComprar = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colLotes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tlpDetalle = new System.Windows.Forms.TableLayoutPanel();
             this.picFoto = new System.Windows.Forms.PictureBox();
             this.labLotes = new System.Windows.Forms.Label();
@@ -223,9 +221,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispNuevo,
             this.colDispUsado,
             this.colDisponible,
-            this.colValorDisponible,
-            this.colAComprar,
-            this.colLotes});
+            this.colValorDisponible});
             this.dgvMateriales.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMateriales.Name = "dgvMateriales";
             this.dgvMateriales.TabIndex = 0;
@@ -285,6 +281,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispNuevo.DataPropertyName = "DisponibleNuevo";
             this.colDispNuevo.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDispNuevo.DefaultCellStyle.Format = "0.###";
+            this.colDispNuevo.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDispNuevo.FillWeight = 55F;
             this.colDispNuevo.HeaderText = "Nuevo";
             this.colDispNuevo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -297,6 +294,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispUsado.DataPropertyName = "DisponibleUsado";
             this.colDispUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDispUsado.DefaultCellStyle.Format = "0.###";
+            this.colDispUsado.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDispUsado.FillWeight = 55F;
             this.colDispUsado.HeaderText = "Usado";
             this.colDispUsado.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -317,6 +315,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colCantidad.DataPropertyName = "Cantidad";
             this.colCantidad.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colCantidad.DefaultCellStyle.Format = "0.###";
+            this.colCantidad.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colCantidad.FillWeight = 55F;
             this.colCantidad.HeaderText = "Cant.";
             this.colCantidad.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -329,6 +328,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDisponible.DataPropertyName = "Disponible";
             this.colDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDisponible.DefaultCellStyle.Format = "0.###";
+            this.colDisponible.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDisponible.FillWeight = 65F;
             this.colDisponible.HeaderText = "Disp.";
             this.colDisponible.ToolTipText = "Disponible total (nuevo + usado)";
@@ -346,29 +346,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.colValorDisponible.HeaderText = "Valor disp.";
             this.colValorDisponible.MinimumWidth = 85;
             this.colValorDisponible.Name = "colValorDisponible";
-            //
-            // colAComprar
-            //
-            this.colAComprar.DataPropertyName = "PedidoPendiente";
-            this.colAComprar.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colAComprar.DefaultCellStyle.Format = "0.###";
-            this.colAComprar.FillWeight = 60F;
-            this.colAComprar.HeaderText = "Pedido";
-            this.colAComprar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colAComprar.MinimumWidth = 40;
-            this.colAComprar.Width = 56;
-            this.colAComprar.Name = "colAComprar";
-            //
-            // colLotes
-            //
-            this.colLotes.DataPropertyName = "CantidadLotes";
-            this.colLotes.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colLotes.FillWeight = 40F;
-            this.colLotes.HeaderText = "Lotes";
-            this.colLotes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colLotes.MinimumWidth = 40;
-            this.colLotes.Width = 56;
-            this.colLotes.Name = "colLotes";
             //
             // tlpDetalle
             //
@@ -741,8 +718,6 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridViewTextBoxColumn colCantidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDisponible;
         private System.Windows.Forms.DataGridViewTextBoxColumn colValorDisponible;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colAComprar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colLotes;
         private System.Windows.Forms.TableLayoutPanel tlpDetalle;
         private System.Windows.Forms.PictureBox picFoto;
         private System.Windows.Forms.Label labLotes;
