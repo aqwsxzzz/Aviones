@@ -34,6 +34,7 @@
             this.Salir = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.botFondo = new System.Windows.Forms.Button();
+            this.botNovedades = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -111,6 +112,18 @@
             this.botFondo.Text = "Cambiar fondo...";
             this.botFondo.UseVisualStyleBackColor = false;
             this.botFondo.Click += new System.EventHandler(this.botFondo_Click);
+            //
+            // botNovedades
+            //
+            this.botNovedades.BackColor = System.Drawing.Color.Gainsboro;
+            this.botNovedades.Font = new System.Drawing.Font("Arial", 9F);
+            this.botNovedades.Margin = new System.Windows.Forms.Padding(4);
+            this.botNovedades.Name = "botNovedades";
+            this.botNovedades.Size = new System.Drawing.Size(130, 34);
+            this.botNovedades.TabIndex = 6;
+            this.botNovedades.Text = "Novedades...";
+            this.botNovedades.UseVisualStyleBackColor = false;
+            this.botNovedades.Click += new System.EventHandler(this.botNovedades_Click);
             // 
             // PantallaPrincipal
             // 
@@ -119,6 +132,7 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(1884, 1061);
             this.Controls.Add(this.botFondo);
+            this.Controls.Add(this.botNovedades);
             this.Controls.Add(this.Salir);
             this.Controls.Add(this.Compras);
             this.Controls.Add(this.Modelos);
@@ -144,6 +158,7 @@
         private System.Windows.Forms.Button Salir;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button botFondo;
+        private System.Windows.Forms.Button botNovedades;
     }
 }
 

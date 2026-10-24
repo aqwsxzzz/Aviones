@@ -1,0 +1,49 @@
+Novedades de cada versión: lo que se pidió, lo que se hizo y, si quedó distinto, por qué.
+Se muestran al abrir el programa después de actualizarlo, y desde el botón NOVEDADES del menú.
+
+Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
+"! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
+
+= 0.4.0
+* Mover el botón "Cambiar foto" al ángulo inferior izquierdo.
+> El botón "Cambiar fondo..." del menú ahora está abajo a la izquierda.
+
+* En el listado de materiales, resaltar sólo la columna cantidad.
+> Sólo la columna Cant. va en negrita.
+
+* Que el total de abajo diga directamente "Valor" y sume la columna valor.
+> El total de abajo ahora dice "Valor: $".
+! La columna "Valor disp." todavía calcula el valor de lo que queda (lo disponible). Pasarla a "valor declarado x cantidad" queda para cuando definamos cuál de los dos querés ver: lo que se compró o lo que queda.
+
+* Que Característica, Color y Medidas sugieran lo ya escrito, como hace Grupo.
+> Al escribir en Característica, Color o Medidas aparecen las palabras ya usadas.
+
+* Si a un material le pongo stock mínimo 0, es que no voy a comprar más (obsoleto u otra razón).
+> Cada material tiene ahora la casilla "Se repone (avisar en Stock crítico)". Si se destilda, el material nunca aparece en Stock crítico, se ve en cursiva en el listado de materiales y, si igual se lo quiere comprar, el programa pregunta antes.
+! En lugar de darle ese significado al 0, se hizo una casilla aparte: así el stock mínimo sigue significando lo mismo para todos los materiales (0 = avisar recién cuando se acaba) y "no se compra más" queda a la vista. Todos los materiales que ya estaban siguen como que se reponen.
+
+* Los botones "Cambiar cantidad" y "Quitar material" no funcionan.
+> Ahora la pantalla del modelo abre con el primer material ya elegido, y los dos botones funcionan de entrada.
+! Los botones andaban, pero quedaban desactivados hasta hacer clic en un material de la lista, y la pantalla abría sin ninguno elegido.
+
+= 0.3.0
+* Que la parte vacía de los listados tome el color del fondo, como en Materiales y Compras.
+> En Modelos, la parte vacía de los listados tiene el mismo color que la pantalla.
+
+* Que Ubicación y Fabricante sean listados, como Unidad, porque se repiten mucho.
+> Fabricante y Ubicación se eligen de una lista, con el botón "Editar..." al lado. Las listas se armaron solas con lo que ya estaba cargado en los lotes.
+
+* En el listado principal, las cantidades en negrita.
+> Las columnas Cant., Nuevo, Usado y Disp. en negrita.
+
+* Sacar las columnas Pedido y Lotes del listado de materiales.
+> Se sacaron. El filtro "Con pedido de compra" sigue estando.
+
+* En NUEVO material, que pase directamente a mostrar las familias.
+> Si no hay una familia elegida de antemano, la lista de familias se abre sola.
+
+* Stock crítico: columnas del tamaño de su contenido y la foto del producto al costado.
+> Las columnas toman el ancho de su contenido y a la derecha se ve la foto del material elegido.
+
+* Stock crítico en negro y lo ya pedido en otro color (por ejemplo, naranja).
+> El listado está en negro y lo ya pedido en naranja oscuro, que se lee bien sobre el fondo verde claro.

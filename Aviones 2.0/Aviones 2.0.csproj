@@ -137,6 +137,10 @@
     <Compile Include="Forms\Materiales\frmInformeValor.Designer.cs">
       <DependentUpon>frmInformeValor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Common\Novedades.cs" />
+    <Compile Include="Forms\Comun\frmNovedades.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Comun\SelectorLista.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -275,6 +279,9 @@
     <None Include="Resources\Se va1.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Novedades.txt">
+      <LogicalName>Novedades.txt</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="DB\Migraciones\*.sql">
       <LogicalName>Migraciones.%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
