@@ -260,7 +260,7 @@ UPDATE dbo.Materiales SET StockMinimo = 4  WHERE IdMaterial IN (8, 9);        --
 UPDATE dbo.Materiales SET StockMinimo = 2  WHERE IdMaterial IN (11, 42, 45);  -- LiPo 3S, motor, hélice
 UPDATE dbo.Materiales SET StockMinimo = 5  WHERE IdMaterial IN (21, 22, 23);  -- tablas de balsa
 UPDATE dbo.Materiales SET StockMinimo = 10 WHERE IdMaterial IN (1, 52);       -- cuchillas, bisagras
-UPDATE dbo.Materiales SET StockMinimo = 0  WHERE IdMaterial IN (3, 4, 17);    -- herramientas: no se recompran
+UPDATE dbo.Materiales SET SeRepone = 0   WHERE IdMaterial IN (3, 4, 17);    -- herramientas: no se recompran
 
 -- Pedidos pendientes
 INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, FechaPedido, Nota) VALUES

@@ -38,6 +38,21 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void StockCritico_LoQueNoSeReponeNuncaAparece()
+        {
+            int pistola = CrearMaterial("Pistola de calor", 0m, minimo: 1m);
+            Assert.AreEqual(1, compras.ListarStockCritico(1m).Count);
+
+            var m = materiales.Obtener(pistola);
+            m.SeRepone = false;
+            materiales.Actualizar(m);
+
+            Assert.IsFalse(materiales.Obtener(pistola).SeRepone);
+            Assert.IsFalse(materiales.ObtenerStock(pistola).SeRepone);
+            Assert.AreEqual(0, compras.ListarStockCritico(1m).Count);
+        }
+
+        [TestMethod]
         public void StockCritico_ConMinimoGeneralMasAlto()
         {
             CrearMaterial("Lija", 5m);

@@ -42,6 +42,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.botUnidades = new System.Windows.Forms.Button();
             this.labAComprar = new System.Windows.Forms.Label();
             this.txtAComprar = new System.Windows.Forms.TextBox();
+            this.flpMinimo = new System.Windows.Forms.FlowLayoutPanel();
+            this.chkSeRepone = new System.Windows.Forms.CheckBox();
             this.flpImagen = new System.Windows.Forms.FlowLayoutPanel();
             this.picImagen = new System.Windows.Forms.PictureBox();
             this.botCargarImagen = new System.Windows.Forms.Button();
@@ -65,6 +67,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpEstado.SuspendLayout();
             this.flpFamilia.SuspendLayout();
             this.flpUnidad.SuspendLayout();
+            this.flpMinimo.SuspendLayout();
             this.flpImagen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picImagen)).BeginInit();
             this.grpLote.SuspendLayout();
@@ -94,7 +97,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.labUnidad, 0, 7);
             this.tlpPrincipal.Controls.Add(this.flpUnidad, 1, 7);
             this.tlpPrincipal.Controls.Add(this.labAComprar, 0, 8);
-            this.tlpPrincipal.Controls.Add(this.txtAComprar, 1, 8);
+            this.tlpPrincipal.Controls.Add(this.flpMinimo, 1, 8);
             this.tlpPrincipal.Controls.Add(this.grpLote, 0, 9);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 11);
             this.tlpPrincipal.AutoSize = true;
@@ -306,8 +309,29 @@ namespace Aviones_2._0.Forms.Materiales
             this.txtAComprar.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtAComprar.Name = "txtAComprar";
             this.txtAComprar.Size = new System.Drawing.Size(100, 23);
-            this.txtAComprar.TabIndex = 8;
+            this.txtAComprar.TabIndex = 0;
             this.txtAComprar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            //
+            // flpMinimo
+            //
+            this.flpMinimo.AutoSize = true;
+            this.flpMinimo.Controls.Add(this.txtAComprar);
+            this.flpMinimo.Controls.Add(this.chkSeRepone);
+            this.flpMinimo.Margin = new System.Windows.Forms.Padding(0);
+            this.flpMinimo.Name = "flpMinimo";
+            this.flpMinimo.TabIndex = 8;
+            //
+            // chkSeRepone
+            //
+            this.chkSeRepone.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.chkSeRepone.AutoSize = true;
+            this.chkSeRepone.Checked = true;
+            this.chkSeRepone.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSeRepone.Margin = new System.Windows.Forms.Padding(16, 3, 3, 3);
+            this.chkSeRepone.Name = "chkSeRepone";
+            this.chkSeRepone.TabIndex = 1;
+            this.chkSeRepone.Text = "Se repone (avisar en Stock crítico)";
+            this.chkSeRepone.CheckedChanged += new System.EventHandler(this.chkSeRepone_CheckedChanged);
             //
             // flpImagen
             //
@@ -512,6 +536,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpFamilia.ResumeLayout(false);
             this.flpFamilia.PerformLayout();
             this.flpUnidad.ResumeLayout(false);
+            this.flpMinimo.ResumeLayout(false);
+            this.flpMinimo.PerformLayout();
             this.flpUnidad.PerformLayout();
             this.flpImagen.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picImagen)).EndInit();
@@ -551,6 +577,8 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.Button botUnidades;
         private System.Windows.Forms.Label labAComprar;
         private System.Windows.Forms.TextBox txtAComprar;
+        private System.Windows.Forms.FlowLayoutPanel flpMinimo;
+        private System.Windows.Forms.CheckBox chkSeRepone;
         private System.Windows.Forms.FlowLayoutPanel flpImagen;
         private System.Windows.Forms.PictureBox picImagen;
         private System.Windows.Forms.Button botCargarImagen;

@@ -77,6 +77,9 @@ namespace Aviones_2._0.Data
 
         /// <summary>Con esto o menos disponible es stock crítico. null: se usa el mínimo general.</summary>
         public decimal? StockMinimo { get; set; }
+
+        /// <summary>Se vuelve a comprar. Lo que no se repone nunca aparece en el stock crítico.</summary>
+        public bool SeRepone { get; set; } = true;
     }
 
     /// <summary>Un renglón de la vista vMaterialesStock: el material con el stock de todos sus lotes.</summary>
@@ -93,6 +96,7 @@ namespace Aviones_2._0.Data
         public int IdTipoUnidad { get; set; }
         public string TipoUnidad { get; set; }
         public decimal? StockMinimo { get; set; }
+        public bool SeRepone { get; set; } = true;
 
         /// <summary>Suma de los pedidos de compra pendientes.</summary>
         public decimal PedidoPendiente { get; set; }

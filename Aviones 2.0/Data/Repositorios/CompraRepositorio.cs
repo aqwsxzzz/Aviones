@@ -31,7 +31,7 @@ namespace Aviones_2._0.Data.Repositorios
                 return cn.Query<StockCritico>(@"
                     SELECT S.*, ISNULL(S.StockMinimo, @minimoGeneral) AS MinimoAplicado
                     FROM dbo.vMaterialesStock S
-                    WHERE S.Disponible <= ISNULL(S.StockMinimo, @minimoGeneral)
+                    WHERE S.SeRepone = 1 AND S.Disponible <= ISNULL(S.StockMinimo, @minimoGeneral)
                     ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Medidas",
                     new { minimoGeneral }).ToList();
             }

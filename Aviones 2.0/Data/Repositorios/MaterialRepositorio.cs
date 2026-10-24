@@ -7,7 +7,7 @@ namespace Aviones_2._0.Data.Repositorios
     public class MaterialRepositorio
     {
         private const string ColumnasMaterial =
-            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo";
+            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone";
 
         /// <summary>Todos los materiales (también los sin stock), con el stock sumado de sus lotes.</summary>
         public List<MaterialStock> ListarStock(FiltroMateriales filtro = null)
@@ -77,8 +77,8 @@ namespace Aviones_2._0.Data.Repositorios
             using (var tx = cn.BeginTransaction())
             {
                 int id = cn.ExecuteScalar<int>(@"
-                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo)
-                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @StockMinimo);
+                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone)
+                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @StockMinimo, @SeRepone);
                     SELECT CAST(SCOPE_IDENTITY() AS int);", material, tx);
 
                 if (loteInicial != null)
@@ -102,7 +102,7 @@ namespace Aviones_2._0.Data.Repositorios
                     UPDATE dbo.Materiales SET
                         IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
                         Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
-                        StockMinimo = @StockMinimo
+                        StockMinimo = @StockMinimo, SeRepone = @SeRepone
                     WHERE IdMaterial = @IdMaterial", material);
             }
         }

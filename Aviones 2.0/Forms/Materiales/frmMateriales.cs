@@ -112,6 +112,7 @@ namespace Aviones_2._0.Forms.Materiales
             decimal usado = lista.Sum(m => m.DisponibleUsado);
             labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   "
                 + (usado > 0 ? $"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado   ·   " : "")
+                + (lista.Any(m => !m.SeRepone) ? $"{lista.Count(m => !m.SeRepone)} no se reponen (en cursiva)   ·   " : "")
                 + $"Valor: $ {Numeros.Dinero(valor)}";
 
             MostrarDetalle();
@@ -239,6 +240,22 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 e.CellStyle.ForeColor = Estilo.SinStock;
             }
+            if (!m.SeRepone)
+            {
+                e.CellStyle.Font = Cursiva(e.CellStyle.Font);
+            }
+        }
+
+        private readonly Dictionary<Font, Font> cursivas = new Dictionary<Font, Font>();
+
+        /// <summary>La misma letra en cursiva, creada una sola vez.</summary>
+        private Font Cursiva(Font letra)
+        {
+            if (!cursivas.TryGetValue(letra, out var cursiva))
+            {
+                cursivas[letra] = cursiva = new Font(letra, letra.Style | FontStyle.Italic);
+            }
+            return cursiva;
         }
 
         private void dgvMateriales_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -365,6 +382,11 @@ namespace Aviones_2._0.Forms.Materiales
         {
             var m = MaterialSeleccionado();
             if (m == null)
+            {
+                return;
+            }
+            if (!m.SeRepone && !Mensajes.Confirmar(this,
+                    "Este material está marcado como que no se repone (no se vuelve a comprar).\n\n¿Agregarlo a la lista de compras igual?", "Comprar"))
             {
                 return;
             }

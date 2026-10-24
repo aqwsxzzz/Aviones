@@ -105,6 +105,7 @@ namespace Aviones_2._0.Forms.Materiales
             txtCodigo.Text = m.Codigo;
             cboUnidad.SelectedValue = m.IdTipoUnidad;
             txtAComprar.Text = Numeros.Cantidad(m.StockMinimo);
+            chkSeRepone.Checked = m.SeRepone;
         }
 
         private void CargarUnidades(int? seleccionar)
@@ -192,8 +193,13 @@ namespace Aviones_2._0.Forms.Materiales
                 Invalido(cboUnidad, "Elija la unidad de medida.");
                 return;
             }
-            // Stock mínimo: vacío usa el mínimo general de Compras
-            if (!Numeros.TryLeerOpcional(txtAComprar.Text, out decimal? stockMinimo) || stockMinimo < 0)
+            // Stock mínimo: vacío usa el mínimo general de Compras. Si no se repone no se usa, pero se guarda por si vuelve a reponerse.
+            bool minimoValido = Numeros.TryLeerOpcional(txtAComprar.Text, out decimal? stockMinimo) && !(stockMinimo < 0);
+            if (!minimoValido && !chkSeRepone.Checked)
+            {
+                stockMinimo = null;
+            }
+            else if (!minimoValido)
             {
                 Invalido(txtAComprar, "El stock mínimo tiene que ser un número (o vacío para usar el general)."); 
                 return;
@@ -233,7 +239,8 @@ namespace Aviones_2._0.Forms.Materiales
                 Medidas = Limpio(txtMedidas.Text),
                 Codigo = Limpio(txtCodigo.Text),
                 IdTipoUnidad = idTipoUnidad,
-                StockMinimo = stockMinimo
+                StockMinimo = stockMinimo,
+                SeRepone = chkSeRepone.Checked
             };
 
             if (!ConfirmarSiEstaRepetido(material))
@@ -290,6 +297,8 @@ namespace Aviones_2._0.Forms.Materiales
                     : "¿Guardar igual? Van a quedar dos materiales con la misma descripción.");
             return Mensajes.Confirmar(this, pregunta, "Material repetido");
         }
+
+        private void chkSeRepone_CheckedChanged(object sender, EventArgs e) => txtAComprar.Enabled = chkSeRepone.Checked;
 
         private void Invalido(Control control, string mensaje)
         {
