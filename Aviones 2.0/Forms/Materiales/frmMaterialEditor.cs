@@ -52,6 +52,9 @@ namespace Aviones_2._0.Forms.Materiales
                 CargarUnidades(null);
 
                 txtGrupo.AutoCompleteCustomSource.AddRange(materiales.ListarGrupos().ToArray());
+                txtCaracteristica.AutoCompleteCustomSource.AddRange(materiales.ListarCaracteristicas().ToArray());
+                txtColor.AutoCompleteCustomSource.AddRange(materiales.ListarColores().ToArray());
+                txtMedidas.AutoCompleteCustomSource.AddRange(materiales.ListarMedidas().ToArray());
                 selFabricante.Cargar(null);
                 selUbicacion.Cargar(null);
 

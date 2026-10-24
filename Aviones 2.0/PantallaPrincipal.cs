@@ -48,7 +48,7 @@ namespace Aviones_2._0
             Salir.Location = new Point(
                 Math.Min(componentesGenericosPrin.puntoMedioHorizontal + 596, pantalla.Width - Salir.Width - 40),
                 Math.Min(componentesGenericosPrin.puntoMedioVertical + 415, pantalla.Height - Salir.Height - 40));
-            botFondo.Location = new Point(Salir.Left - botFondo.Width - 20, Salir.Bottom - botFondo.Height);
+            botFondo.Location = new Point(40, Salir.Bottom - botFondo.Height);
             CargarFondo();
         }
 

@@ -176,6 +176,8 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // txtCaracteristica
             //
+            this.txtCaracteristica.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtCaracteristica.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txtCaracteristica.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtCaracteristica.MaxLength = 100;
             this.txtCaracteristica.Name = "txtCaracteristica";
@@ -190,6 +192,8 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // txtColor
             //
+            this.txtColor.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtColor.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txtColor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtColor.MaxLength = 60;
             this.txtColor.Name = "txtColor";
@@ -204,6 +208,8 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // txtMedidas
             //
+            this.txtMedidas.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtMedidas.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txtMedidas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtMedidas.MaxLength = 60;
             this.txtMedidas.Name = "txtMedidas";

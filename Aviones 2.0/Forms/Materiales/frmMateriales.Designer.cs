@@ -281,7 +281,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispNuevo.DataPropertyName = "DisponibleNuevo";
             this.colDispNuevo.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDispNuevo.DefaultCellStyle.Format = "0.###";
-            this.colDispNuevo.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDispNuevo.FillWeight = 55F;
             this.colDispNuevo.HeaderText = "Nuevo";
             this.colDispNuevo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -294,7 +293,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDispUsado.DataPropertyName = "DisponibleUsado";
             this.colDispUsado.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDispUsado.DefaultCellStyle.Format = "0.###";
-            this.colDispUsado.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDispUsado.FillWeight = 55F;
             this.colDispUsado.HeaderText = "Usado";
             this.colDispUsado.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -328,7 +326,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDisponible.DataPropertyName = "Disponible";
             this.colDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colDisponible.DefaultCellStyle.Format = "0.###";
-            this.colDisponible.DefaultCellStyle.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
             this.colDisponible.FillWeight = 65F;
             this.colDisponible.HeaderText = "Disp.";
             this.colDisponible.ToolTipText = "Disponible total (nuevo + usado)";

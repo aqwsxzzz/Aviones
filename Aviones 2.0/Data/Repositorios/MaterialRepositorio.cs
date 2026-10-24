@@ -176,11 +176,21 @@ namespace Aviones_2._0.Data.Repositorios
             System.Text.RegularExpressions.Regex.Replace((texto ?? "").Trim(), @"\s+", " ").ToLowerInvariant();
 
         /// <summary>Grupos ya usados, para sugerirlos al escribir.</summary>
-        public List<string> ListarGrupos()
+        public List<string> ListarGrupos() => ListarDistintos("Grupo");
+
+        public List<string> ListarCaracteristicas() => ListarDistintos("Caracteristica");
+
+        public List<string> ListarColores() => ListarDistintos("Color");
+
+        public List<string> ListarMedidas() => ListarDistintos("Medidas");
+
+        /// <summary>Lo ya escrito en una columna, para sugerirlo al escribir.</summary>
+        private static List<string> ListarDistintos(string columna)
         {
             using (var cn = Db.Abrir())
             {
-                return cn.Query<string>("SELECT DISTINCT Grupo FROM dbo.Materiales ORDER BY Grupo").ToList();
+                return cn.Query<string>(
+                    $"SELECT DISTINCT {columna} FROM dbo.Materiales WHERE {columna} IS NOT NULL AND {columna} <> '' ORDER BY {columna}").ToList();
             }
         }
 

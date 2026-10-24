@@ -111,7 +111,13 @@ namespace Aviones_2._0.Forms.Modelos
                 DialogResult = DialogResult.Cancel;
                 return;
             }
+            // El primer material ya elegido: CAMBIAR CANTIDAD y QUITAR MATERIAL quedan listos para usar
             dgvMateriales.ClearSelection();
+            if (dgvMateriales.Rows.Count > 0)
+            {
+                dgvMateriales.CurrentCell = dgvMateriales.Rows[0].Cells.Cast<DataGridViewCell>().First(c => c.Visible);
+                dgvMateriales.Rows[0].Selected = true;
+            }
             ActualizarBotones();
             ActualizarTotal();
             cargando = false;

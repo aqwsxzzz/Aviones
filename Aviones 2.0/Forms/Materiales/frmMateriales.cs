@@ -112,7 +112,7 @@ namespace Aviones_2._0.Forms.Materiales
             decimal usado = lista.Sum(m => m.DisponibleUsado);
             labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   "
                 + (usado > 0 ? $"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado   ·   " : "")
-                + $"Valor disponible: $ {Numeros.Dinero(valor)}";
+                + $"Valor: $ {Numeros.Dinero(valor)}";
 
             MostrarDetalle();
         }
