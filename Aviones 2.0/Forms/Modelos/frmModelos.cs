@@ -29,6 +29,17 @@ namespace Aviones_2._0.Forms.Modelos
             OrdenGrilla.Habilitar(dgvModelos, dgvMateriales);
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            // Al mostrarse, la grilla elige sola la primera fila: se deja sin ninguno elegido
+            cargando = true;
+            dgvModelos.ClearSelection();
+            dgvModelos.CurrentCell = null;
+            cargando = false;
+            MostrarDetalle();
+        }
+
         private void frmModelos_Load(object sender, EventArgs e)
         {
             splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.45));
@@ -69,9 +80,10 @@ namespace Aviones_2._0.Forms.Modelos
             {
                 dgvModelos.DataSource = OrdenGrilla.Aplicar(dgvModelos, lista);
                 dgvModelos.ClearSelection();
+                // Sólo se vuelve a elegir el que estaba elegido; al entrar no hay ninguno y cada uno decide cuál abrir
+                dgvModelos.CurrentCell = null;
                 var fila = dgvModelos.Rows.Cast<DataGridViewRow>()
-                               .FirstOrDefault(r => ((Modelo)r.DataBoundItem).IdModelo == idSeleccionado)
-                           ?? dgvModelos.Rows.Cast<DataGridViewRow>().FirstOrDefault();
+                               .FirstOrDefault(r => ((Modelo)r.DataBoundItem).IdModelo == idSeleccionado);
                 if (fila != null)
                 {
                     dgvModelos.CurrentCell = fila.Cells[colNombre.Index];

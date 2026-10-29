@@ -6,25 +6,31 @@ using Dapper;
 namespace Aviones_2._0.Data.Repositorios
 {
     /// <summary>
-    /// Una lista de nombres que usan los lotes: los fabricantes o las ubicaciones.
-    /// Las dos funcionan igual; sólo cambia la tabla.
+    /// Una lista simple de nombres: fabricantes y ubicaciones (de los lotes) o vendedores (de los pedidos).
+    /// Todas funcionan igual; sólo cambian la tabla y dónde se usa.
     /// </summary>
-    public class ListaLoteRepositorio
+    public class ListaRepositorio
     {
         private readonly string tabla;
         private readonly string columnaId;
         private readonly string elemento;
+        private readonly string tablaUso;
+        private readonly string usos;
 
-        private ListaLoteRepositorio(string tabla, string columnaId, string elemento)
+        private ListaRepositorio(string tabla, string columnaId, string elemento, string tablaUso, string usos)
         {
             this.tabla = tabla;
             this.columnaId = columnaId;
             this.elemento = elemento;
+            this.tablaUso = tablaUso;
+            this.usos = usos;
         }
 
-        public static ListaLoteRepositorio Fabricantes() => new ListaLoteRepositorio("Fabricantes", "IdFabricante", "el fabricante");
+        public static ListaRepositorio Fabricantes() => new ListaRepositorio("Fabricantes", "IdFabricante", "el fabricante", "Lotes", "lotes");
 
-        public static ListaLoteRepositorio Ubicaciones() => new ListaLoteRepositorio("Ubicaciones", "IdUbicacion", "la ubicación");
+        public static ListaRepositorio Ubicaciones() => new ListaRepositorio("Ubicaciones", "IdUbicacion", "la ubicación", "Lotes", "lotes");
+
+        public static ListaRepositorio Vendedores() => new ListaRepositorio("Vendedores", "IdVendedor", "el vendedor", "PedidosCompra", "pedidos");
 
         public List<ElementoLista> Listar()
         {
@@ -52,7 +58,7 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        /// <summary>Le cambia el nombre en todos los lotes que lo usan.</summary>
+        /// <summary>Le cambia el nombre en todo lo que lo usa.</summary>
         public void Renombrar(int id, string nombre)
         {
             nombre = Validar(nombre);
@@ -73,10 +79,10 @@ namespace Aviones_2._0.Data.Repositorios
         {
             using (var cn = Db.Abrir())
             {
-                int lotes = cn.ExecuteScalar<int>($"SELECT COUNT(*) FROM dbo.Lotes WHERE {columnaId} = @id", new { id });
-                if (lotes > 0)
+                int enUso = cn.ExecuteScalar<int>($"SELECT COUNT(*) FROM dbo.{tablaUso} WHERE {columnaId} = @id", new { id });
+                if (enUso > 0)
                 {
-                    throw new ReglaNegocioException($"Hay {lotes} lotes con {elemento}. Cámbielo en esos lotes primero, o renómbrelo.");
+                    throw new ReglaNegocioException($"Hay {enUso} {usos} con {elemento}. Cámbielo en esos {usos} primero, o renómbrelo.");
                 }
                 cn.Execute($"DELETE FROM dbo.{tabla} WHERE {columnaId} = @id", new { id });
             }

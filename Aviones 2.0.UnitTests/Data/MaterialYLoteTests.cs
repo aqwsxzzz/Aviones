@@ -48,6 +48,33 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Valor_CuentaTodoLoCompradoAunqueEsteEnUnModelo()
+        {
+            var (idMaterial, idLote) = CrearMaterialConLote(5m, valor: 10m);
+            new ModeloRepositorio().Crear(new Modelo { Nombre = "Cub", IdEstadoModelo = EstadoActivo }, new[] { new LoteAsignado(idLote, 2m) });
+
+            var fila = materiales.ObtenerStock(idMaterial);
+            Assert.AreEqual(50m, fila.Valor);
+            Assert.AreEqual(30m, fila.ValorDisponible);
+        }
+
+        [TestMethod]
+        public void Nota_SeGuardaSinEspaciosDeMasYVaciaEsNull()
+        {
+            var (idMaterial, _) = CrearMaterialConLote(1m);
+            var m = materiales.Obtener(idMaterial);
+
+            m.Nota = "  Pedir el de 9 g  ";
+            materiales.Actualizar(m);
+            Assert.AreEqual("Pedir el de 9 g", materiales.Obtener(idMaterial).Nota);
+            Assert.AreEqual("Pedir el de 9 g", materiales.ObtenerStock(idMaterial).Nota);
+
+            m.Nota = "   ";
+            materiales.Actualizar(m);
+            Assert.IsNull(materiales.Obtener(idMaterial).Nota);
+        }
+
+        [TestMethod]
         public void Lote_MuestraLosNombresDeSusListas()
         {
             var (_, idLote) = CrearMaterialConLote(1m, fabricante: "Hitec", ubicacion: "Estante");
@@ -65,7 +92,7 @@ namespace Aviones_2._0.UnitTests.Data
         [TestMethod]
         public void ListaLote_RenombrarCambiaTodosLosLotesYNoSeBorraEnUso()
         {
-            var fabricantes = ListaLoteRepositorio.Fabricantes();
+            var fabricantes = ListaRepositorio.Fabricantes();
             var (_, uno) = CrearMaterialConLote(1m, fabricante: "Hitek");
             var (_, otro) = CrearMaterialConLote(1m, grupo: "Tela", fabricante: "Hitek");
             int id = lotes.Obtener(uno).IdFabricante!.Value;

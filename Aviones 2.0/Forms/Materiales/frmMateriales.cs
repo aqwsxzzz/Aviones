@@ -108,7 +108,7 @@ namespace Aviones_2._0.Forms.Materiales
             }
 
             int sinStock = lista.Count(m => m.Disponible == 0);
-            decimal valor = lista.Sum(m => m.ValorDisponible);
+            decimal valor = lista.Sum(m => m.Valor);
             decimal usado = lista.Sum(m => m.DisponibleUsado);
             labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   "
                 + (usado > 0 ? $"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado   ·   " : "")
@@ -132,6 +132,10 @@ namespace Aviones_2._0.Forms.Materiales
             botEliminar.Enabled = hay;
             botComprar.Enabled = hay;
             botAgregarLote.Enabled = hay;
+
+            // La nota del material, en un recuadro debajo de la foto
+            labNota.Text = m?.Nota;
+            labNota.Visible = !string.IsNullOrEmpty(m?.Nota);
 
             if (!hay)
             {
@@ -294,7 +298,12 @@ namespace Aviones_2._0.Forms.Materiales
                 (int)tlpDetalle.RowStyles[0].Height - picFoto.Margin.Vertical));
         }
 
-        private void tlpDetalle_SizeChanged(object sender, EventArgs e) => AjustarFoto();
+        private void tlpDetalle_SizeChanged(object sender, EventArgs e)
+        {
+            AjustarFoto();
+            // La nota corta los renglones al ancho del panel
+            labNota.MaximumSize = new Size(Math.Max(100, tlpDetalle.ClientSize.Width - labNota.Margin.Horizontal), 0);
+        }
 
         private void picFoto_DoubleClick(object sender, EventArgs e)
         {

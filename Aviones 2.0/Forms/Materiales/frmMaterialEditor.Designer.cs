@@ -32,6 +32,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.txtMedidas = new System.Windows.Forms.TextBox();
             this.labCodigo = new System.Windows.Forms.Label();
             this.txtCodigo = new System.Windows.Forms.TextBox();
+            this.labNota = new System.Windows.Forms.Label();
+            this.txtNota = new System.Windows.Forms.TextBox();
             this.labEstado = new System.Windows.Forms.Label();
             this.flpEstado = new System.Windows.Forms.FlowLayoutPanel();
             this.radNuevo = new System.Windows.Forms.RadioButton();
@@ -94,6 +96,8 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.txtMedidas, 1, 4);
             this.tlpPrincipal.Controls.Add(this.labCodigo, 0, 5);
             this.tlpPrincipal.Controls.Add(this.txtCodigo, 1, 5);
+            this.tlpPrincipal.Controls.Add(this.labNota, 0, 6);
+            this.tlpPrincipal.Controls.Add(this.txtNota, 1, 6);
             this.tlpPrincipal.Controls.Add(this.labUnidad, 0, 7);
             this.tlpPrincipal.Controls.Add(this.flpUnidad, 1, 7);
             this.tlpPrincipal.Controls.Add(this.labAComprar, 0, 8);
@@ -121,6 +125,24 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.SetColumnSpan(this.grpLote, 3);
             this.tlpPrincipal.SetColumnSpan(this.flpBotones, 3);
             this.tlpPrincipal.TabIndex = 0;
+            //
+            // labNota
+            //
+            this.labNota.AutoSize = true;
+            this.labNota.Margin = new System.Windows.Forms.Padding(3, 6, 3, 0);
+            this.labNota.Name = "labNota";
+            this.labNota.Text = "Nota";
+            //
+            // txtNota
+            //
+            this.txtNota.AcceptsReturn = true;
+            this.txtNota.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNota.MaxLength = 500;
+            this.txtNota.Multiline = true;
+            this.txtNota.Name = "txtNota";
+            this.txtNota.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNota.Size = new System.Drawing.Size(434, 52);
+            this.txtNota.TabIndex = 6;
             //
             // labFamilia
             //
@@ -567,6 +589,8 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.TextBox txtMedidas;
         private System.Windows.Forms.Label labCodigo;
         private System.Windows.Forms.TextBox txtCodigo;
+        private System.Windows.Forms.Label labNota;
+        private System.Windows.Forms.TextBox txtNota;
         private System.Windows.Forms.Label labEstado;
         private System.Windows.Forms.FlowLayoutPanel flpEstado;
         private System.Windows.Forms.RadioButton radNuevo;

@@ -57,7 +57,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.labTitulo.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold);
             this.labTitulo.Margin = new System.Windows.Forms.Padding(3, 0, 3, 10);
             this.labTitulo.Name = "labTitulo";
-            this.labTitulo.Text = "Valor del stock disponible por familia";
+            this.labTitulo.Text = "Valor de los materiales por familia";
             //
             // dgvFamilias
             //
@@ -98,7 +98,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colValor.DataPropertyName = "Valor";
             this.colValor.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colValor.DefaultCellStyle.Format = "N2";
-            this.colValor.HeaderText = "Valor disponible";
+            this.colValor.HeaderText = "Valor";
             this.colValor.Name = "colValor";
             //
             // labTotal

@@ -32,8 +32,8 @@ namespace Aviones_2._0.Forms.Materiales
         {
             InitializeComponent();
             Imagenes.MarcarSinImagen(picImagen);
-            selFabricante.Configurar(ListaLoteRepositorio.Fabricantes(), "Fabricantes");
-            selUbicacion.Configurar(ListaLoteRepositorio.Ubicaciones(), "Ubicaciones");
+            selFabricante.Configurar(ListaRepositorio.Fabricantes(), "Fabricantes");
+            selUbicacion.Configurar(ListaRepositorio.Ubicaciones(), "Ubicaciones");
             fotoMaxima = picImagen.Size;
             this.idMaterial = idMaterial;
             this.idFamiliaSugerida = idFamiliaSugerida;
@@ -106,6 +106,7 @@ namespace Aviones_2._0.Forms.Materiales
             cboUnidad.SelectedValue = m.IdTipoUnidad;
             txtAComprar.Text = Numeros.Cantidad(m.StockMinimo);
             chkSeRepone.Checked = m.SeRepone;
+            txtNota.Text = m.Nota;
         }
 
         private void CargarUnidades(int? seleccionar)
@@ -240,7 +241,8 @@ namespace Aviones_2._0.Forms.Materiales
                 Codigo = Limpio(txtCodigo.Text),
                 IdTipoUnidad = idTipoUnidad,
                 StockMinimo = stockMinimo,
-                SeRepone = chkSeRepone.Checked
+                SeRepone = chkSeRepone.Checked,
+                Nota = Limpio(txtNota.Text)
             };
 
             if (!ConfirmarSiEstaRepetido(material))

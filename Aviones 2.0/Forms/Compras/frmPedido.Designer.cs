@@ -30,7 +30,7 @@ namespace Aviones_2._0.Forms.Compras
             this.labUltimoPrecio = new System.Windows.Forms.Label();
             this.labTotales = new System.Windows.Forms.Label();
             this.labNota = new System.Windows.Forms.Label();
-            this.txtNota = new System.Windows.Forms.TextBox();
+            this.selVendedor = new Aviones_2._0.Forms.Comun.SelectorLista();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
             this.botCancelar = new System.Windows.Forms.Button();
             this.botGuardar = new System.Windows.Forms.Button();
@@ -53,7 +53,7 @@ namespace Aviones_2._0.Forms.Compras
             this.tlpPrincipal.Controls.Add(this.labPrecio, 0, 3);
             this.tlpPrincipal.Controls.Add(this.flpPrecio, 1, 3);
             this.tlpPrincipal.Controls.Add(this.labNota, 0, 4);
-            this.tlpPrincipal.Controls.Add(this.txtNota, 1, 4);
+            this.tlpPrincipal.Controls.Add(this.selVendedor, 1, 4);
             this.tlpPrincipal.Controls.Add(this.labTotales, 0, 5);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 6);
             this.tlpPrincipal.Location = new System.Drawing.Point(0, 0);
@@ -169,14 +169,13 @@ namespace Aviones_2._0.Forms.Compras
             this.labNota.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labNota.AutoSize = true;
             this.labNota.Name = "labNota";
-            this.labNota.Text = "Nota";
+            this.labNota.Text = "Vendedor";
             //
-            // txtNota
+            // selVendedor
             //
-            this.txtNota.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtNota.MaxLength = 200;
-            this.txtNota.Name = "txtNota";
-            this.txtNota.TabIndex = 2;
+            this.selVendedor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.selVendedor.Name = "selVendedor";
+            this.selVendedor.TabIndex = 2;
             //
             // flpBotones
             //
@@ -252,7 +251,7 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.Label labUltimoPrecio;
         private System.Windows.Forms.Label labTotales;
         private System.Windows.Forms.Label labNota;
-        private System.Windows.Forms.TextBox txtNota;
+        private Aviones_2._0.Forms.Comun.SelectorLista selVendedor;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;
         private System.Windows.Forms.Button botCancelar;
         private System.Windows.Forms.Button botGuardar;

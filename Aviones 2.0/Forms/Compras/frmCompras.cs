@@ -20,6 +20,10 @@ namespace Aviones_2._0.Forms.Compras
         private readonly ConfiguracionRepositorio configuracion = new ConfiguracionRepositorio();
         private readonly MaterialRepositorio materiales = new MaterialRepositorio();
         private List<StockCritico> criticos = new List<StockCritico>();
+        private readonly ListaRepositorio vendedores = ListaRepositorio.Vendedores();
+        private bool cargandoVendedores;
+        /// <summary>Filtro de la lista de compras: todos los vendedores, o los pedidos sin vendedor.</summary>
+        private const int TodosLosVendedores = -1, SinVendedor = 0;
         private decimal minimoGeneral;
         /// <summary>Naranja oscuro: se lee bien sobre el fondo verde claro.</summary>
         private static readonly Color YaPedido = Color.FromArgb(200, 85, 0);
@@ -35,7 +39,7 @@ namespace Aviones_2._0.Forms.Compras
             dgvPedidos.BackgroundColor = Color.Honeydew;
             dgvCriticos.BackgroundColor = Color.Honeydew;
             dgvCriticos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            Estilo.Botones(botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
+            Estilo.Botones(botAgregarPedido, botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
             Estilo.BotonSecundario(botSalir);
             OrdenGrilla.Habilitar(dgvPedidos, dgvCriticos);
         }
@@ -47,6 +51,7 @@ namespace Aviones_2._0.Forms.Compras
             {
                 minimoGeneral = configuracion.ObtenerStockMinimoGeneral();
                 txtMinimo.Text = Numeros.Cantidad(minimoGeneral);
+                CargarVendedores();
                 CargarPedidos();
                 CargarCriticos();
             });
@@ -60,19 +65,75 @@ namespace Aviones_2._0.Forms.Compras
         private void CargarPedidos(int? seleccionar = null)
         {
             int? id = seleccionar ?? PedidoSeleccionado()?.IdPedido;
-            var pedidos = compras.ListarPendientes();
+            int filtro = cboVendedor.SelectedValue is int v ? v : TodosLosVendedores;
+            var pedidos = compras.ListarPendientes()
+                .Where(p => filtro == TodosLosVendedores || (p.IdVendedor ?? SinVendedor) == filtro)
+                .ToList();
             dgvPedidos.DataSource = OrdenGrilla.Aplicar(dgvPedidos, pedidos);
             Seleccionar(dgvPedidos, r => ((PedidoCompra)r.DataBoundItem).IdPedido == id);
 
             decimal total = pedidos.Sum(p => p.CostoEstimado ?? 0m);
             labTotalPedidos.Text = pedidos.Count == 0
-                ? "No hay nada pendiente de comprar."
+                ? (filtro == TodosLosVendedores ? "No hay nada pendiente de comprar." : "No hay pedidos pendientes de este vendedor.")
                 : $"{pedidos.Count} pedidos   ·   Costo estimado: $ {Numeros.Dinero(total)}"
                   + (pedidos.Any(p => !p.Precio.HasValue) ? " (algunos sin precio)" : "");
             ActualizarBotones();
         }
 
         private void dgvPedidos_SelectionChanged(object sender, EventArgs e) => ActualizarBotones();
+
+        /// <summary>El filtro por vendedor: (Todos), (Sin vendedor) y cada vendedor. Conserva lo elegido.</summary>
+        private void CargarVendedores()
+        {
+            int actual = cboVendedor.SelectedValue is int v ? v : TodosLosVendedores;
+            var opciones = new List<ElementoLista>
+            {
+                new ElementoLista { Id = TodosLosVendedores, Nombre = "(Todos)" },
+                new ElementoLista { Id = SinVendedor, Nombre = "(Sin vendedor)" }
+            };
+            opciones.AddRange(vendedores.Listar());
+            cargandoVendedores = true;
+            try
+            {
+                cboVendedor.DisplayMember = nameof(ElementoLista.Nombre);
+                cboVendedor.ValueMember = nameof(ElementoLista.Id);
+                cboVendedor.DataSource = opciones;
+                cboVendedor.SelectedValue = opciones.Any(o => o.Id == actual) ? actual : TodosLosVendedores;
+            }
+            finally
+            {
+                cargandoVendedores = false;
+            }
+        }
+
+        private void cboVendedor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!cargandoVendedores)
+            {
+                Mensajes.Intentar(this, () => CargarPedidos());
+            }
+        }
+
+        /// <summary>Pedir cualquier material, tenga el stock que tenga, o uno nuevo que todavía no está cargado.</summary>
+        private void botAgregarPedido_Click(object sender, EventArgs e)
+        {
+            int idMaterial;
+            using (var elegir = new frmElegirMaterial())
+            {
+                if (elegir.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+                idMaterial = elegir.IdMaterial;
+            }
+            using (var dialogo = new frmPedido(idMaterial))
+            {
+                if (dialogo.ShowDialog(this) == DialogResult.OK)
+                {
+                    Recargar(null, idMaterial);
+                }
+            }
+        }
 
         private void dgvPedidos_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -141,7 +202,11 @@ namespace Aviones_2._0.Forms.Compras
 
         private void botImprimirPedidos_Click(object sender, EventArgs e)
         {
-            ImpresionGrilla.VistaPrevia(this, dgvPedidos, "Lista de compras", labTotalPedidos.Text);
+            // Filtrada por vendedor, se imprime la lista de ese vendedor para mandarle la compra
+            string titulo = cboVendedor.SelectedValue is int v && v != TodosLosVendedores
+                ? $"Lista de compras: {cboVendedor.Text}"
+                : "Lista de compras";
+            ImpresionGrilla.VistaPrevia(this, dgvPedidos, titulo, labTotalPedidos.Text);
         }
 
         #endregion
@@ -280,6 +345,7 @@ namespace Aviones_2._0.Forms.Compras
         {
             Mensajes.Intentar(this, () =>
             {
+                CargarVendedores();   // desde un pedido se pueden agregar vendedores
                 CargarPedidos(idPedido);
                 CargarCriticos(idMaterialCritico);
             });

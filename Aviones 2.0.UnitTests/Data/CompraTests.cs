@@ -123,6 +123,27 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void Pedidos_ConVendedorYSeProponeElUltimo()
+        {
+            var vendedores = ListaRepositorio.Vendedores();
+            int hobbyking = vendedores.Crear("HobbyKing");
+            int servo = CrearMaterial("Servo", 2m);
+            Assert.IsNull(compras.UltimoVendedor(servo));
+
+            int id = compras.CrearPedido(servo, 4m, null, idVendedor: hobbyking);
+            Assert.AreEqual("HobbyKing", compras.Obtener(id).Vendedor);
+            Assert.AreEqual(hobbyking, compras.UltimoVendedor(servo));
+            Assert.ThrowsExactly<ReglaNegocioException>(() => vendedores.Eliminar(hobbyking));
+
+            // Lo recibido en partes conserva el vendedor
+            compras.Recibir(id, Recibido(1m), esperarResto: true);
+            Assert.AreEqual(1m, Valor("SELECT COUNT(*) FROM dbo.PedidosCompra WHERE Estado = 'C' AND IdVendedor = @hobbyking", new { hobbyking }) ?? 0m);
+
+            compras.ModificarPedido(id, 3m, null, idVendedor: null);
+            Assert.IsNull(compras.Obtener(id).Vendedor);
+        }
+
+        [TestMethod]
         public void Pedidos_CantidadTieneQueSerPositiva()
         {
             int servo = CrearMaterial("Servo", 2m);
@@ -130,7 +151,7 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         private static Lote Recibido(decimal cantidad, decimal valor = 12m) =>
-            new Lote { Cantidad = cantidad, ValorUnitario = valor, IdFabricante = IdDe(ListaLoteRepositorio.Fabricantes(), "Hitec") };
+            new Lote { Cantidad = cantidad, ValorUnitario = valor, IdFabricante = IdDe(ListaRepositorio.Fabricantes(), "Hitec") };
 
         private static decimal? Valor(string sql, object datos)
         {

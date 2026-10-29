@@ -63,8 +63,8 @@ namespace Aviones_2._0.UnitTests.Data
             {
                 Cantidad = cantidad,
                 ValorUnitario = valor,
-                IdFabricante = IdDe(ListaLoteRepositorio.Fabricantes(), fabricante),
-                IdUbicacion = IdDe(ListaLoteRepositorio.Ubicaciones(), ubicacion)
+                IdFabricante = IdDe(ListaRepositorio.Fabricantes(), fabricante),
+                IdUbicacion = IdDe(ListaRepositorio.Ubicaciones(), ubicacion)
             };
             int idMaterial = new MaterialRepositorio().Crear(
                 new Material { IdFamilia = IdFamilia, Grupo = grupo, Caracteristica = "Monokote", IdTipoUnidad = IdMetros },
@@ -73,7 +73,7 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         /// <summary>El Id del nombre en la lista; si no está, lo agrega. null para ninguno.</summary>
-        protected static int? IdDe(ListaLoteRepositorio lista, string nombre) =>
+        protected static int? IdDe(ListaRepositorio lista, string nombre) =>
             nombre == null ? (int?)null : lista.Listar().FirstOrDefault(x => x.Nombre == nombre)?.Id ?? lista.Crear(nombre);
 
         protected static int EstadoActivo => 1;

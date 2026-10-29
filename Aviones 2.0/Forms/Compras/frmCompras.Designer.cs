@@ -22,8 +22,12 @@ namespace Aviones_2._0.Forms.Compras
             this.splListas = new System.Windows.Forms.SplitContainer();
             this.tlpPedidos = new System.Windows.Forms.TableLayoutPanel();
             this.labPedidos = new System.Windows.Forms.Label();
+            this.flpPedidosTitulo = new System.Windows.Forms.FlowLayoutPanel();
+            this.labVendedor = new System.Windows.Forms.Label();
+            this.cboVendedor = new System.Windows.Forms.ComboBox();
+            this.botAgregarPedido = new System.Windows.Forms.Button();
             this.dgvPedidos = new System.Windows.Forms.DataGridView();
-            this.colPedFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPedVendedor = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -32,7 +36,6 @@ namespace Aviones_2._0.Forms.Compras
             this.colPedDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedPrecio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedCosto = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPedNota = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.flpPedidos = new System.Windows.Forms.FlowLayoutPanel();
             this.botRecibirPedido = new System.Windows.Forms.Button();
             this.botModificarPedido = new System.Windows.Forms.Button();
@@ -119,7 +122,7 @@ namespace Aviones_2._0.Forms.Compras
             //
             this.tlpPedidos.ColumnCount = 1;
             this.tlpPedidos.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPedidos.Controls.Add(this.labPedidos, 0, 0);
+            this.tlpPedidos.Controls.Add(this.flpPedidosTitulo, 0, 0);
             this.tlpPedidos.Controls.Add(this.dgvPedidos, 0, 1);
             this.tlpPedidos.Controls.Add(this.flpPedidos, 0, 2);
             this.tlpPedidos.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -134,14 +137,47 @@ namespace Aviones_2._0.Forms.Compras
             //
             this.labPedidos.AutoSize = true;
             this.labPedidos.Font = new System.Drawing.Font("Arial", 13F, System.Drawing.FontStyle.Bold);
-            this.labPedidos.Margin = new System.Windows.Forms.Padding(3, 0, 3, 6);
+            this.labPedidos.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.labPedidos.Name = "labPedidos";
             this.labPedidos.Text = "Lista de compras (pedidos pendientes)";
+            //
+            // flpPedidosTitulo
+            //
+            this.flpPedidosTitulo.AutoSize = true;
+            this.flpPedidosTitulo.Controls.Add(this.labPedidos);
+            this.flpPedidosTitulo.Controls.Add(this.labVendedor);
+            this.flpPedidosTitulo.Controls.Add(this.cboVendedor);
+            this.flpPedidosTitulo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpPedidosTitulo.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
+            this.flpPedidosTitulo.Name = "flpPedidosTitulo";
+            //
+            // labVendedor
+            //
+            this.labVendedor.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.labVendedor.AutoSize = true;
+            this.labVendedor.Margin = new System.Windows.Forms.Padding(30, 0, 3, 0);
+            this.labVendedor.Name = "labVendedor";
+            this.labVendedor.Text = "Vendedor";
+            //
+            // cboVendedor
+            //
+            this.cboVendedor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboVendedor.Name = "cboVendedor";
+            this.cboVendedor.Size = new System.Drawing.Size(240, 24);
+            this.cboVendedor.TabIndex = 0;
+            this.cboVendedor.SelectedIndexChanged += new System.EventHandler(this.cboVendedor_SelectedIndexChanged);
+            //
+            // botAgregarPedido
+            //
+            this.botAgregarPedido.Name = "botAgregarPedido";
+            this.botAgregarPedido.Size = new System.Drawing.Size(210, 38);
+            this.botAgregarPedido.TabIndex = 0;
+            this.botAgregarPedido.Text = "AGREGAR MATERIAL...";
+            this.botAgregarPedido.Click += new System.EventHandler(this.botAgregarPedido_Click);
             //
             // dgvPedidos
             //
             this.dgvPedidos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colPedFecha,
             this.colPedFamilia,
             this.colPedMaterial,
             this.colPedCodigo,
@@ -150,7 +186,7 @@ namespace Aviones_2._0.Forms.Compras
             this.colPedDisponible,
             this.colPedPrecio,
             this.colPedCosto,
-            this.colPedNota});
+            this.colPedVendedor});
             this.dgvPedidos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvPedidos.Name = "dgvPedidos";
             this.dgvPedidos.TabIndex = 0;
@@ -158,14 +194,13 @@ namespace Aviones_2._0.Forms.Compras
             this.dgvPedidos.SelectionChanged += new System.EventHandler(this.dgvPedidos_SelectionChanged);
             this.dgvPedidos.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvPedidos_KeyDown);
             //
-            // colPedFecha
+            // colPedVendedor
             //
-            this.colPedFecha.DataPropertyName = "FechaPedido";
-            this.colPedFecha.DefaultCellStyle.Format = "dd/MM/yyyy";
-            this.colPedFecha.FillWeight = 60F;
-            this.colPedFecha.HeaderText = "Pedido";
-            this.colPedFecha.MinimumWidth = 80;
-            this.colPedFecha.Name = "colPedFecha";
+            this.colPedVendedor.DataPropertyName = "Vendedor";
+            this.colPedVendedor.FillWeight = 90F;
+            this.colPedVendedor.HeaderText = "Vendedor";
+            this.colPedVendedor.MinimumWidth = 80;
+            this.colPedVendedor.Name = "colPedVendedor";
             //
             // colPedFamilia
             //
@@ -240,17 +275,10 @@ namespace Aviones_2._0.Forms.Compras
             this.colPedCosto.MinimumWidth = 70;
             this.colPedCosto.Name = "colPedCosto";
             //
-            // colPedNota
-            //
-            this.colPedNota.DataPropertyName = "Nota";
-            this.colPedNota.FillWeight = 150F;
-            this.colPedNota.HeaderText = "Nota";
-            this.colPedNota.MinimumWidth = 80;
-            this.colPedNota.Name = "colPedNota";
-            //
             // flpPedidos
             //
             this.flpPedidos.AutoSize = true;
+            this.flpPedidos.Controls.Add(this.botAgregarPedido);
             this.flpPedidos.Controls.Add(this.botRecibirPedido);
             this.flpPedidos.Controls.Add(this.botModificarPedido);
             this.flpPedidos.Controls.Add(this.botEliminarPedido);
@@ -575,8 +603,12 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.SplitContainer splListas;
         private System.Windows.Forms.TableLayoutPanel tlpPedidos;
         private System.Windows.Forms.Label labPedidos;
+        private System.Windows.Forms.FlowLayoutPanel flpPedidosTitulo;
+        private System.Windows.Forms.Label labVendedor;
+        private System.Windows.Forms.ComboBox cboVendedor;
+        private System.Windows.Forms.Button botAgregarPedido;
         private System.Windows.Forms.DataGridView dgvPedidos;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPedFecha;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPedVendedor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedFamilia;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedMaterial;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedCodigo;
@@ -585,7 +617,6 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedDisponible;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedPrecio;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedCosto;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colPedNota;
         private System.Windows.Forms.FlowLayoutPanel flpPedidos;
         private System.Windows.Forms.Button botRecibirPedido;
         private System.Windows.Forms.Button botModificarPedido;

@@ -10,14 +10,14 @@ using Aviones_2._0.Data.Repositorios;
 namespace Aviones_2._0.Forms.Comun
 {
     /// <summary>
-    /// Elegir un elemento de una lista de nombres (fabricante, ubicación) o dejarlo vacío,
+    /// Elegir un elemento de una lista de nombres (fabricante, ubicación, vendedor) o dejarlo vacío,
     /// con un botón para editar la lista.
     /// </summary>
     public class SelectorLista : UserControl
     {
         private readonly ComboBox combo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Margin = Padding.Empty };
         private readonly Button boton = new Button { Text = "Editar…", AutoSize = true, TabStop = false, Margin = Padding.Empty };
-        private ListaLoteRepositorio lista;
+        private ListaRepositorio lista;
         private string titulo;
 
         public SelectorLista()
@@ -28,7 +28,7 @@ namespace Aviones_2._0.Forms.Comun
         }
 
         /// <summary>Qué lista muestra y el título de su editor.</summary>
-        public void Configurar(ListaLoteRepositorio lista, string titulo)
+        public void Configurar(ListaRepositorio lista, string titulo)
         {
             this.lista = lista;
             this.titulo = titulo;

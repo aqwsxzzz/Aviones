@@ -29,6 +29,7 @@ namespace Aviones_2._0.Forms.Compras
         private frmPedido(int idMaterial, PedidoCompra pedido)
         {
             InitializeComponent();
+            selVendedor.Configurar(ListaRepositorio.Vendedores(), "Vendedores");
             this.idMaterial = idMaterial;
             this.pedido = pedido;
             Estilo.Botones(botGuardar);
@@ -53,6 +54,7 @@ namespace Aviones_2._0.Forms.Compras
                 decimal? precio = pedido?.PrecioEstimado ?? ultimo;
                 txtPrecio.Text = precio.HasValue ? Numeros.Dinero(precio.Value) : "";
 
+                selVendedor.Cargar(pedido?.IdVendedor ?? UltimoVendedor());
                 labMaterial.Text = $"{m.Familia}: {m.Descripcion}" + (string.IsNullOrEmpty(m.Codigo) ? "" : $" ({m.Codigo})");
                 labUnidad.Text = m.TipoUnidad;
                 labStock.Text = $"Disponible: {Numeros.Cantidad(m.Disponible)}"
@@ -77,7 +79,6 @@ namespace Aviones_2._0.Forms.Compras
                     Text = "Modificar pedido";
                     botGuardar.Text = "GUARDAR";
                     txtCantidad.Text = Numeros.Cantidad(pedido.Cantidad);
-                    txtNota.Text = pedido.Nota;
                 }
             });
 
@@ -109,14 +110,18 @@ namespace Aviones_2._0.Forms.Compras
 
             bool guardado = Mensajes.Intentar(this, () =>
             {
-                if (pedido == null) compras.CrearPedido(idMaterial, cantidad, txtNota.Text, precio);
-                else compras.ModificarPedido(pedido.IdPedido, cantidad, txtNota.Text, precio);
+                // La nota de los pedidos ya no se edita acá (ahora es del material); se conserva la que tenía
+                if (pedido == null) compras.CrearPedido(idMaterial, cantidad, null, precio, selVendedor.Valor);
+                else compras.ModificarPedido(pedido.IdPedido, cantidad, pedido.Nota, precio, selVendedor.Valor);
             });
             if (guardado)
             {
                 DialogResult = DialogResult.OK;
             }
         }
+
+        /// <summary>Para un pedido nuevo: el vendedor del último pedido de este material, si tuvo.</summary>
+        private int? UltimoVendedor() => compras.UltimoVendedor(idMaterial);
 
         private void Importe_TextChanged(object sender, EventArgs e) => MostrarTotales();
 

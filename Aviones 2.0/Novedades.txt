@@ -11,9 +11,11 @@ Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se
 * En el listado de materiales, resaltar sólo la columna cantidad.
 > Sólo la columna Cant. va en negrita.
 
+* Que la columna se llame directamente "Valor" y muestre el valor declarado por la cantidad, no el disponible.
+> La columna ahora se llama "Valor" y es todo lo comprado por su valor unitario: cuenta aunque esté usado, puesto en un modelo o guardado. El informe por familia (INFORME) usa el mismo valor.
+
 * Que el total de abajo diga directamente "Valor" y sume la columna valor.
-> El total de abajo ahora dice "Valor: $".
-! La columna "Valor disp." todavía calcula el valor de lo que queda (lo disponible). Pasarla a "valor declarado x cantidad" queda para cuando definamos cuál de los dos querés ver: lo que se compró o lo que queda.
+> El total de abajo ahora dice "Valor: $" y es la suma de esa columna.
 
 * Que Característica, Color y Medidas sugieran lo ya escrito, como hace Grupo.
 > Al escribir en Característica, Color o Medidas aparecen las palabras ya usadas.
@@ -21,6 +23,23 @@ Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se
 * Si a un material le pongo stock mínimo 0, es que no voy a comprar más (obsoleto u otra razón).
 > Cada material tiene ahora la casilla "Se repone (avisar en Stock crítico)". Si se destilda, el material nunca aparece en Stock crítico, se ve en cursiva en el listado de materiales y, si igual se lo quiere comprar, el programa pregunta antes.
 ! En lugar de darle ese significado al 0, se hizo una casilla aparte: así el stock mínimo sigue significando lo mismo para todos los materiales (0 = avisar recién cuando se acaba) y "no se compra más" queda a la vista. Todos los materiales que ya estaban siguen como que se reponen.
+
+* Al entrar en MODELOS, que no quede elegido el primer modelo, y elegir yo cuál abrir.
+> Al entrar en Modelos no hay ningún modelo elegido; se ven sus datos al hacer clic en uno.
+
+* En Compras, poder pedir un material que tiene más stock que el mínimo, y también uno que no está en el listado de materiales.
+> En la lista de compras está el botón "AGREGAR MATERIAL...": se busca cualquier material y se lo pide. Si todavía no existe, "MATERIAL NUEVO..." lo crea ahí mismo y queda pedido.
+! Un material que no existe se crea en el listado de materiales (sin stock) antes de pedirlo: así, cuando llega, se recibe como cualquier otro.
+
+* En la lista de compras, aclarar a qué vendedor se le compra cada material, en lugar de la columna de fecha y al final, antes de notas.
+> Cada pedido tiene su vendedor, que se elige de una lista (con "Editar..." para agregar vendedores). La columna de la fecha se sacó y la de Vendedor quedó al final. Para un material que ya se pidió, se propone el mismo vendedor de la vez anterior.
+! La columna Notas ya no está en los pedidos (ver la nota del material), así que Vendedor quedó como última columna.
+
+* Al cerrar el pedido, que el programa largue un listado por vendedor, para decidir cuál mandar a comprar.
+> Arriba de la lista de compras hay un filtro "Vendedor". Eligiendo uno se ven sólo sus pedidos, con su total, e IMPRIMIR LISTA imprime la lista de ese vendedor.
+
+* Que la nota pase a la tabla de materiales y aparezca en un recuadro al elegir el material en MATERIALES.
+> Cada material tiene una Nota (en NUEVO o MODIFICAR). Al elegir un material con nota, aparece en un recuadro amarillo debajo de la foto. Las notas que había en los pedidos pendientes pasaron a su material.
 
 * Los botones "Cambiar cantidad" y "Quitar material" no funcionan.
 > Ahora la pantalla del modelo abre con el primer material ya elegido, y los dos botones funcionan de entrada.

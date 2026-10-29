@@ -76,7 +76,7 @@
     <Compile Include="Data\Errores.cs" />
     <Compile Include="Data\Repositorios\EstadoModeloRepositorio.cs" />
     <Compile Include="Data\Repositorios\FamiliaRepositorio.cs" />
-    <Compile Include="Data\Repositorios\ListaLoteRepositorio.cs" />
+    <Compile Include="Data\Repositorios\ListaRepositorio.cs" />
     <Compile Include="Data\Repositorios\LoteRepositorio.cs" />
     <Compile Include="Data\Repositorios\MaterialRepositorio.cs" />
     <Compile Include="Data\Repositorios\ModeloRepositorio.cs" />
@@ -138,6 +138,9 @@
       <DependentUpon>frmInformeValor.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Novedades.cs" />
+    <Compile Include="Forms\Compras\frmElegirMaterial.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Comun\frmNovedades.cs">
       <SubType>Form</SubType>
     </Compile>

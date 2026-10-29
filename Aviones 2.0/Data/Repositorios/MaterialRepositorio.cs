@@ -7,7 +7,7 @@ namespace Aviones_2._0.Data.Repositorios
     public class MaterialRepositorio
     {
         private const string ColumnasMaterial =
-            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone";
+            "IdMaterial, IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone, Nota";
 
         /// <summary>Todos los materiales (también los sin stock), con el stock sumado de sus lotes.</summary>
         public List<MaterialStock> ListarStock(FiltroMateriales filtro = null)
@@ -77,8 +77,8 @@ namespace Aviones_2._0.Data.Repositorios
             using (var tx = cn.BeginTransaction())
             {
                 int id = cn.ExecuteScalar<int>(@"
-                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone)
-                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @StockMinimo, @SeRepone);
+                    INSERT INTO dbo.Materiales (IdFamilia, Grupo, Caracteristica, Color, Medidas, Codigo, IdTipoUnidad, StockMinimo, SeRepone, Nota)
+                    VALUES (@IdFamilia, @Grupo, @Caracteristica, @Color, @Medidas, @Codigo, @IdTipoUnidad, @StockMinimo, @SeRepone, @Nota);
                     SELECT CAST(SCOPE_IDENTITY() AS int);", material, tx);
 
                 if (loteInicial != null)
@@ -102,7 +102,7 @@ namespace Aviones_2._0.Data.Repositorios
                     UPDATE dbo.Materiales SET
                         IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
                         Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
-                        StockMinimo = @StockMinimo, SeRepone = @SeRepone
+                        StockMinimo = @StockMinimo, SeRepone = @SeRepone, Nota = @Nota
                     WHERE IdMaterial = @IdMaterial", material);
             }
         }
@@ -228,6 +228,11 @@ namespace Aviones_2._0.Data.Repositorios
             if (m.StockMinimo < 0)
             {
                 throw new ReglaNegocioException("El stock mínimo no puede ser negativo.");
+            }
+            m.Nota = string.IsNullOrWhiteSpace(m.Nota) ? null : m.Nota.Trim();
+            if (m.Nota?.Length > 500)
+            {
+                throw new ReglaNegocioException("La nota no puede tener más de 500 letras.");
             }
         }
 

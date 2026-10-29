@@ -7,7 +7,7 @@ using Aviones_2._0.Data;
 
 namespace Aviones_2._0.Forms.Materiales
 {
-    /// <summary>Valor del stock disponible (lo que queda en los lotes × su precio), por familia.</summary>
+    /// <summary>Valor de los materiales (todo lo comprado × su precio, esté guardado, usado o en un modelo), por familia.</summary>
     public partial class frmInformeValor : Form
     {
         public class FilaFamilia
@@ -33,7 +33,7 @@ namespace Aviones_2._0.Forms.Materiales
                     Familia = g.Key,
                     Materiales = g.Count(),
                     SinStock = g.Count(m => m.Disponible == 0),
-                    Valor = g.Sum(m => m.ValorDisponible)
+                    Valor = g.Sum(m => m.Valor)
                 })
                 .OrderBy(f => f.Familia)
                 .ToList();

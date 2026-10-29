@@ -43,6 +43,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.colDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colValorDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tlpDetalle = new System.Windows.Forms.TableLayoutPanel();
+            this.labNota = new System.Windows.Forms.Label();
             this.picFoto = new System.Windows.Forms.PictureBox();
             this.labLotes = new System.Windows.Forms.Label();
             this.dgvLotes = new System.Windows.Forms.DataGridView();
@@ -336,11 +337,11 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // colValorDisponible
             //
-            this.colValorDisponible.DataPropertyName = "ValorDisponible";
+            this.colValorDisponible.DataPropertyName = "Valor";
             this.colValorDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colValorDisponible.DefaultCellStyle.Format = "N2";
             this.colValorDisponible.FillWeight = 70F;
-            this.colValorDisponible.HeaderText = "Valor disp.";
+            this.colValorDisponible.HeaderText = "Valor";
             this.colValorDisponible.MinimumWidth = 85;
             this.colValorDisponible.Name = "colValorDisponible";
             //
@@ -349,22 +350,34 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpDetalle.ColumnCount = 1;
             this.tlpDetalle.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpDetalle.Controls.Add(this.picFoto, 0, 0);
-            this.tlpDetalle.Controls.Add(this.labLotes, 0, 1);
-            this.tlpDetalle.Controls.Add(this.dgvLotes, 0, 2);
-            this.tlpDetalle.Controls.Add(this.flpBotonesLote, 0, 3);
-            this.tlpDetalle.Controls.Add(this.labUsos, 0, 4);
-            this.tlpDetalle.Controls.Add(this.dgvUsos, 0, 5);
+            this.tlpDetalle.Controls.Add(this.labNota, 0, 1);
+            this.tlpDetalle.Controls.Add(this.labLotes, 0, 2);
+            this.tlpDetalle.Controls.Add(this.dgvLotes, 0, 3);
+            this.tlpDetalle.Controls.Add(this.flpBotonesLote, 0, 4);
+            this.tlpDetalle.Controls.Add(this.labUsos, 0, 5);
+            this.tlpDetalle.Controls.Add(this.dgvUsos, 0, 6);
             this.tlpDetalle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpDetalle.Name = "tlpDetalle";
             this.tlpDetalle.SizeChanged += new System.EventHandler(this.tlpDetalle_SizeChanged);
-            this.tlpDetalle.RowCount = 6;
+            this.tlpDetalle.RowCount = 7;
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 220F));
+            this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 55F));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpDetalle.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 45F));
             this.tlpDetalle.TabIndex = 0;
+            //
+            // labNota
+            //
+            this.labNota.AutoSize = true;
+            this.labNota.BackColor = System.Drawing.Color.FromArgb(255, 248, 196);
+            this.labNota.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labNota.Margin = new System.Windows.Forms.Padding(3, 4, 3, 8);
+            this.labNota.Name = "labNota";
+            this.labNota.Padding = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            this.labNota.Visible = false;
             //
             // picFoto
             //
@@ -715,6 +728,7 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridViewTextBoxColumn colCantidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDisponible;
         private System.Windows.Forms.DataGridViewTextBoxColumn colValorDisponible;
+        private System.Windows.Forms.Label labNota;
         private System.Windows.Forms.TableLayoutPanel tlpDetalle;
         private System.Windows.Forms.PictureBox picFoto;
         private System.Windows.Forms.Label labLotes;

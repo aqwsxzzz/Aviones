@@ -80,6 +80,9 @@ namespace Aviones_2._0.Data
 
         /// <summary>Se vuelve a comprar. Lo que no se repone nunca aparece en el stock crítico.</summary>
         public bool SeRepone { get; set; } = true;
+
+        /// <summary>Comentario libre; se muestra al elegir el material.</summary>
+        public string Nota { get; set; }
     }
 
     /// <summary>Un renglón de la vista vMaterialesStock: el material con el stock de todos sus lotes.</summary>
@@ -97,6 +100,7 @@ namespace Aviones_2._0.Data
         public string TipoUnidad { get; set; }
         public decimal? StockMinimo { get; set; }
         public bool SeRepone { get; set; } = true;
+        public string Nota { get; set; }
 
         /// <summary>Suma de los pedidos de compra pendientes.</summary>
         public decimal PedidoPendiente { get; set; }
@@ -107,6 +111,9 @@ namespace Aviones_2._0.Data
         public decimal DisponibleUsado { get; set; }
         public decimal Disponible { get; set; }
         public decimal ValorDisponible { get; set; }
+
+        /// <summary>Todo lo comprado x su valor unitario: esté guardado, usado o puesto en un modelo.</summary>
+        public decimal Valor { get; set; }
 
         public string Descripcion => string.Join(" ", new[] { Grupo, Caracteristica, Color, Medidas }
             .Where(t => !string.IsNullOrWhiteSpace(t)));
@@ -156,6 +163,11 @@ namespace Aviones_2._0.Data
         public decimal Cantidad { get; set; }
         public DateTime FechaPedido { get; set; }
         public string Nota { get; set; }
+        public int? IdVendedor { get; set; }
+
+        /// <summary>A quién se le compra (sólo para mostrar; se guarda IdVendedor).</summary>
+        public string Vendedor { get; set; }
+
         public string Estado { get; set; }
         public DateTime? FechaCierre { get; set; }
         public decimal? CantidadRecibida { get; set; }
