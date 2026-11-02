@@ -77,6 +77,17 @@ namespace Aviones_2._0.Common
             };
         }
 
+        /// <summary>Un total que tiene que verse: recuadrado y con letra más grande.</summary>
+        public static void Total(Label total)
+        {
+            total.AutoSize = true;
+            total.BorderStyle = BorderStyle.FixedSingle;
+            total.BackColor = Color.FromArgb(250, 250, 250);
+            total.Font = new Font("Arial", 13F, FontStyle.Bold);
+            total.Padding = new Padding(10, 5, 10, 5);
+            total.Anchor = AnchorStyles.Left;
+        }
+
         public static void BotonSecundario(Button b)
         {
             Botones(b);

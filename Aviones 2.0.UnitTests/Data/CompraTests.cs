@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using Aviones_2._0.Data;
 using Aviones_2._0.Data.Repositorios;
 
@@ -132,15 +132,42 @@ namespace Aviones_2._0.UnitTests.Data
 
             int id = compras.CrearPedido(servo, 4m, null, idVendedor: hobbyking);
             Assert.AreEqual("HobbyKing", compras.Obtener(id).Vendedor);
+            compras.ModificarPedido(id, 3m, null, idVendedor: null);
+            Assert.IsNull(compras.Obtener(id).Vendedor);
+            compras.ModificarPedido(id, 4m, null, idVendedor: hobbyking);
+            compras.EnviarPedidos(new[] { id });
             Assert.AreEqual(hobbyking, compras.UltimoVendedor(servo));
             Assert.ThrowsExactly<ReglaNegocioException>(() => vendedores.Eliminar(hobbyking));
 
             // Lo recibido en partes conserva el vendedor
             compras.Recibir(id, Recibido(1m), esperarResto: true);
             Assert.AreEqual(1m, Valor("SELECT COUNT(*) FROM dbo.PedidosCompra WHERE Estado = 'C' AND IdVendedor = @hobbyking", new { hobbyking }) ?? 0m);
+        }
 
-            compras.ModificarPedido(id, 3m, null, idVendedor: null);
-            Assert.IsNull(compras.Obtener(id).Vendedor);
+        [TestMethod]
+        public void CerrarPedido_RecienAhiSeRecibeYYaNoSeModifica()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int id = compras.CrearPedido(servo, 5m, null);
+            int otro = compras.CrearPedido(servo, 1m, null);
+
+            var pedido = compras.Obtener(id);
+            Assert.IsFalse(pedido.Enviado);
+            Assert.AreEqual("Por enviar", pedido.EstadoEnvio);
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.Recibir(id, Recibido(5m), false));
+
+            Assert.AreEqual(1, compras.EnviarPedidos(new[] { id }));
+            Assert.AreEqual(0, compras.EnviarPedidos(new[] { id }));   // ya estaba enviado
+            pedido = compras.Obtener(id);
+            Assert.IsTrue(pedido.Enviado);
+            Assert.IsNotNull(pedido.FechaEnvio);
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.ModificarPedido(id, 6m, null));
+
+            // Sigue contando como pedido en el material y en la lista, y se puede borrar si se cancela la compra
+            Assert.AreEqual(6m, materiales.ObtenerStock(servo).PedidoPendiente);
+            Assert.AreEqual(2, compras.ListarPendientes().Count);
+            compras.EliminarPedido(id);
+            Assert.AreEqual(otro, compras.ListarPendientes().Single().IdPedido);
         }
 
         [TestMethod]
@@ -166,6 +193,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, null);
+            compras.EnviarPedidos(new[] { id });
 
             int idLote = compras.Recibir(id, Recibido(10m), esperarResto: false);
 
@@ -188,6 +216,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, "para el Cub");
+            compras.EnviarPedidos(new[] { id });
 
             int idLote = compras.Recibir(id, Recibido(4m), esperarResto: true);
 
@@ -209,6 +238,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, null);
+            compras.EnviarPedidos(new[] { id });
 
             compras.Recibir(id, Recibido(5m), esperarResto: false);
 
@@ -225,6 +255,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, null);
+            compras.EnviarPedidos(new[] { id });
 
             compras.Recibir(id, Recibido(12m), esperarResto: true);
 
@@ -237,6 +268,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 3m, null);
+            compras.EnviarPedidos(new[] { id });
             var recibido = Recibido(3m);
             recibido.CompradoUsado = true;
 
@@ -250,6 +282,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, null);
+            compras.EnviarPedidos(new[] { id });
 
             Assert.ThrowsExactly<ReglaNegocioException>(() => compras.Recibir(id, Recibido(0m), false));
             compras.Recibir(id, Recibido(10m), false);
@@ -264,6 +297,7 @@ namespace Aviones_2._0.UnitTests.Data
         {
             int servo = CrearMaterial("Servo", 2m);
             int id = compras.CrearPedido(servo, 10m, null);
+            compras.EnviarPedidos(new[] { id });
             int idLote = compras.Recibir(id, Recibido(10m), false);
 
             new LoteRepositorio().Eliminar(idLote);

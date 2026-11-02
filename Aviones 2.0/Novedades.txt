@@ -4,6 +4,45 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.5.0
+* Al entrar en MATERIALES y en COMPRAS, que no quede elegido el primer registro, y elegir yo cuál abrir.
+> Al entrar en Materiales y en Compras no hay nada elegido en los listados; se ven los datos al hacer clic.
+
+* Un material nuevo que todavía no compré aparece en el inventario con la cantidad y el valor que le puse, y suma al total.
+> Al crear un material desde Compras ("AGREGAR MATERIAL..." > "MATERIAL NUEVO...") ya no aparece la parte "Primer ingreso": el material se crea sin stock y sin valor, y entra al inventario recién cuando se recibe el pedido.
+! No hizo falta un campo nuevo: el problema era que al crearlo se le cargaba también un primer ingreso, que es lo que lo metía en el inventario. Si ya hay uno creado así (por ejemplo la mesa de prueba), hay que borrarle ese lote a mano (Materiales > el material > Eliminar lote).
+
+* La columna "Valor" con un solo decimal y el total de abajo sin decimales, recuadrado y con letra más grande.
+> La columna Valor muestra un decimal. El total "Valor: $" va aparte, sin decimales, recuadrado y con letra más grande.
+
+* En Modelos, "Subtotal" con un solo decimal, y "Total" y "Valor total de materiales" sin decimales, recuadrados y con letra más grande.
+> Así quedó: Subtotal con un decimal; los dos totales sin decimales, recuadrados y más grandes.
+
+* Al agregar una familia nueva, que la ventana se cierre sola (lo mismo en Unidades, Fabricante y Ubicación).
+> Al tocar AGREGAR, la ventana se cierra y lo agregado queda elegido. Vale para familias, unidades, fabricantes, ubicaciones y vendedores.
+
+* Impresión de Materiales: que los títulos "Cantidad", "Estado" y "Usado" no se corten en dos renglones.
+> Al imprimir, cada columna toma el ancho que necesita su título en un renglón y su contenido.
+
+* Impresión del INFORME (y los demás listados): que no estire las columnas para llenar la hoja, y que lo haga en hoja vertical.
+> Las columnas se imprimen del tamaño de su contenido y la hoja va vertical. Sólo si el listado no entra se pone apaisada.
+
+* Después de imprimir, que vuelva a la pantalla que llamó, en vez de quedarse en la impresión.
+> Al mandar a la impresora, la vista previa se cierra sola y se vuelve a la pantalla de antes.
+
+* Sacar el botón COMPRAR de Materiales, porque para eso está Compras.
+> Se sacó. Para pedir cualquier material está "AGREGAR MATERIAL..." en Compras.
+
+* En la impresión de materiales de un modelo, que el título Cantidad no se corte y que "Salió" diga "Estado".
+> El título dice "Cantidad" y la columna "Salió" ahora se llama "Estado" (en la pantalla y en la impresión).
+
+* Que los mensajes del programa tengan una pantalla propia, con letra más grande y el color de la división, más oscuro.
+> Los avisos y preguntas salen en una ventana propia: letra más grande, botones como los del programa y el color de la pantalla en la que se está, un poco más oscuro.
+
+* Un botón "CERRAR PEDIDO", entre "AGREGAR MATERIAL" y "RECIBIR", que mande a imprimir lo pedido; y que RECIBIR no se pueda usar hasta cerrar el pedido.
+> Cada pedido dice si está "Por enviar" o "Enviado" (columna Estado). CERRAR PEDIDO imprime lo que está por enviar de un vendedor y, al confirmar, lo deja como enviado. RECIBIR sólo funciona con lo enviado, y lo enviado ya no se modifica (si se cancela la compra, se puede ELIMINAR).
+! Pediste que lo filtre por Fabricante, pero el fabricante es de cada lote; el pedido tiene Vendedor, así que se cierra por vendedor (se elige arriba, en "Vendedor"). Los pedidos que ya estaban hechos antes de esta versión quedaron como enviados, para poder recibirlos como hasta ahora.
+
 = 0.4.0
 * Mover el botón "Cambiar foto" al ángulo inferior izquierdo.
 > El botón "Cambiar fondo..." del menú ahora está abajo a la izquierda.

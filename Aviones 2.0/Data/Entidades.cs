@@ -143,7 +143,10 @@ namespace Aviones_2._0.Data
 
     public static class EstadosPedido
     {
+        /// <summary>En la lista, todavía no se mandó al vendedor.</summary>
         public const string Pendiente = "P";
+        /// <summary>Se cerró el pedido y se mandó al vendedor: falta que llegue.</summary>
+        public const string Enviado = "E";
         public const string Comprado = "C";
         public const string Cancelado = "X";
     }
@@ -169,6 +172,15 @@ namespace Aviones_2._0.Data
         public string Vendedor { get; set; }
 
         public string Estado { get; set; }
+
+        /// <summary>Cuándo se cerró el pedido y se mandó al vendedor.</summary>
+        public DateTime? FechaEnvio { get; set; }
+
+        public bool Enviado => Estado == EstadosPedido.Enviado;
+
+        /// <summary>Para la lista: "Por enviar" o "Enviado dd/MM".</summary>
+        public string EstadoEnvio => Enviado ? $"Enviado {FechaEnvio:dd/MM}" : "Por enviar";
+
         public DateTime? FechaCierre { get; set; }
         public decimal? CantidadRecibida { get; set; }
         public int? IdLote { get; set; }

@@ -28,6 +28,8 @@ namespace Aviones_2._0.Forms.Compras
             this.botAgregarPedido = new System.Windows.Forms.Button();
             this.dgvPedidos = new System.Windows.Forms.DataGridView();
             this.colPedVendedor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPedEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.botCerrarPedido = new System.Windows.Forms.Button();
             this.colPedFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPedCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -167,6 +169,14 @@ namespace Aviones_2._0.Forms.Compras
             this.cboVendedor.TabIndex = 0;
             this.cboVendedor.SelectedIndexChanged += new System.EventHandler(this.cboVendedor_SelectedIndexChanged);
             //
+            // botCerrarPedido
+            //
+            this.botCerrarPedido.Name = "botCerrarPedido";
+            this.botCerrarPedido.Size = new System.Drawing.Size(180, 38);
+            this.botCerrarPedido.TabIndex = 0;
+            this.botCerrarPedido.Text = "CERRAR PEDIDO";
+            this.botCerrarPedido.Click += new System.EventHandler(this.botCerrarPedido_Click);
+            //
             // botAgregarPedido
             //
             this.botAgregarPedido.Name = "botAgregarPedido";
@@ -186,6 +196,7 @@ namespace Aviones_2._0.Forms.Compras
             this.colPedDisponible,
             this.colPedPrecio,
             this.colPedCosto,
+            this.colPedEstado,
             this.colPedVendedor});
             this.dgvPedidos.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvPedidos.Name = "dgvPedidos";
@@ -193,6 +204,14 @@ namespace Aviones_2._0.Forms.Compras
             this.dgvPedidos.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPedidos_CellDoubleClick);
             this.dgvPedidos.SelectionChanged += new System.EventHandler(this.dgvPedidos_SelectionChanged);
             this.dgvPedidos.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgvPedidos_KeyDown);
+            //
+            // colPedEstado
+            //
+            this.colPedEstado.DataPropertyName = "EstadoEnvio";
+            this.colPedEstado.FillWeight = 70F;
+            this.colPedEstado.HeaderText = "Estado";
+            this.colPedEstado.MinimumWidth = 90;
+            this.colPedEstado.Name = "colPedEstado";
             //
             // colPedVendedor
             //
@@ -279,6 +298,7 @@ namespace Aviones_2._0.Forms.Compras
             //
             this.flpPedidos.AutoSize = true;
             this.flpPedidos.Controls.Add(this.botAgregarPedido);
+            this.flpPedidos.Controls.Add(this.botCerrarPedido);
             this.flpPedidos.Controls.Add(this.botRecibirPedido);
             this.flpPedidos.Controls.Add(this.botModificarPedido);
             this.flpPedidos.Controls.Add(this.botEliminarPedido);
@@ -607,6 +627,8 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.Label labVendedor;
         private System.Windows.Forms.ComboBox cboVendedor;
         private System.Windows.Forms.Button botAgregarPedido;
+        private System.Windows.Forms.Button botCerrarPedido;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colPedEstado;
         private System.Windows.Forms.DataGridView dgvPedidos;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedVendedor;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPedFamilia;

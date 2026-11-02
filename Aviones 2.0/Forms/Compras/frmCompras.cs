@@ -39,7 +39,7 @@ namespace Aviones_2._0.Forms.Compras
             dgvPedidos.BackgroundColor = Color.Honeydew;
             dgvCriticos.BackgroundColor = Color.Honeydew;
             dgvCriticos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            Estilo.Botones(botAgregarPedido, botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
+            Estilo.Botones(botAgregarPedido, botCerrarPedido, botRecibirPedido, botModificarPedido, botEliminarPedido, botImprimirPedidos, botPedir, botImprimirCriticos);
             Estilo.BotonSecundario(botSalir);
             OrdenGrilla.Habilitar(dgvPedidos, dgvCriticos);
         }
@@ -164,6 +164,11 @@ namespace Aviones_2._0.Forms.Compras
             {
                 return;
             }
+            if (!pedido.Enviado)
+            {
+                Mensajes.Aviso(this, "Este pedido todavía no se envió. Primero CERRAR PEDIDO; cuando llegue, se recibe.", "Recibir");
+                return;
+            }
             using (var dialogo = new frmLoteEditor(pedido))
             {
                 if (dialogo.ShowDialog(this) == DialogResult.OK)
@@ -178,6 +183,11 @@ namespace Aviones_2._0.Forms.Compras
             var pedido = PedidoSeleccionado();
             if (pedido == null)
             {
+                return;
+            }
+            if (pedido.Enviado)
+            {
+                Mensajes.Aviso(this, "Este pedido ya se envió al vendedor y no se puede cambiar.\nSi se canceló la compra, se puede ELIMINAR.", "Modificar");
                 return;
             }
             using (var dialogo = new frmPedido(pedido))
@@ -195,6 +205,70 @@ namespace Aviones_2._0.Forms.Compras
             if (pedido != null
                 && Mensajes.Confirmar(this, $"¿Sacar de la lista de compras {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} de {pedido.Material}?", "Eliminar pedido")
                 && Mensajes.Intentar(this, () => compras.EliminarPedido(pedido.IdPedido)))
+            {
+                Recargar(null);
+            }
+        }
+
+        /// <summary>
+        /// Cerrar el pedido de un vendedor: imprime la lista de lo que todavía no se le mandó
+        /// y lo deja como enviado. Recién entonces se puede recibir.
+        /// </summary>
+        private void botCerrarPedido_Click(object sender, EventArgs e)
+        {
+            List<PedidoCompra> porEnviar = null;
+            if (!Mensajes.Intentar(this, () => porEnviar = compras.ListarPendientes().Where(p => !p.Enviado).ToList()))
+            {
+                return;
+            }
+            if (porEnviar.Count == 0)
+            {
+                Mensajes.Aviso(this, "No hay pedidos por enviar: todo lo de la lista ya se mandó.", "Cerrar pedido");
+                return;
+            }
+
+            // De qué vendedor: el del filtro, o el único que tiene pedidos por enviar
+            int filtro = cboVendedor.SelectedValue is int v ? v : TodosLosVendedores;
+            var vendedoresPorEnviar = porEnviar.Select(p => p.IdVendedor ?? SinVendedor).Distinct().ToList();
+            if (filtro == TodosLosVendedores)
+            {
+                if (vendedoresPorEnviar.Count > 1)
+                {
+                    Mensajes.Aviso(this, "Hay pedidos por enviar de más de un vendedor.\n\nElija arriba, en \"Vendedor\", el del pedido que va a cerrar.", "Cerrar pedido");
+                    cboVendedor.Focus();
+                    cboVendedor.DroppedDown = true;
+                    return;
+                }
+                filtro = vendedoresPorEnviar[0];
+                cboVendedor.SelectedValue = filtro;   // la lista queda mostrando ese vendedor
+            }
+            var delVendedor = porEnviar.Where(p => (p.IdVendedor ?? SinVendedor) == filtro).ToList();
+            if (delVendedor.Count == 0)
+            {
+                Mensajes.Aviso(this, "Este vendedor no tiene pedidos por enviar.", "Cerrar pedido");
+                return;
+            }
+            string vendedor = filtro == SinVendedor ? "sin vendedor" : cboVendedor.Text;
+
+            // Se imprime sólo lo que se le va a mandar
+            decimal total = delVendedor.Sum(p => p.CostoEstimado ?? 0m);
+            dgvPedidos.DataSource = delVendedor;
+            bool impreso;
+            try
+            {
+                impreso = ImpresionGrilla.VistaPrevia(this, dgvPedidos, $"Pedido a {vendedor} ({DateTime.Today:dd/MM/yyyy})",
+                    $"{delVendedor.Count} materiales   ·   Costo estimado: $ {Numeros.Dinero(total)}");
+            }
+            finally
+            {
+                Mensajes.Intentar(this, () => CargarPedidos());
+            }
+
+            string pregunta = impreso
+                ? $"¿Cerrar el pedido a {vendedor}?\n\nLos {delVendedor.Count} materiales quedan como enviados y ya se pueden recibir cuando lleguen."
+                : $"No se imprimió.\n\n¿Cerrar igual el pedido a {vendedor}? (por ejemplo, si lo mandó por mail)";
+            if (Mensajes.Confirmar(this, pregunta, "Cerrar pedido")
+                && Mensajes.Intentar(this, () => compras.EnviarPedidos(delVendedor.Select(p => p.IdPedido))))
             {
                 Recargar(null);
             }
@@ -354,7 +428,8 @@ namespace Aviones_2._0.Forms.Compras
         private static void Seleccionar(DataGridView dgv, Func<DataGridViewRow, bool> condicion)
         {
             dgv.ClearSelection();
-            var fila = dgv.Rows.Cast<DataGridViewRow>().FirstOrDefault(condicion) ?? dgv.Rows.Cast<DataGridViewRow>().FirstOrDefault();
+            dgv.CurrentCell = null;
+            var fila = dgv.Rows.Cast<DataGridViewRow>().FirstOrDefault(condicion);
             if (fila != null)
             {
                 dgv.CurrentCell = fila.Cells.Cast<DataGridViewCell>().First(c => c.Visible);
@@ -362,10 +437,25 @@ namespace Aviones_2._0.Forms.Compras
             }
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            // Al mostrarse, las grillas eligen solas la primera fila: se dejan sin ninguna elegida
+            foreach (var dgv in new[] { dgvPedidos, dgvCriticos })
+            {
+                dgv.ClearSelection();
+                dgv.CurrentCell = null;
+            }
+            ActualizarBotones();
+            MostrarFotoCritico();
+        }
+
         private void ActualizarBotones()
         {
-            botRecibirPedido.Enabled = PedidoSeleccionado() != null;
-            botModificarPedido.Enabled = PedidoSeleccionado() != null;
+            var pedido = PedidoSeleccionado();
+            // Primero se cierra el pedido (se manda al vendedor); recién ahí se puede recibir, y ya no se modifica
+            botRecibirPedido.Enabled = pedido?.Enviado == true;
+            botModificarPedido.Enabled = pedido != null && !pedido.Enviado;
             botEliminarPedido.Enabled = PedidoSeleccionado() != null;
             botPedir.Enabled = CriticoSeleccionado() != null;
         }

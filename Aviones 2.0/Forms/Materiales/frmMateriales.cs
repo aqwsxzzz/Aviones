@@ -32,7 +32,8 @@ namespace Aviones_2._0.Forms.Materiales
             Estilo.Grilla(dgvMateriales);
             Estilo.Grilla(dgvLotes);
             Estilo.Grilla(dgvUsos);
-            Estilo.Botones(botNuevo, botModificar, botEliminar, botComprar, botInforme, botImprimir,
+            Estilo.Total(labValor);
+            Estilo.Botones(botNuevo, botModificar, botEliminar, botInforme, botImprimir,
                 botAgregarLote, botModificarLote, botEliminarLote);
             Estilo.BotonSecundario(botSalir);
             dgvLotes.SelectionChanged += (s, e) => ActualizarBotonesLote();
@@ -92,10 +93,8 @@ namespace Aviones_2._0.Forms.Materiales
                 dgvMateriales.ClearSelection();
                 var fila = dgvMateriales.Rows.Cast<DataGridViewRow>()
                     .FirstOrDefault(r => ((MaterialStock)r.DataBoundItem).IdMaterial == idSeleccionado);
-                if (fila == null && dgvMateriales.Rows.Count > 0 && seleccionar == null)
-                {
-                    fila = dgvMateriales.Rows[0];
-                }
+                // Sin uno a recordar no se elige ninguno: cada uno decide cuál abrir
+                dgvMateriales.CurrentCell = null;
                 if (fila != null)
                 {
                     dgvMateriales.CurrentCell = fila.Cells[colGrupo.Index];
@@ -110,10 +109,11 @@ namespace Aviones_2._0.Forms.Materiales
             int sinStock = lista.Count(m => m.Disponible == 0);
             decimal valor = lista.Sum(m => m.Valor);
             decimal usado = lista.Sum(m => m.DisponibleUsado);
-            labResumen.Text = $"{lista.Count} materiales   ·   {sinStock} sin stock   ·   "
-                + (usado > 0 ? $"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado   ·   " : "")
-                + (lista.Any(m => !m.SeRepone) ? $"{lista.Count(m => !m.SeRepone)} no se reponen (en cursiva)   ·   " : "")
-                + $"Valor: $ {Numeros.Dinero(valor)}";
+            var partes = new List<string> { $"{lista.Count} materiales", $"{sinStock} sin stock" };
+            if (usado > 0) partes.Add($"{lista.Count(m => m.DisponibleUsado > 0)} con stock usado");
+            if (lista.Any(m => !m.SeRepone)) partes.Add($"{lista.Count(m => !m.SeRepone)} no se reponen (en cursiva)");
+            labResumen.Text = string.Join("   ·   ", partes);
+            labValor.Text = $"Valor: $ {Numeros.DineroRedondo(valor)}";
 
             MostrarDetalle();
         }
@@ -130,7 +130,6 @@ namespace Aviones_2._0.Forms.Materiales
             bool hay = m != null;
             botModificar.Enabled = hay;
             botEliminar.Enabled = hay;
-            botComprar.Enabled = hay;
             botAgregarLote.Enabled = hay;
 
             // La nota del material, en un recuadro debajo de la foto
@@ -262,6 +261,17 @@ namespace Aviones_2._0.Forms.Materiales
             return cursiva;
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            // Al mostrarse, la grilla elige sola la primera fila: se deja sin ninguno elegido
+            cargando = true;
+            dgvMateriales.ClearSelection();
+            dgvMateriales.CurrentCell = null;
+            cargando = false;
+            MostrarDetalle();
+        }
+
         private void dgvMateriales_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -387,26 +397,6 @@ namespace Aviones_2._0.Forms.Materiales
             }
         }
 
-        private void botComprar_Click(object sender, EventArgs e)
-        {
-            var m = MaterialSeleccionado();
-            if (m == null)
-            {
-                return;
-            }
-            if (!m.SeRepone && !Mensajes.Confirmar(this,
-                    "Este material está marcado como que no se repone (no se vuelve a comprar).\n\n¿Agregarlo a la lista de compras igual?", "Comprar"))
-            {
-                return;
-            }
-            using (var dialogo = new frmPedido(m.IdMaterial))
-            {
-                if (dialogo.ShowDialog(this) == DialogResult.OK)
-                {
-                    Mensajes.Intentar(this, () => CargarMateriales(m.IdMaterial));
-                }
-            }
-        }
 
         #endregion
 
@@ -500,7 +490,7 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 titulo += $" - \"{txtBuscar.Text.Trim()}\"";
             }
-            ImpresionGrilla.VistaPrevia(this, dgvMateriales, titulo, labResumen.Text);
+            ImpresionGrilla.VistaPrevia(this, dgvMateriales, titulo, $"{labResumen.Text}   ·   {labValor.Text}");
         }
 
         #endregion

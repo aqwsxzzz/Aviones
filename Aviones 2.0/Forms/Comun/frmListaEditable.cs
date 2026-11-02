@@ -88,10 +88,9 @@ namespace Aviones_2._0.Forms.Comun
             int id = 0;
             if (Mensajes.Intentar(this, () => id = crear(txtNombre.Text)))
             {
+                // Agregado: se cierra y queda elegido en la pantalla que la abrió
                 UltimoCreado = id;
-                Cargar(id);
-                txtNombre.SelectAll();
-                txtNombre.Focus();
+                DialogResult = DialogResult.OK;
             }
         }
 

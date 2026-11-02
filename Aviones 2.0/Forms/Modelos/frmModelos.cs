@@ -20,6 +20,9 @@ namespace Aviones_2._0.Forms.Modelos
         {
             InitializeComponent();
             Imagenes.MarcarSinImagen(picFoto);
+            Estilo.Total(labValorTotal);
+            Estilo.Total(labTotal);
+            labTotal.Anchor = AnchorStyles.Right;
             Estilo.Grilla(dgvModelos);
             Estilo.Grilla(dgvMateriales);
             dgvModelos.BackgroundColor = BackColor;
@@ -95,7 +98,8 @@ namespace Aviones_2._0.Forms.Modelos
                 cargando = false;
             }
 
-            labResumen.Text = $"{lista.Count} modelos   ·   Valor total de materiales: $ {Numeros.Dinero(lista.Sum(m => m.ValorMateriales))}";
+            labResumen.Text = $"{lista.Count} modelos";
+            labValorTotal.Text = $"Valor total de materiales: $ {Numeros.DineroRedondo(lista.Sum(m => m.ValorMateriales))}";
             MostrarDetalle();
         }
 
@@ -114,7 +118,7 @@ namespace Aviones_2._0.Forms.Modelos
                 dgvMateriales.DataSource = null;
                 MostrarFoto(null);
                 labMateriales.Text = "Materiales";
-                labTotal.Text = "";
+                labTotal.Text = "Total: $ 0";
                 return;
             }
 
@@ -123,7 +127,7 @@ namespace Aviones_2._0.Forms.Modelos
                 var materiales = modelos.ListarMateriales(m.IdModelo);
                 dgvMateriales.DataSource = OrdenGrilla.Aplicar(dgvMateriales, materiales);
                 labMateriales.Text = $"Materiales de {m.Nombre}" + (string.IsNullOrEmpty(m.Alias) ? "" : $" ({m.Alias})");
-                labTotal.Text = $"Total: $ {Numeros.Dinero(materiales.Sum(x => x.Subtotal))}";
+                labTotal.Text = $"Total: $ {Numeros.DineroRedondo(materiales.Sum(x => x.Subtotal))}";
                 MostrarFoto(Imagenes.DesdeBytes(modelos.ObtenerFoto(m.IdModelo)));
             });
         }
@@ -251,7 +255,7 @@ namespace Aviones_2._0.Forms.Modelos
 
         private void botImprimir_Click(object sender, EventArgs e)
         {
-            ImpresionGrilla.VistaPrevia(this, dgvModelos, "Modelos", labResumen.Text);
+            ImpresionGrilla.VistaPrevia(this, dgvModelos, "Modelos", $"{labResumen.Text}   ·   {labValorTotal.Text}");
         }
 
         private void botImprimirMateriales_Click(object sender, EventArgs e)

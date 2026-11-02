@@ -52,5 +52,8 @@ namespace Aviones_2._0.Common
         public static string Cantidad(decimal? valor) => valor.HasValue ? Cantidad(valor.Value) : "";
 
         public static string Dinero(decimal valor) => valor.ToString("N2", CultureInfo.CurrentCulture);
+
+        /// <summary>Totales: sin decimales.</summary>
+        public static string DineroRedondo(decimal valor) => valor.ToString("N0", CultureInfo.CurrentCulture);
     }
 }

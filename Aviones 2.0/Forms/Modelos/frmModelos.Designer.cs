@@ -49,6 +49,8 @@ namespace Aviones_2._0.Forms.Modelos
             this.labTotal = new System.Windows.Forms.Label();
             this.botImprimirMateriales = new System.Windows.Forms.Button();
             this.labResumen = new System.Windows.Forms.Label();
+            this.flpResumen = new System.Windows.Forms.FlowLayoutPanel();
+            this.labValorTotal = new System.Windows.Forms.Label();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
             this.botNuevo = new System.Windows.Forms.Button();
             this.botModificar = new System.Windows.Forms.Button();
@@ -76,7 +78,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.tlpPrincipal.Controls.Add(this.labTitulo, 0, 0);
             this.tlpPrincipal.Controls.Add(this.flpFiltros, 0, 1);
             this.tlpPrincipal.Controls.Add(this.splPrincipal, 0, 2);
-            this.tlpPrincipal.Controls.Add(this.labResumen, 0, 3);
+            this.tlpPrincipal.Controls.Add(this.flpResumen, 0, 3);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 4);
             this.tlpPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPrincipal.Name = "tlpPrincipal";
@@ -309,7 +311,7 @@ namespace Aviones_2._0.Forms.Modelos
             //
             this.colMatCondicion.DataPropertyName = "Condicion";
             this.colMatCondicion.FillWeight = 55F;
-            this.colMatCondicion.HeaderText = "Salió";
+            this.colMatCondicion.HeaderText = "Estado";
             this.colMatCondicion.MinimumWidth = 55;
             this.colMatCondicion.Name = "colMatCondicion";
             //
@@ -319,7 +321,7 @@ namespace Aviones_2._0.Forms.Modelos
             this.colMatCantidad.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             this.colMatCantidad.DefaultCellStyle.Format = "0.###";
             this.colMatCantidad.FillWeight = 55F;
-            this.colMatCantidad.HeaderText = "Cant.";
+            this.colMatCantidad.HeaderText = "Cantidad";
             this.colMatCantidad.MinimumWidth = 50;
             this.colMatCantidad.Name = "colMatCantidad";
             //
@@ -335,7 +337,7 @@ namespace Aviones_2._0.Forms.Modelos
             //
             this.colMatSubtotal.DataPropertyName = "Subtotal";
             this.colMatSubtotal.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colMatSubtotal.DefaultCellStyle.Format = "N2";
+            this.colMatSubtotal.DefaultCellStyle.Format = "N1";
             this.colMatSubtotal.FillWeight = 65F;
             this.colMatSubtotal.HeaderText = "Subtotal";
             this.colMatSubtotal.MinimumWidth = 70;
@@ -375,6 +377,20 @@ namespace Aviones_2._0.Forms.Modelos
             this.labResumen.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
             this.labResumen.Name = "labResumen";
             this.labResumen.Text = "Resumen";
+            this.labResumen.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            //
+            // flpResumen
+            //
+            this.flpResumen.AutoSize = true;
+            this.flpResumen.Controls.Add(this.labResumen);
+            this.flpResumen.Controls.Add(this.labValorTotal);
+            this.flpResumen.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this.flpResumen.Name = "flpResumen";
+            //
+            // labValorTotal
+            //
+            this.labValorTotal.Margin = new System.Windows.Forms.Padding(16, 0, 3, 0);
+            this.labValorTotal.Name = "labValorTotal";
             //
             // flpBotones
             //
@@ -503,6 +519,8 @@ namespace Aviones_2._0.Forms.Modelos
         private System.Windows.Forms.Label labTotal;
         private System.Windows.Forms.Button botImprimirMateriales;
         private System.Windows.Forms.Label labResumen;
+        private System.Windows.Forms.FlowLayoutPanel flpResumen;
+        private System.Windows.Forms.Label labValorTotal;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;
         private System.Windows.Forms.Button botNuevo;
         private System.Windows.Forms.Button botModificar;

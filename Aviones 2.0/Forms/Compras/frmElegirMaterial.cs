@@ -120,7 +120,7 @@ namespace Aviones_2._0.Forms.Compras
 
         private void CrearNuevo()
         {
-            using (var editor = new frmMaterialEditor(null, null))
+            using (var editor = new frmMaterialEditor(null, null) { SinPrimerIngreso = true })
             {
                 if (editor.ShowDialog(this) == DialogResult.OK)
                 {

@@ -23,6 +23,12 @@ namespace Aviones_2._0.Forms.Materiales
         private byte[] imagen;
         private bool imagenCambiada;
 
+        /// <summary>
+        /// Sin la parte de "Primer ingreso": para un material que se va a pedir (desde Compras), que todavía
+        /// no está en el inventario. Su stock entra cuando se recibe el pedido.
+        /// </summary>
+        public bool SinPrimerIngreso { get; set; }
+
         /// <summary>El material guardado.</summary>
         public int IdMaterial { get; private set; }
 
@@ -61,6 +67,7 @@ namespace Aviones_2._0.Forms.Materiales
                 if (EsNuevo)
                 {
                     Text = "Nuevo material";
+                    grpLote.Visible = !SinPrimerIngreso;
                     cboFamilia.SelectedValue = idFamiliaSugerida ?? -1;
                     if (idFamiliaSugerida == null) cboFamilia.SelectedIndex = -1;
                     cboUnidad.SelectedIndex = -1;
@@ -207,7 +214,7 @@ namespace Aviones_2._0.Forms.Materiales
             }
 
             Lote primerLote = null;
-            if (EsNuevo && !string.IsNullOrWhiteSpace(txtCantidad.Text))
+            if (EsNuevo && grpLote.Visible && !string.IsNullOrWhiteSpace(txtCantidad.Text))
             {
                 if (!Numeros.TryLeer(txtCantidad.Text, out decimal cantidad) || cantidad <= 0)
                 {

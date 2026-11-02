@@ -66,11 +66,12 @@ namespace Aviones_2._0.Forms.Materiales
             this.colUsoCondicion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colUsoCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labResumen = new System.Windows.Forms.Label();
+            this.flpResumen = new System.Windows.Forms.FlowLayoutPanel();
+            this.labValor = new System.Windows.Forms.Label();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
             this.botNuevo = new System.Windows.Forms.Button();
             this.botModificar = new System.Windows.Forms.Button();
             this.botEliminar = new System.Windows.Forms.Button();
-            this.botComprar = new System.Windows.Forms.Button();
             this.botInforme = new System.Windows.Forms.Button();
             this.botImprimir = new System.Windows.Forms.Button();
             this.botSalir = new System.Windows.Forms.Button();
@@ -97,7 +98,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.labTitulo, 0, 0);
             this.tlpPrincipal.Controls.Add(this.flpFiltros, 0, 1);
             this.tlpPrincipal.Controls.Add(this.splPrincipal, 0, 2);
-            this.tlpPrincipal.Controls.Add(this.labResumen, 0, 3);
+            this.tlpPrincipal.Controls.Add(this.flpResumen, 0, 3);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 4);
             this.tlpPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPrincipal.Location = new System.Drawing.Point(0, 0);
@@ -339,7 +340,7 @@ namespace Aviones_2._0.Forms.Materiales
             //
             this.colValorDisponible.DataPropertyName = "Valor";
             this.colValorDisponible.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            this.colValorDisponible.DefaultCellStyle.Format = "N2";
+            this.colValorDisponible.DefaultCellStyle.Format = "N1";
             this.colValorDisponible.FillWeight = 70F;
             this.colValorDisponible.HeaderText = "Valor";
             this.colValorDisponible.MinimumWidth = 85;
@@ -563,7 +564,7 @@ namespace Aviones_2._0.Forms.Materiales
             //
             this.colUsoCondicion.DataPropertyName = "Condicion";
             this.colUsoCondicion.FillWeight = 55F;
-            this.colUsoCondicion.HeaderText = "Salió";
+            this.colUsoCondicion.HeaderText = "Estado";
             this.colUsoCondicion.MinimumWidth = 55;
             this.colUsoCondicion.Name = "colUsoCondicion";
             //
@@ -583,6 +584,20 @@ namespace Aviones_2._0.Forms.Materiales
             this.labResumen.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
             this.labResumen.Name = "labResumen";
             this.labResumen.Text = "Resumen";
+            this.labResumen.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            //
+            // flpResumen
+            //
+            this.flpResumen.AutoSize = true;
+            this.flpResumen.Controls.Add(this.labResumen);
+            this.flpResumen.Controls.Add(this.labValor);
+            this.flpResumen.Margin = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this.flpResumen.Name = "flpResumen";
+            //
+            // labValor
+            //
+            this.labValor.Margin = new System.Windows.Forms.Padding(16, 0, 3, 0);
+            this.labValor.Name = "labValor";
             //
             // flpBotones
             //
@@ -591,7 +606,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpBotones.Controls.Add(this.botNuevo);
             this.flpBotones.Controls.Add(this.botModificar);
             this.flpBotones.Controls.Add(this.botEliminar);
-            this.flpBotones.Controls.Add(this.botComprar);
             this.flpBotones.Controls.Add(this.botInforme);
             this.flpBotones.Controls.Add(this.botImprimir);
             this.flpBotones.Controls.Add(this.botSalir);
@@ -624,15 +638,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.botEliminar.TabIndex = 2;
             this.botEliminar.Text = "ELIMINAR";
             this.botEliminar.Click += new System.EventHandler(this.botEliminar_Click);
-            //
-            // botComprar
-            //
-            this.botComprar.Margin = new System.Windows.Forms.Padding(6);
-            this.botComprar.Name = "botComprar";
-            this.botComprar.Size = new System.Drawing.Size(132, 44);
-            this.botComprar.TabIndex = 3;
-            this.botComprar.Text = "COMPRAR";
-            this.botComprar.Click += new System.EventHandler(this.botComprar_Click);
             //
             // botInforme
             //
@@ -752,11 +757,12 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsoCondicion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsoCantidad;
         private System.Windows.Forms.Label labResumen;
+        private System.Windows.Forms.FlowLayoutPanel flpResumen;
+        private System.Windows.Forms.Label labValor;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;
         private System.Windows.Forms.Button botNuevo;
         private System.Windows.Forms.Button botModificar;
         private System.Windows.Forms.Button botEliminar;
-        private System.Windows.Forms.Button botComprar;
         private System.Windows.Forms.Button botInforme;
         private System.Windows.Forms.Button botImprimir;
         private System.Windows.Forms.Button botSalir;

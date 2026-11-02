@@ -30,8 +30,7 @@ namespace Aviones_2._0.Common
                 }
                 catch (Exception ex) when (ex is OutOfMemoryException || ex is ArgumentException || ex is IOException)
                 {
-                    MessageBox.Show(dueño, "No se pudo abrir la imagen:\n" + ex.Message, "Foto",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Mensajes.Aviso(dueño, "No se pudo abrir la imagen:\n" + ex.Message, "Foto");
                     return null;
                 }
             }

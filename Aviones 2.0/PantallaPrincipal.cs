@@ -122,13 +122,13 @@ namespace Aviones_2._0
         {
             if (fondo != null)
             {
-                var respuesta = MessageBox.Show(this, "¿Elegir otra foto de fondo?\n\nSí: elegir otra foto.\nNo: dejar el fondo liso.",
-                    "Fondo", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                if (respuesta == DialogResult.Cancel)
+                int respuesta = Mensajes.Elegir(this, "¿Elegir otra foto de fondo, o dejar el fondo liso?", "Fondo",
+                    "OTRA FOTO", "FONDO LISO", "CANCELAR");
+                if (respuesta == 2)
                 {
                     return;
                 }
-                if (respuesta == DialogResult.No)
+                if (respuesta == 1)
                 {
                     Mensajes.Intentar(this, () => File.Delete(ArchivoFondo));
                     CargarFondo();
