@@ -143,7 +143,9 @@ namespace Aviones_2._0.Common
             {
                 return Color.FromArgb((int)(c.R * 0.8), (int)(c.G * 0.8), (int)(c.B * 0.8));   // gris: sólo más oscuro
             }
-            return DeHsl(h, Math.Min(Math.Max(s, 0.45f), 0.65f), 0.70f);
+            // Los verdes saturados encandilan: se dejan más apagados
+            float maximo = h >= 70 && h <= 170 ? 0.42f : 0.65f;
+            return DeHsl(h, Math.Min(Math.Max(s, 0.42f), maximo), 0.70f);
         }
 
         private static Color DeHsl(float h, float s, float l)
