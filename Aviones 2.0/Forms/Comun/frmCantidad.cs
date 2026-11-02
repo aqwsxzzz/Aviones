@@ -14,6 +14,7 @@ namespace Aviones_2._0.Forms.Comun
         public frmCantidad(string titulo, string pregunta, decimal? actual, decimal? maximo)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             Text = titulo;
             labPregunta.Text = pregunta;
             this.maximo = maximo;

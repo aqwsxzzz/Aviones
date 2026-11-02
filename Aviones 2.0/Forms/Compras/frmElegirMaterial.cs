@@ -35,6 +35,7 @@ namespace Aviones_2._0.Forms.Compras
             ShowInTaskbar = false;
             MinimizeBox = false;
 
+            Estilo.ColorDeLaSeccion(this);
             Estilo.Grilla(dgv);
             dgv.BackgroundColor = BackColor;
             dgv.AutoGenerateColumns = false;

@@ -38,6 +38,7 @@ namespace Aviones_2._0.Forms.Modelos
         public frmEliminarModelo(Modelo modelo)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             this.modelo = modelo;
             Estilo.Grilla(dgvMateriales);
             dgvMateriales.ReadOnly = false;

@@ -38,6 +38,7 @@ namespace Aviones_2._0.Forms.Comun
             Action<int, string> renombrar, Action<int> eliminar)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             Text = titulo;
             this.listar = listar;
             this.crear = crear;

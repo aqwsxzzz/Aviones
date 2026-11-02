@@ -21,6 +21,7 @@ namespace Aviones_2._0.Forms.Modelos
         public frmDestino(string material, decimal saliente, string unidad, string estadoOrigen)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             this.saliente = saliente;
             puedeVolverNuevo = estadoOrigen != EstadosMaterial.Usado;
 

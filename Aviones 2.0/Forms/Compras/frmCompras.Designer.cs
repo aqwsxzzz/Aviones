@@ -54,7 +54,10 @@ namespace Aviones_2._0.Forms.Compras
             this.dgvCriticos = new System.Windows.Forms.DataGridView();
             this.picCritico = new System.Windows.Forms.PictureBox();
             this.colCriFamilia = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colCriMaterial = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCriGrupo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCriCaracteristica = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCriColor = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCriMedidas = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCriCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCriUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCriDisponible = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -425,7 +428,10 @@ namespace Aviones_2._0.Forms.Compras
             //
             this.dgvCriticos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colCriFamilia,
-            this.colCriMaterial,
+            this.colCriGrupo,
+            this.colCriCaracteristica,
+            this.colCriColor,
+            this.colCriMedidas,
             this.colCriCodigo,
             this.colCriUnidad,
             this.colCriDisponible,
@@ -457,13 +463,37 @@ namespace Aviones_2._0.Forms.Compras
             this.colCriFamilia.MinimumWidth = 80;
             this.colCriFamilia.Name = "colCriFamilia";
             //
-            // colCriMaterial
+            // colCriGrupo
             //
-            this.colCriMaterial.DataPropertyName = "Descripcion";
-            this.colCriMaterial.FillWeight = 220F;
-            this.colCriMaterial.HeaderText = "Material";
-            this.colCriMaterial.MinimumWidth = 150;
-            this.colCriMaterial.Name = "colCriMaterial";
+            this.colCriGrupo.DataPropertyName = "Grupo";
+            this.colCriGrupo.FillWeight = 110F;
+            this.colCriGrupo.HeaderText = "Grupo";
+            this.colCriGrupo.MinimumWidth = 90;
+            this.colCriGrupo.Name = "colCriGrupo";
+            //
+            // colCriCaracteristica
+            //
+            this.colCriCaracteristica.DataPropertyName = "Caracteristica";
+            this.colCriCaracteristica.FillWeight = 110F;
+            this.colCriCaracteristica.HeaderText = "Característica";
+            this.colCriCaracteristica.MinimumWidth = 100;
+            this.colCriCaracteristica.Name = "colCriCaracteristica";
+            //
+            // colCriColor
+            //
+            this.colCriColor.DataPropertyName = "Color";
+            this.colCriColor.FillWeight = 70F;
+            this.colCriColor.HeaderText = "Color";
+            this.colCriColor.MinimumWidth = 60;
+            this.colCriColor.Name = "colCriColor";
+            //
+            // colCriMedidas
+            //
+            this.colCriMedidas.DataPropertyName = "Medidas";
+            this.colCriMedidas.FillWeight = 80F;
+            this.colCriMedidas.HeaderText = "Medidas";
+            this.colCriMedidas.MinimumWidth = 70;
+            this.colCriMedidas.Name = "colCriMedidas";
             //
             // colCriCodigo
             //
@@ -655,7 +685,10 @@ namespace Aviones_2._0.Forms.Compras
         private System.Windows.Forms.DataGridView dgvCriticos;
         private System.Windows.Forms.PictureBox picCritico;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriFamilia;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colCriMaterial;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCriGrupo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCriCaracteristica;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCriColor;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCriMedidas;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriCodigo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriUnidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCriDisponible;

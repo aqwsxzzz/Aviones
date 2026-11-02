@@ -29,6 +29,7 @@ namespace Aviones_2._0.Forms.Compras
         private frmPedido(int idMaterial, PedidoCompra pedido)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             selVendedor.Configurar(ListaRepositorio.Vendedores(), "Vendedores");
             this.idMaterial = idMaterial;
             this.pedido = pedido;

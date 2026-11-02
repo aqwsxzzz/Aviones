@@ -21,6 +21,7 @@ namespace Aviones_2._0.Forms.Materiales
         public frmInformeValor(IEnumerable<MaterialStock> materiales)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             Estilo.Grilla(dgvFamilias);
             OrdenGrilla.Habilitar(dgvFamilias);
             Estilo.Botones(botImprimir);

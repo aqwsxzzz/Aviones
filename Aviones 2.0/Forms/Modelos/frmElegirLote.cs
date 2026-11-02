@@ -44,6 +44,7 @@ namespace Aviones_2._0.Forms.Modelos
         public frmElegirLote(Func<int, string, decimal> usoPendiente, Func<int, decimal> usoPendienteMaterial, Action<FilaMaterial> agregar)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             this.usoPendiente = usoPendiente;
             this.usoPendienteMaterial = usoPendienteMaterial;
             this.agregar = agregar;

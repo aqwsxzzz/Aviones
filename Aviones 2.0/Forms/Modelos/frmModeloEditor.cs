@@ -42,6 +42,7 @@ namespace Aviones_2._0.Forms.Modelos
         public frmModeloEditor(int? idModelo)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             Imagenes.MarcarSinImagen(picFoto);
             fotoMaxima = picFoto.Size;
             this.idModelo = idModelo;

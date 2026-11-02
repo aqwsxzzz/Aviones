@@ -43,6 +43,12 @@ Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se
 > Cada pedido dice si está "Por enviar" o "Enviado" (columna Estado). CERRAR PEDIDO imprime lo que está por enviar de un vendedor y, al confirmar, lo deja como enviado. RECIBIR sólo funciona con lo enviado, y lo enviado ya no se modifica (si se cancela la compra, se puede ELIMINAR).
 ! Pediste que lo filtre por Fabricante, pero el fabricante es de cada lote; el pedido tiene Vendedor, así que se cierra por vendedor (se elige arriba, en "Vendedor"). Los pedidos que ya estaban hechos antes de esta versión quedaron como enviados, para poder recibirlos como hasta ahora.
 
+* En Stock crítico, que se vean las columnas Grupo, Característica y Color, para no confundir materiales parecidos.
+> La columna "Material" se separó en Grupo, Característica, Color y Medidas.
+
+* Que todas las ventanas y avisos sigan el color de la división en la que estoy (por ejemplo, "Cambiar cantidad" en Modelos salía celeste).
+> Las ventanas que se abren desde una división (cantidades, listas, editores, elegir lote, etc.) toman el mismo color que esa división. Los avisos y preguntas salen con el mismo tono pero más fuerte (en Modelos un mostaza, en Materiales un azul acero, en Compras un verde) y con la letra en negrita.
+
 = 0.4.0
 * Mover el botón "Cambiar foto" al ángulo inferior izquierdo.
 > El botón "Cambiar fondo..." del menú ahora está abajo a la izquierda.

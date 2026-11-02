@@ -6,8 +6,8 @@ using Aviones_2._0.Common;
 namespace Aviones_2._0.Forms.Comun
 {
     /// <summary>
-    /// Ventana de mensajes del programa, en lugar de la de Windows: letra más grande y el color
-    /// de la pantalla que la llama, un poco más oscuro, para que se distinga del fondo.
+    /// Ventana de mensajes del programa, en lugar de la de Windows: letra más grande y en negrita,
+    /// y el tono de la pantalla que la llama pero más fuerte, para que llame la atención.
     /// </summary>
     public class frmMensaje : Form
     {
@@ -22,7 +22,7 @@ namespace Aviones_2._0.Forms.Comun
         {
             Text = titulo;
             Font = new Font("Arial", 12F);
-            BackColor = Oscurecer(fondo);
+            BackColor = Estilo.Resaltado(fondo);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
@@ -57,7 +57,14 @@ namespace Aviones_2._0.Forms.Comun
             }
             else
             {
-                cuerpo = new Label { Text = texto, AutoSize = true, MaximumSize = new Size(560, 0), Margin = new Padding(0, 10, 0, 0) };
+                cuerpo = new Label
+                {
+                    Text = texto,
+                    AutoSize = true,
+                    MaximumSize = new Size(560, 0),
+                    Margin = new Padding(0, 10, 0, 0),
+                    Font = new Font("Arial", 12F, FontStyle.Bold)
+                };
             }
 
             var contenido = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0) };
@@ -114,17 +121,6 @@ namespace Aviones_2._0.Forms.Comun
         {
             base.OnShown(e);
             botonPorDefecto?.Focus();   // recién visible se le puede dar el foco
-        }
-
-        /// <summary>El color de la pantalla, más oscuro; sin pantalla, el gris de Windows.</summary>
-        private static Color Oscurecer(Color c)
-        {
-            if (c.IsEmpty || c.A < 255)
-            {
-                c = SystemColors.Control;
-            }
-            const double factor = 0.82;
-            return Color.FromArgb((int)(c.R * factor), (int)(c.G * factor), (int)(c.B * factor));
         }
 
         private static Icon IconoDe(Tipo tipo)

@@ -23,6 +23,7 @@ namespace Aviones_2._0.Forms.Materiales
         public frmLoteEditor(int idMaterial, string descripcionMaterial, Lote lote)
         {
             InitializeComponent();
+            Estilo.ColorDeLaSeccion(this);
             selFabricante.Configurar(ListaRepositorio.Fabricantes(), "Fabricantes");
             selUbicacion.Configurar(ListaRepositorio.Ubicaciones(), "Ubicaciones");
             this.idMaterial = idMaterial;
