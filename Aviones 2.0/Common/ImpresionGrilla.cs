@@ -87,21 +87,26 @@ namespace Aviones_2._0.Common
         private void Medir()
         {
             columnas = grilla.Columns.Cast<DataGridViewColumn>().Where(c => c.Visible).OrderBy(c => c.DisplayIndex).ToList();
-            naturales = new float[columnas.Count];
             using (var bmp = new Bitmap(1, 1))
             using (var g = Graphics.FromImage(bmp))
             {
                 g.PageUnit = GraphicsUnit.Display;   // centésimas de pulgada, como la impresora
-                for (int i = 0; i < columnas.Count; i++)
+                Medir(g);
+            }
+        }
+
+        private void Medir(Graphics g)
+        {
+            naturales = new float[columnas.Count];
+            for (int i = 0; i < columnas.Count; i++)
+            {
+                float ancho = g.MeasureString(columnas[i].HeaderText.Trim(), fuenteEncabezado).Width;
+                foreach (DataGridViewRow fila in grilla.Rows)
                 {
-                    float ancho = g.MeasureString(columnas[i].HeaderText.Trim(), fuenteEncabezado).Width;
-                    foreach (DataGridViewRow fila in grilla.Rows)
-                    {
-                        string valor = fila.Cells[columnas[i].Index].FormattedValue?.ToString() ?? "";
-                        ancho = Math.Max(ancho, g.MeasureString(valor, fuente).Width);
-                    }
-                    naturales[i] = (float)Math.Ceiling(ancho + 2 * Relleno + 2);
+                    string valor = fila.Cells[columnas[i].Index].FormattedValue?.ToString() ?? "";
+                    ancho = Math.Max(ancho, g.MeasureString(valor, fuente).Width);
                 }
+                naturales[i] = (float)Math.Ceiling(ancho + 2 * Relleno + 4);
             }
         }
 
@@ -117,15 +122,23 @@ namespace Aviones_2._0.Common
             var area = e.MarginBounds;
             var g = e.Graphics;
             float y = area.Top;
-
-            string fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-            g.DrawString(titulo, fuenteTitulo, Brushes.Black, area.Left, y);
-            g.DrawString(fecha, fuente, Brushes.Black, area.Right - g.MeasureString(fecha, fuente).Width, y + 4);
-            y += fuenteTitulo.GetHeight(g) + 8;
+            if (pagina == 1)
+            {
+                Medir(g);   // la impresora mide la letra distinto que la pantalla: se mide con la suya
+            }
 
             // Del ancho de su contenido; si no entra ni apaisado, se achican todas por igual
             float escala = Math.Min(1f, area.Width / AnchoNatural);
             float[] anchos = naturales.Select(a => a * escala).ToArray();
+
+            // El listado va centrado en la hoja; el título y la fecha, alineados con sus bordes
+            float anchoListado = anchos.Sum();
+            float izquierda = area.Left + (area.Width - anchoListado) / 2;
+            string fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            g.DrawString(titulo, fuenteTitulo, Brushes.Black, izquierda, y);
+            g.DrawString(fecha, fuente, Brushes.Black, izquierda + anchoListado - g.MeasureString(fecha, fuente).Width, y + 4);
+            y += fuenteTitulo.GetHeight(g) + 8;
+
             bool titulosEnDosRenglones = escala < 1f;
             float altoEncabezado = fuenteEncabezado.GetHeight(g) * (titulosEnDosRenglones ? 2 : 1) + 8;
             float altoFila = fuente.GetHeight(g) + 6;
@@ -137,7 +150,7 @@ namespace Aviones_2._0.Common
                 {
                     formato.FormatFlags |= StringFormatFlags.NoWrap;
                 }
-                float x = area.Left;
+                float x = izquierda;
                 for (int i = 0; i < columnas.Count; i++)
                 {
                     var celda = new RectangleF(x, y, anchos[i], altoEncabezado);
@@ -154,7 +167,7 @@ namespace Aviones_2._0.Common
                 while (filaActual < grilla.Rows.Count && y <= limite)
                 {
                     var fila = grilla.Rows[filaActual];
-                    x = area.Left;
+                    x = izquierda;
                     for (int i = 0; i < columnas.Count; i++)
                     {
                         var celda = new RectangleF(x, y, anchos[i], altoFila);
@@ -170,7 +183,7 @@ namespace Aviones_2._0.Common
             }
 
             string textoPie = (pie != null ? pie + "    " : "") + "Página " + pagina;
-            g.DrawString(textoPie, fuente, Brushes.Black, area.Left, area.Bottom + 6);
+            g.DrawString(textoPie, fuente, Brushes.Black, izquierda, area.Bottom + 6);
 
             e.HasMorePages = filaActual < grilla.Rows.Count;
         }

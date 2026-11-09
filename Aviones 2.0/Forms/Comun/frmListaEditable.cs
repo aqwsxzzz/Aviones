@@ -47,12 +47,24 @@ namespace Aviones_2._0.Forms.Comun
             Estilo.Botones(botAgregar, botRenombrar, botEliminar);
             Estilo.BotonSecundario(botCerrar);
             AcceptButton = botAgregar;
+            txtNombre.TextChanged += (s, e) => ActualizarBotones();
         }
 
         private void frmListaEditable_Load(object sender, EventArgs e)
         {
+            // Se abre sin nada elegido y sin nombre: AGREGAR se enciende recién al escribir uno nuevo
             Cargar(null);
+            txtNombre.Clear();
             ActiveControl = txtNombre;
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            // Al mostrarse, la lista elige sola el primero: se deja sin ninguno
+            lstItems.ClearSelected();
+            txtNombre.Clear();
+            ActualizarBotones();
         }
 
         private ItemLista Seleccionado => lstItems.SelectedItem as ItemLista;
@@ -73,6 +85,10 @@ namespace Aviones_2._0.Forms.Comun
         {
             botRenombrar.Enabled = Seleccionado != null;
             botEliminar.Enabled = Seleccionado != null;
+            // Sólo se puede agregar un nombre escrito que todavía no esté en la lista
+            string nombre = txtNombre.Text.Trim();
+            botAgregar.Enabled = nombre.Length > 0
+                && !lstItems.Items.Cast<ItemLista>().Any(i => string.Equals(i.Nombre, nombre, StringComparison.CurrentCultureIgnoreCase));
         }
 
         private void lstItems_SelectedIndexChanged(object sender, EventArgs e)

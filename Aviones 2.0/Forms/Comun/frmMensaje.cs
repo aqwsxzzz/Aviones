@@ -8,6 +8,7 @@ namespace Aviones_2._0.Forms.Comun
     /// <summary>
     /// Ventana de mensajes del programa, en lugar de la de Windows: letra más grande y en negrita,
     /// y el tono de la pantalla que la llama pero más fuerte, para que llame la atención.
+    /// Sin la barra blanca de Windows: el título va adentro, con borde en relieve y sombra.
     /// </summary>
     public class frmMensaje : Form
     {
@@ -23,7 +24,7 @@ namespace Aviones_2._0.Forms.Comun
             Text = titulo;
             Font = new Font("Arial", 12F);
             BackColor = Estilo.Resaltado(fondo);
-            FormBorderStyle = FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.None;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
             MinimizeBox = false;
@@ -102,9 +103,18 @@ namespace Aviones_2._0.Forms.Comun
                 }
             }
 
-            var marco = new TableLayoutPanel { AutoSize = true, ColumnCount = 1, Padding = new Padding(24, 22, 24, 18) };
-            marco.Controls.Add(contenido, 0, 0);
-            marco.Controls.Add(fila, 0, 1);
+            var encabezado = new Label
+            {
+                Text = titulo,
+                AutoSize = true,
+                Font = new Font("Arial", 13F, FontStyle.Bold | FontStyle.Underline),
+                Margin = new Padding(0, 0, 0, 14)
+            };
+
+            var marco = new TableLayoutPanel { AutoSize = true, ColumnCount = 1, Padding = new Padding(26, 18, 26, 20) };
+            marco.Controls.Add(encabezado, 0, 0);
+            marco.Controls.Add(contenido, 0, 1);
+            marco.Controls.Add(fila, 0, 2);
             Controls.Add(marco);
 
             KeyDown += (s, e) =>
@@ -115,6 +125,35 @@ namespace Aviones_2._0.Forms.Comun
                     DialogResult = DialogResult.Cancel;
                 }
             };
+        }
+
+        /// <summary>Sombra alrededor de la ventana, para que se despegue de la pantalla de atrás.</summary>
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                const int CS_DROPSHADOW = 0x20000;
+                var cp = base.CreateParams;
+                cp.ClassStyle |= CS_DROPSHADOW;
+                return cp;
+            }
+        }
+
+        /// <summary>Borde en relieve: claro arriba y a la izquierda, oscuro abajo y a la derecha.</summary>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            var r = ClientRectangle;
+            using (var contorno = new Pen(Color.FromArgb(70, 70, 70)))
+            using (var luz = new Pen(ControlPaint.Light(BackColor, 0.6f), 3))
+            using (var sombra = new Pen(ControlPaint.Dark(BackColor, 0.25f), 3))
+            {
+                e.Graphics.DrawLine(luz, 2, 2, r.Right - 3, 2);
+                e.Graphics.DrawLine(luz, 2, 2, 2, r.Bottom - 3);
+                e.Graphics.DrawLine(sombra, r.Right - 3, 2, r.Right - 3, r.Bottom - 3);
+                e.Graphics.DrawLine(sombra, 2, r.Bottom - 3, r.Right - 3, r.Bottom - 3);
+                e.Graphics.DrawRectangle(contorno, 0, 0, r.Width - 1, r.Height - 1);
+            }
         }
 
         protected override void OnShown(EventArgs e)

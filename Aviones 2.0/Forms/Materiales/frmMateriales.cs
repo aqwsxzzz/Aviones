@@ -28,7 +28,6 @@ namespace Aviones_2._0.Forms.Materiales
         public frmMateriales()
         {
             InitializeComponent();
-            Imagenes.MarcarSinImagen(picFoto);
             Estilo.Grilla(dgvMateriales);
             Estilo.Grilla(dgvLotes);
             Estilo.Grilla(dgvUsos);
@@ -131,6 +130,8 @@ namespace Aviones_2._0.Forms.Materiales
             botModificar.Enabled = hay;
             botEliminar.Enabled = hay;
             botAgregarLote.Enabled = hay;
+            // Sin material elegido no se muestra el detalle (foto, lotes, modelos): aparece al elegir uno
+            tlpDetalle.Visible = hay;
 
             // La nota del material, en un recuadro debajo de la foto
             labNota.Text = m?.Nota;

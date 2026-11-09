@@ -19,7 +19,6 @@ namespace Aviones_2._0.Forms.Modelos
         public frmModelos()
         {
             InitializeComponent();
-            Imagenes.MarcarSinImagen(picFoto);
             Estilo.Total(labValorTotal);
             Estilo.Total(labTotal);
             labTotal.Anchor = AnchorStyles.Right;
@@ -112,6 +111,8 @@ namespace Aviones_2._0.Forms.Modelos
             botModificar.Enabled = m != null;
             botEliminar.Enabled = m != null;
             botImprimirMateriales.Enabled = m != null;
+            // Sin modelo elegido no se muestra el detalle (foto, materiales, total): aparece al elegir uno
+            tlpDetalle.Visible = m != null;
 
             if (m == null)
             {

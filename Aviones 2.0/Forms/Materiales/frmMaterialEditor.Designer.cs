@@ -541,7 +541,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(860, 640);
             this.Controls.Add(this.tlpPrincipal);
-            this.Font = new System.Drawing.Font("Arial", 10F);
+            this.Font = new System.Drawing.Font("Arial", 12F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

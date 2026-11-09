@@ -38,7 +38,6 @@ namespace Aviones_2._0.Forms.Materiales
         {
             InitializeComponent();
             Estilo.ColorDeLaSeccion(this);
-            Imagenes.MarcarSinImagen(picImagen);
             selFabricante.Configurar(ListaRepositorio.Fabricantes(), "Fabricantes");
             selUbicacion.Configurar(ListaRepositorio.Ubicaciones(), "Ubicaciones");
             fotoMaxima = picImagen.Size;

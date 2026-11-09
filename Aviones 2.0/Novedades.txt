@@ -4,6 +4,32 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.6.0
+* Al imprimir Materiales y Modelos, centrar el listado en la hoja y alinear la fecha con el borde derecho del listado.
+> El listado se imprime centrado; el título y la fecha quedan alineados con sus bordes. Además, los anchos se miden con la letra de la impresora, para que no se corten textos como "Banco de trabajo".
+
+* El cartel amarillo que aparece al elegir un material.
+> No es un error: es la Nota de ese material (por ejemplo "Es una pruega"). Se borra en Modificar > Nota.
+! Puede venir de una nota que tenía un pedido de compra viejo: en la versión 0.4.0 las notas de los pedidos pasaron al material.
+
+* Sacar el dibujo de la cámara de fotos cuando no hay foto.
+> Sin foto, el lugar queda vacío (en Materiales, Modelos, Compras y en los editores).
+
+* En Materiales, cuando no hay material elegido, que no aparezca el detalle de la derecha.
+> La foto, los lotes, sus botones y "Usado en modelos" aparecen recién al elegir un material.
+
+* En Modelos, cuando no hay modelo elegido, que no aparezca "Materiales".
+> La foto, la lista de materiales y el total aparecen recién al elegir un modelo.
+
+* En los listados (Familias, Fabricante, Ubicación, etc.), que no venga nada elegido y que AGREGAR se encienda recién al escribir.
+> Se abren sin nada elegido y con el nombre vacío. AGREGAR se enciende sólo cuando se escribe un nombre que todavía no está en la lista.
+
+* A los mensajes sacarles la parte de arriba blanca y darles efecto de profundidad.
+> Los mensajes ya no tienen la barra blanca: el título va adentro, subrayado, y la ventana tiene borde en relieve y sombra.
+
+* Agrandar las letras de la pantalla de Nuevo / Modificar material.
+> La letra pasó de 10 a 12.
+
 = 0.5.0
 * Al entrar en MATERIALES y en COMPRAS, que no quede elegido el primer registro, y elegir yo cuál abrir.
 > Al entrar en Materiales y en Compras no hay nada elegido en los listados; se ven los datos al hacer clic.

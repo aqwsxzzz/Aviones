@@ -43,7 +43,6 @@ namespace Aviones_2._0.Forms.Modelos
         {
             InitializeComponent();
             Estilo.ColorDeLaSeccion(this);
-            Imagenes.MarcarSinImagen(picFoto);
             fotoMaxima = picFoto.Size;
             this.idModelo = idModelo;
             Estilo.Grilla(dgvMateriales);

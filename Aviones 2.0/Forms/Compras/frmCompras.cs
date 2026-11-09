@@ -33,7 +33,6 @@ namespace Aviones_2._0.Forms.Compras
         public frmCompras()
         {
             InitializeComponent();
-            Imagenes.MarcarSinImagen(picCritico);
             Estilo.Grilla(dgvPedidos);
             Estilo.Grilla(dgvCriticos);
             dgvPedidos.BackgroundColor = Color.Honeydew;
