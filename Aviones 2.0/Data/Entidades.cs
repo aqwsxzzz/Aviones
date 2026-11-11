@@ -132,13 +132,34 @@ namespace Aviones_2._0.Data
         public bool SoloAComprar { get; set; }
     }
 
-    /// <summary>Un material con stock crítico: disponible menor o igual que su mínimo.</summary>
+    /// <summary>Un material visto desde Compras: su stock, el mínimo que le toca y el último precio pagado.</summary>
     public class StockCritico : MaterialStock
     {
         /// <summary>El mínimo que se usó: el del material, o el general si no tiene.</summary>
         public decimal MinimoAplicado { get; set; }
 
+        /// <summary>Valor unitario del último lote ingresado; null si nunca se compró.</summary>
+        public decimal? UltimoPrecio { get; set; }
+
         public bool TienePedido => PedidoPendiente > 0;
+
+        /// <summary>Se repone y le queda su mínimo o menos.</summary>
+        public bool EsCritico => SeRepone && Disponible <= MinimoAplicado;
+    }
+
+    /// <summary>
+    /// Lo que llegó de un pedido, al pasarlo a stock: el lote que entra y, si se corrigieron,
+    /// los datos del material (Familia, Grupo, Color…).
+    /// </summary>
+    public class Recepcion
+    {
+        public int IdPedido { get; set; }
+
+        /// <summary>El material con los datos corregidos; null si no se tocó.</summary>
+        public Material Material { get; set; }
+
+        /// <summary>Lo que entra al stock. Con cantidad 0 no llegó nada y el pedido sigue pendiente.</summary>
+        public Lote Lote { get; set; }
     }
 
     public static class EstadosPedido

@@ -33,17 +33,12 @@ namespace Aviones_2._0.Forms.Materiales
             this.flpCompra = new System.Windows.Forms.FlowLayoutPanel();
             this.radCompraNuevo = new System.Windows.Forms.RadioButton();
             this.radCompraUsado = new System.Windows.Forms.RadioButton();
-            this.labResto = new System.Windows.Forms.Label();
-            this.flpResto = new System.Windows.Forms.FlowLayoutPanel();
-            this.radEsperarResto = new System.Windows.Forms.RadioButton();
-            this.radCerrarPedido = new System.Windows.Forms.RadioButton();
             this.labUso = new System.Windows.Forms.Label();
             this.flpBotones = new System.Windows.Forms.FlowLayoutPanel();
             this.botCancelar = new System.Windows.Forms.Button();
             this.botGuardar = new System.Windows.Forms.Button();
             this.tlpPrincipal.SuspendLayout();
             this.flpCompra.SuspendLayout();
-            this.flpResto.SuspendLayout();
             this.flpBotones.SuspendLayout();
             this.SuspendLayout();
             //
@@ -65,8 +60,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.Controls.Add(this.dtpFecha, 1, 5);
             this.tlpPrincipal.Controls.Add(this.labCompra, 0, 6);
             this.tlpPrincipal.Controls.Add(this.flpCompra, 1, 6);
-            this.tlpPrincipal.Controls.Add(this.labResto, 0, 7);
-            this.tlpPrincipal.Controls.Add(this.flpResto, 0, 8);
             this.tlpPrincipal.Controls.Add(this.labUso, 0, 9);
             this.tlpPrincipal.Controls.Add(this.flpBotones, 0, 10);
             this.tlpPrincipal.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -85,8 +78,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpPrincipal.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.tlpPrincipal.SetColumnSpan(this.labMaterial, 2);
-            this.tlpPrincipal.SetColumnSpan(this.labResto, 2);
-            this.tlpPrincipal.SetColumnSpan(this.flpResto, 2);
             this.tlpPrincipal.SetColumnSpan(this.labUso, 2);
             this.tlpPrincipal.SetColumnSpan(this.flpBotones, 2);
             this.tlpPrincipal.TabIndex = 0;
@@ -138,7 +129,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.txtCantidad.Size = new System.Drawing.Size(120, 23);
             this.txtCantidad.TabIndex = 2;
             this.txtCantidad.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.txtCantidad.TextChanged += new System.EventHandler(this.txtCantidad_TextChanged);
             //
             // labValor
             //
@@ -200,41 +190,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.radCompraUsado.TabIndex = 1;
             this.radCompraUsado.Text = "Usado";
             //
-            // labResto
-            //
-            this.labResto.AutoSize = true;
-            this.labResto.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
-            this.labResto.ForeColor = System.Drawing.Color.Firebrick;
-            this.labResto.Margin = new System.Windows.Forms.Padding(3, 12, 3, 3);
-            this.labResto.Name = "labResto";
-            this.labResto.Text = "Llegó menos de lo pedido. ¿Qué pasa con lo que falta?";
-            this.labResto.Visible = false;
-            //
-            // flpResto
-            //
-            this.flpResto.AutoSize = true;
-            this.flpResto.Controls.Add(this.radEsperarResto);
-            this.flpResto.Controls.Add(this.radCerrarPedido);
-            this.flpResto.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flpResto.Margin = new System.Windows.Forms.Padding(20, 0, 3, 3);
-            this.flpResto.Name = "flpResto";
-            this.flpResto.TabIndex = 6;
-            this.flpResto.Visible = false;
-            //
-            // radEsperarResto
-            //
-            this.radEsperarResto.AutoSize = true;
-            this.radEsperarResto.Name = "radEsperarResto";
-            this.radEsperarResto.TabIndex = 0;
-            this.radEsperarResto.Text = "Sigo esperando el resto";
-            //
-            // radCerrarPedido
-            //
-            this.radCerrarPedido.AutoSize = true;
-            this.radCerrarPedido.Name = "radCerrarPedido";
-            this.radCerrarPedido.TabIndex = 1;
-            this.radCerrarPedido.Text = "No llega más: cerrar el pedido";
-            //
             // labUso
             //
             this.labUso.AutoSize = true;
@@ -292,8 +247,6 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpPrincipal.PerformLayout();
             this.flpCompra.ResumeLayout(false);
             this.flpCompra.PerformLayout();
-            this.flpResto.ResumeLayout(false);
-            this.flpResto.PerformLayout();
             this.flpBotones.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -317,10 +270,6 @@ namespace Aviones_2._0.Forms.Materiales
         private System.Windows.Forms.FlowLayoutPanel flpCompra;
         private System.Windows.Forms.RadioButton radCompraNuevo;
         private System.Windows.Forms.RadioButton radCompraUsado;
-        private System.Windows.Forms.Label labResto;
-        private System.Windows.Forms.FlowLayoutPanel flpResto;
-        private System.Windows.Forms.RadioButton radEsperarResto;
-        private System.Windows.Forms.RadioButton radCerrarPedido;
         private System.Windows.Forms.Label labUso;
         private System.Windows.Forms.FlowLayoutPanel flpBotones;
         private System.Windows.Forms.Button botCancelar;

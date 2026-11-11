@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Dapper;
 
@@ -95,16 +96,22 @@ namespace Aviones_2._0.Data.Repositorios
 
         public void Actualizar(Material material)
         {
-            Validar(material);
             using (var cn = Db.Abrir())
             {
-                cn.Execute(@"
-                    UPDATE dbo.Materiales SET
-                        IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
-                        Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
-                        StockMinimo = @StockMinimo, SeRepone = @SeRepone, Nota = @Nota
-                    WHERE IdMaterial = @IdMaterial", material);
+                Actualizar(cn, null, material);
             }
+        }
+
+        /// <summary>Actualiza dentro de una transacción ya abierta (por ejemplo, al pasar un pedido a stock).</summary>
+        internal static void Actualizar(IDbConnection cn, IDbTransaction tx, Material material)
+        {
+            Validar(material);
+            cn.Execute(@"
+                UPDATE dbo.Materiales SET
+                    IdFamilia = @IdFamilia, Grupo = @Grupo, Caracteristica = @Caracteristica, Color = @Color,
+                    Medidas = @Medidas, Codigo = @Codigo, IdTipoUnidad = @IdTipoUnidad,
+                    StockMinimo = @StockMinimo, SeRepone = @SeRepone, Nota = @Nota
+                WHERE IdMaterial = @IdMaterial", material, tx);
         }
 
         /// <summary>

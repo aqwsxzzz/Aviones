@@ -30,6 +30,17 @@ Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se
 * Agrandar las letras de la pantalla de Nuevo / Modificar material.
 > La letra pasó de 10 a 12.
 
+* PROCESO DE COMPRAS: abajo el listado de materiales con botones "Stock general", "Stock crítico" y "Agregar material sin stock"; el recuadro "Pedidos" apagado mientras no haya nada en la lista de compras.
+> Abajo se ven todos los materiales (Stock general) o sólo los que llegaron a su mínimo (Stock crítico), con buscador. Para pedir uno: doble clic o "AGREGAR AL PEDIDO". "AGREGAR MATERIAL SIN STOCK" crea uno nuevo y lo pide. El recuadro "Pedidos" (Modificar, Eliminar, Imprimir, Cerrar pedido, Recibir pedido) se enciende con el primer pedido.
+! Agregué el botón "AGREGAR AL PEDIDO" para que se vea cómo pedir el material elegido (el doble clic también funciona). La columna "Tipo" del dibujo es la unidad (Unidades, Metros...), y se llama "Unidad" como en Materiales.
+
+* Cerrar pedido: elegir de una lista el vendedor (si es uno solo, directo) e imprimir su pedido. Poder ver los pedidos abiertos y cerrados.
+> CERRAR PEDIDO muestra la lista de vendedores con pedidos abiertos; al elegir uno, la lista de compras queda con lo suyo, se imprime y, al confirmar, queda cerrado (enviado). Arriba, "Mostrar" filtra Todos, Abiertos o Cerrados.
+
+* Recibir pedido: elegir el vendedor, poder cambiar todos los datos de la lista y con "Pasar a stock" pasar todo al inventario y borrar esa compra del listado.
+> RECIBIR PEDIDO muestra la lista de vendedores con pedidos cerrados; al elegir uno, quedan sólo sus materiales y todo se puede corregir: Familia, Grupo, Característica, Color, Medidas, Código, cuánto llegó, el valor unitario, el fabricante, la ubicación y si se compró nuevo o usado. PASAR A STOCK ingresa todo junto y lo saca de la lista de compras.
+! Lo que se corrige del material (Familia, Grupo, Color...) cambia en todo el programa. Si llegó menos de lo pedido, lo que falta sigue en la lista como pedido cerrado, esperando; si no llegó nada (Llegó en 0), queda como estaba. Las compras no se borran: quedan guardadas como compradas, sólo que ya no aparecen en la lista. La fecha de ingreso es la del día.
+
 = 0.5.0
 * Al entrar en MATERIALES y en COMPRAS, que no quede elegido el primer registro, y elegir yo cuál abrir.
 > Al entrar en Materiales y en Compras no hay nada elegido en los listados; se ven los datos al hacer clic.

@@ -309,6 +309,76 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void PasarAStock_TodoJuntoCorrigeMaterialesYDejaPendienteLoQueFalta()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int motor = CrearMaterial("Motor", 0m);
+            int cola = CrearMaterial("Cola", 1m);
+            int pServo = compras.CrearPedido(servo, 10m, null);
+            int pMotor = compras.CrearPedido(motor, 3m, null);
+            int pCola = compras.CrearPedido(cola, 2m, null);
+            compras.EnviarPedidos(new[] { pServo, pMotor, pCola });
+
+            var corregido = materiales.Obtener(motor);
+            corregido.Color = "Negro";
+            int entraron = compras.PasarAStock(new[]
+            {
+                new Recepcion { IdPedido = pServo, Lote = Recibido(10m) },
+                new Recepcion { IdPedido = pMotor, Lote = Recibido(2m, 30m), Material = corregido },
+                new Recepcion { IdPedido = pCola, Lote = Recibido(0m) }   // no llegó
+            });
+
+            Assert.AreEqual(2, entraron);
+            Assert.AreEqual(12m, materiales.ObtenerStock(servo).Disponible);
+            Assert.AreEqual(2m, materiales.ObtenerStock(motor).Disponible);
+            Assert.AreEqual("Negro", materiales.Obtener(motor).Color);
+            // Del motor falta 1 y la cola no llegó: siguen pendientes y enviados
+            var pendientes = compras.ListarPendientes();
+            Assert.AreEqual(1m, pendientes.Single(p => p.IdPedido == pMotor).Cantidad);
+            Assert.AreEqual(2m, pendientes.Single(p => p.IdPedido == pCola).Cantidad);
+            Assert.IsTrue(pendientes.All(p => p.Enviado));
+        }
+
+        [TestMethod]
+        public void PasarAStock_SiAlgoFallaNoSeGuardaNada()
+        {
+            int servo = CrearMaterial("Servo", 2m);
+            int motor = CrearMaterial("Motor", 0m);
+            int pServo = compras.CrearPedido(servo, 10m, null);
+            int pMotor = compras.CrearPedido(motor, 3m, null);
+            compras.EnviarPedidos(new[] { pServo, pMotor });
+
+            var sinGrupo = materiales.Obtener(motor);
+            sinGrupo.Grupo = " ";
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.PasarAStock(new[]
+            {
+                new Recepcion { IdPedido = pServo, Lote = Recibido(10m) },
+                new Recepcion { IdPedido = pMotor, Lote = Recibido(3m), Material = sinGrupo }
+            }));
+            Assert.AreEqual(2m, materiales.ObtenerStock(servo).Disponible);
+            Assert.AreEqual(2, compras.ListarPendientes().Count);
+
+            // Si no llegó nada, avisa
+            Assert.ThrowsExactly<ReglaNegocioException>(() => compras.PasarAStock(new[]
+            {
+                new Recepcion { IdPedido = pServo, Lote = Recibido(0m) }
+            }));
+        }
+
+        [TestMethod]
+        public void ParaComprar_TodosConUltimoPrecioYSiEsCritico()
+        {
+            int servo = CrearMaterial("Servo", 3m, minimo: 4m, precio: 7m);
+            CrearMaterial("Motor", 3m, minimo: 2m);
+            var lista = compras.ListarParaComprar(1m);
+            Assert.AreEqual(2, lista.Count);
+            var s = lista.Single(m => m.IdMaterial == servo);
+            Assert.IsTrue(s.EsCritico);
+            Assert.AreEqual(7m, s.UltimoPrecio);
+            Assert.IsFalse(lista.Single(m => m.IdMaterial != servo).EsCritico);
+        }
+
+        [TestMethod]
         public void MinimoGeneral_SeGuardaYSeLee()
         {
             var config = new ConfiguracionRepositorio();

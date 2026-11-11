@@ -138,7 +138,7 @@
       <DependentUpon>frmInformeValor.cs</DependentUpon>
     </Compile>
     <Compile Include="Common\Novedades.cs" />
-    <Compile Include="Forms\Compras\frmElegirMaterial.cs">
+    <Compile Include="Forms\Comun\frmElegirDeLista.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Comun\frmNovedades.cs">
@@ -202,9 +202,7 @@
     <Compile Include="Forms\Compras\frmCompras.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Compras\frmCompras.Designer.cs">
-      <DependentUpon>frmCompras.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Forms\Compras\FilaRecepcion.cs" />
     <Compile Include="Forms\Compras\frmPedido.cs">
       <SubType>Form</SubType>
     </Compile>

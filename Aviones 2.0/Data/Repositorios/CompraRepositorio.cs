@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Dapper;
 
@@ -25,14 +26,19 @@ namespace Aviones_2._0.Data.Repositorios
         /// Materiales con disponible (nuevo + usado) menor o igual que su mínimo propio,
         /// o que el mínimo general si no tienen uno.
         /// </summary>
-        public List<StockCritico> ListarStockCritico(decimal minimoGeneral)
+        public List<StockCritico> ListarStockCritico(decimal minimoGeneral) =>
+            ListarParaComprar(minimoGeneral).Where(m => m.EsCritico).ToList();
+
+        /// <summary>Todos los materiales, con el mínimo que les toca y el último precio pagado.</summary>
+        public List<StockCritico> ListarParaComprar(decimal minimoGeneral)
         {
             using (var cn = Db.Abrir())
             {
                 return cn.Query<StockCritico>(@"
-                    SELECT S.*, ISNULL(S.StockMinimo, @minimoGeneral) AS MinimoAplicado
+                    SELECT S.*, ISNULL(S.StockMinimo, @minimoGeneral) AS MinimoAplicado,
+                           (SELECT TOP 1 L.ValorUnitario FROM dbo.Lotes L
+                             WHERE L.IdMaterial = S.IdMaterial ORDER BY L.FechaIngreso DESC, L.IdLote DESC) AS UltimoPrecio
                     FROM dbo.vMaterialesStock S
-                    WHERE S.SeRepone = 1 AND S.Disponible <= ISNULL(S.StockMinimo, @minimoGeneral)
                     ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Medidas",
                     new { minimoGeneral }).ToList();
             }
@@ -150,47 +156,82 @@ namespace Aviones_2._0.Data.Repositorios
         /// </summary>
         public int Recibir(int idPedido, Lote recibido, bool esperarResto)
         {
-            if (recibido.Cantidad <= 0)
+            using (var cn = Db.Abrir())
+            using (var tx = cn.BeginTransaction())
             {
-                throw new ReglaNegocioException("La cantidad recibida tiene que ser mayor que cero.");
+                int idLote = Recibir(cn, tx, idPedido, recibido, esperarResto);
+                tx.Commit();
+                return idLote;
+            }
+        }
+
+        /// <summary>
+        /// Pasar a stock lo que llegó de un pedido cerrado, todo junto: corrige los materiales que se
+        /// cambiaron e ingresa un lote por cada uno que llegó. Lo que llegó de menos sigue pendiente;
+        /// lo que no llegó (cantidad 0) queda como estaba. Si algo falla, no se guarda nada.
+        /// Devuelve cuántos materiales entraron.
+        /// </summary>
+        public int PasarAStock(IEnumerable<Recepcion> recepciones)
+        {
+            var llegaron = recepciones.Where(r => r.Lote.Cantidad != 0).ToList();
+            if (llegaron.Count == 0)
+            {
+                throw new ReglaNegocioException("No llegó nada: escriba en \"Llegó\" cuánto se recibió de cada material.");
             }
             using (var cn = Db.Abrir())
             using (var tx = cn.BeginTransaction())
             {
-                var pedido = cn.QuerySingleOrDefault<PedidoCompra>(
-                    "SELECT IdPedido, IdMaterial, Cantidad, FechaPedido, Nota, Estado FROM dbo.PedidosCompra WITH (UPDLOCK) WHERE IdPedido = @idPedido AND Estado IN ('P', 'E')",
-                    new { idPedido }, tx);
-                if (pedido == null)
+                foreach (var r in llegaron)
                 {
-                    throw new ReglaNegocioException("El pedido ya no está pendiente.");
-                }
-                if (!pedido.Enviado)
-                {
-                    throw new ReglaNegocioException("Primero hay que cerrar el pedido (enviarlo al vendedor); después se recibe.");
-                }
-
-                recibido.IdMaterial = pedido.IdMaterial;
-                int idLote = LoteRepositorio.Insertar(cn, tx, recibido);
-                var datos = new { idPedido, recibida = recibido.Cantidad, idLote, fecha = recibido.FechaIngreso.Date };
-
-                if (esperarResto && recibido.Cantidad < pedido.Cantidad)
-                {
-                    cn.Execute("UPDATE dbo.PedidosCompra SET Cantidad = Cantidad - @recibida WHERE IdPedido = @idPedido", datos, tx);
-                    cn.Execute(@"
-                        INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, FechaPedido, Nota, PrecioEstimado, IdVendedor, FechaEnvio, Estado, FechaCierre, CantidadRecibida, IdLote)
-                        SELECT IdMaterial, @recibida, FechaPedido, Nota, PrecioEstimado, IdVendedor, FechaEnvio, 'C', @fecha, @recibida, @idLote
-                        FROM dbo.PedidosCompra WHERE IdPedido = @idPedido", datos, tx);
-                }
-                else
-                {
-                    cn.Execute(@"
-                        UPDATE dbo.PedidosCompra
-                        SET Estado = 'C', FechaCierre = @fecha, CantidadRecibida = @recibida, IdLote = @idLote
-                        WHERE IdPedido = @idPedido", datos, tx);
+                    if (r.Material != null)
+                    {
+                        MaterialRepositorio.Actualizar(cn, tx, r.Material);
+                    }
+                    Recibir(cn, tx, r.IdPedido, r.Lote, esperarResto: true);
                 }
                 tx.Commit();
-                return idLote;
             }
+            return llegaron.Count;
+        }
+
+        private static int Recibir(IDbConnection cn, IDbTransaction tx, int idPedido, Lote recibido, bool esperarResto)
+        {
+            if (recibido.Cantidad <= 0)
+            {
+                throw new ReglaNegocioException("La cantidad recibida tiene que ser mayor que cero.");
+            }
+            var pedido = cn.QuerySingleOrDefault<PedidoCompra>(
+                "SELECT IdPedido, IdMaterial, Cantidad, FechaPedido, Nota, Estado FROM dbo.PedidosCompra WITH (UPDLOCK) WHERE IdPedido = @idPedido AND Estado IN ('P', 'E')",
+                new { idPedido }, tx);
+            if (pedido == null)
+            {
+                throw new ReglaNegocioException("El pedido ya no está pendiente.");
+            }
+            if (!pedido.Enviado)
+            {
+                throw new ReglaNegocioException("Primero hay que cerrar el pedido (enviarlo al vendedor); después se recibe.");
+            }
+
+            recibido.IdMaterial = pedido.IdMaterial;
+            int idLote = LoteRepositorio.Insertar(cn, tx, recibido);
+            var datos = new { idPedido, recibida = recibido.Cantidad, idLote, fecha = recibido.FechaIngreso.Date };
+
+            if (esperarResto && recibido.Cantidad < pedido.Cantidad)
+            {
+                cn.Execute("UPDATE dbo.PedidosCompra SET Cantidad = Cantidad - @recibida WHERE IdPedido = @idPedido", datos, tx);
+                cn.Execute(@"
+                    INSERT INTO dbo.PedidosCompra (IdMaterial, Cantidad, FechaPedido, Nota, PrecioEstimado, IdVendedor, FechaEnvio, Estado, FechaCierre, CantidadRecibida, IdLote)
+                    SELECT IdMaterial, @recibida, FechaPedido, Nota, PrecioEstimado, IdVendedor, FechaEnvio, 'C', @fecha, @recibida, @idLote
+                    FROM dbo.PedidosCompra WHERE IdPedido = @idPedido", datos, tx);
+            }
+            else
+            {
+                cn.Execute(@"
+                    UPDATE dbo.PedidosCompra
+                    SET Estado = 'C', FechaCierre = @fecha, CantidadRecibida = @recibida, IdLote = @idLote
+                    WHERE IdPedido = @idPedido", datos, tx);
+            }
+            return idLote;
         }
 
         private static void Validar(decimal cantidad, decimal? precioEstimado = null)
