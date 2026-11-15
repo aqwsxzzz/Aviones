@@ -4,6 +4,26 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.7.0
+* Nuevo / Modificar material: las casillas "Cantidad" y "Stock mínimo" más cortas e iguales, y "Fecha ingreso" en el mismo renglón que su campo.
+> Las dos casillas quedaron del mismo largo, más cortas, y la fecha y "Se compró" quedan alineadas con su título.
+
+* Al tocar NUEVO en Materiales, que el listado no quede con el último material elegido ni con su foto.
+> NUEVO deja el listado sin ningún material elegido y sin foto antes de abrir la pantalla.
+
+* "Stock mínimo" vacío quiere decir que el material no se repone; si el stock llega a 0, avisarme para decidir si borro el registro.
+> Cuando un material que no se repone se queda sin stock (al usarlo en un modelo, o al corregir o borrar un lote), aparece un aviso. Si no se usa en ningún modelo, pregunta si se elimina; si se usa, avisa que queda con stock 0.
+! "Stock mínimo" vacío no quiere decir que no se repone: quiere decir que usa el mínimo general (el "Avisar cuando quede ..." de Stock crítico, en Compras), y así están casi todos los materiales. Para marcar uno que no se repone está la casilla "Se repone", al lado: se destilda.
+
+* Agrandar la letra de los listados (Familias, Ubicaciones, etc.).
+> La letra de esas ventanas es más grande.
+
+* Compras: sacar "Agregar al pedido" (alcanza con el doble clic), subir los botones a la altura de los de Pedidos y no mostrar los botones de Pedidos cuando no hay pedidos.
+> Así quedó: el material se pide con doble clic (o Enter), los botones están a la misma altura y el recuadro "Pedidos" aparece recién con el primer pedido.
+
+* Compras: después de pedir un material, que no quede elegido en el listado de stock ni su foto; y un recuadro con el valor de lo que estoy comprando, con un decimal.
+> Después de pedir, el listado de abajo queda sin nada elegido y sin foto. Arriba, al lado de la cantidad de pedidos, un recuadro muestra el total de la lista con un decimal; si se filtra por vendedor, es el total de ese vendedor.
+
 = 0.6.0
 * Al imprimir Materiales y Modelos, centrar el listado en la hoja y alinear la fecha con el borde derecho del listado.
 > El listado se imprime centrado; el título y la fecha quedan alineados con sus bordes. Además, los anchos se miden con la letra de la impresora, para que no se corten textos como "Banco de trabajo".

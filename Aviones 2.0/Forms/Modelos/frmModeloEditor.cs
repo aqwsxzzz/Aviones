@@ -354,6 +354,11 @@ namespace Aviones_2._0.Forms.Modelos
                 Desde = dtpDesde.Checked ? dtpDesde.Value.Date : (DateTime?)null
             };
 
+            // Para avisar después de los que no se reponen y se terminan con este modelo
+            Dictionary<int, decimal> antes = null;
+            Mensajes.Intentar(this, () => antes = Agotados.Antes(
+                filas.Select(f => f.IdMaterial).Concat(quitados.Select(q => q.Fila.IdMaterial))));
+
             bool guardado = Mensajes.Intentar(this, () =>
             {
                 if (EsNuevo)
@@ -388,6 +393,7 @@ namespace Aviones_2._0.Forms.Modelos
             if (guardado)
             {
                 modificado = false;
+                Agotados.Revisar(this, antes);
                 DialogResult = DialogResult.OK;
             }
         }

@@ -52,6 +52,7 @@ namespace Aviones_2._0.Forms.Compras
         private readonly ComboBox cboVendedor = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 200, Margin = new Padding(3, 4, 20, 3) };
         private readonly ComboBox cboMostrar = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 190, Margin = new Padding(3, 4, 20, 3) };
         private readonly Label labTotalPedidos = new Label { AutoSize = true, Font = new Font("Arial", 10F, FontStyle.Bold), Margin = new Padding(10, 8, 3, 3) };
+        private readonly Label labTotalCompra = new Label();
         private readonly DataGridView dgvPedidos = new DataGridView { Dock = DockStyle.Fill };
         private readonly DataGridView dgvRecepcion = new DataGridView { Dock = DockStyle.Fill, Visible = false };
         private readonly PictureBox picArriba = Foto();
@@ -64,8 +65,8 @@ namespace Aviones_2._0.Forms.Compras
         private readonly DataGridView dgvMateriales = new DataGridView { Dock = DockStyle.Fill };
         private readonly PictureBox picAbajo = Foto();
 
-        private readonly FlowLayoutPanel flpStock = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Anchor = AnchorStyles.Left | AnchorStyles.Bottom, Margin = new Padding(0, 0, 30, 0) };
-        private readonly Button botPedir = Boton("AGREGAR AL PEDIDO", 175);
+        /// <summary>Abajo, a la misma altura que los botones del recuadro Pedidos (su margen inferior es el del recuadro).</summary>
+        private readonly FlowLayoutPanel flpStock = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Anchor = AnchorStyles.Left | AnchorStyles.Bottom, Margin = new Padding(0, 0, 30, 9) };
         private readonly Button botStockGeneral = Boton("STOCK GENERAL", 145);
         private readonly Button botStockCritico = Boton("STOCK CRÍTICO", 145);
         private readonly Button botNuevoMaterial = Boton("AGREGAR MATERIAL SIN STOCK", 245);
@@ -92,7 +93,7 @@ namespace Aviones_2._0.Forms.Compras
 
             ArmarGrillas();
             ArmarPantalla();
-            Estilo.Botones(botPedir, botStockGeneral, botStockCritico, botNuevoMaterial, botModificar, botEliminar, botImprimir, botCerrar, botRecibir, botPasarAStock);
+            Estilo.Botones(botStockGeneral, botStockCritico, botNuevoMaterial, botModificar, botEliminar, botImprimir, botCerrar, botRecibir, botPasarAStock);
             Estilo.BotonSecundario(botCancelarRecepcion);
             Estilo.BotonSecundario(botSalir);
 
@@ -110,7 +111,6 @@ namespace Aviones_2._0.Forms.Compras
             txtBuscar.TextChanged += (s, e) => MostrarMateriales(null);
             txtMinimo.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; AplicarMinimo(); } };
             botAplicarMinimo.Click += (s, e) => AplicarMinimo();
-            botPedir.Click += (s, e) => Pedir();
             botStockGeneral.Click += (s, e) => CambiarVista(false);
             botStockCritico.Click += (s, e) => CambiarVista(true);
             botNuevoMaterial.Click += (s, e) => NuevoMaterial();
@@ -304,6 +304,10 @@ namespace Aviones_2._0.Forms.Compras
             filtros.Controls.Add(Etiqueta("Mostrar:"));
             filtros.Controls.Add(cboMostrar);
             filtros.Controls.Add(labTotalPedidos);
+            Estilo.Total(labTotalCompra);
+            labTotalCompra.Margin = new Padding(16, 0, 3, 3);
+            labTotalCompra.Visible = false;
+            filtros.Controls.Add(labTotalCompra);
             tlp.Controls.Add(filtros, 0, 1);
             tlp.SetColumnSpan(filtros, 2);
 
@@ -329,7 +333,6 @@ namespace Aviones_2._0.Forms.Compras
             tlp.Controls.Add(dgvMateriales, 0, 4);
             tlp.Controls.Add(picAbajo, 1, 4);
 
-            flpStock.Controls.Add(botPedir);
             flpStock.Controls.Add(botStockGeneral);
             flpStock.Controls.Add(botStockCritico);
             flpStock.Controls.Add(botNuevoMaterial);
@@ -441,8 +444,11 @@ namespace Aviones_2._0.Forms.Compras
                 ? "No hay nada pendiente de comprar."
                 : visibles.Count == 0
                     ? "No hay pedidos con este filtro."
-                    : $"{visibles.Count} pedidos   ·   Costo estimado: $ {Numeros.Dinero(total)}"
+                    : $"{visibles.Count} {(visibles.Count == 1 ? "pedido" : "pedidos")}"
                       + (visibles.Any(p => !p.Precio.HasValue) ? " (algunos sin precio)" : "");
+            // El valor de lo que se está comprando, en un recuadro que crece con el pedido
+            labTotalCompra.Text = $"Total: $ {Numeros.DineroUnDecimal(total)}";
+            labTotalCompra.Visible = visibles.Count > 0 && recepcion == null;
             ActualizarBotones();
             MostrarFotoArriba();
         }
@@ -513,14 +519,13 @@ namespace Aviones_2._0.Forms.Compras
         private void ActualizarBotones()
         {
             var pedido = PedidoSeleccionado();
-            // Sin nada en la lista de compras, el recuadro Pedidos queda apagado
-            grpPedidos.Enabled = pendientes.Count > 0;
+            // Sin nada en la lista de compras, el recuadro Pedidos no se muestra
+            grpPedidos.Visible = recepcion == null && pendientes.Count > 0;
             botModificar.Enabled = pedido != null && !pedido.Enviado;
             botEliminar.Enabled = pedido != null;
             botImprimir.Enabled = dgvPedidos.Rows.Count > 0;
             botCerrar.Enabled = pendientes.Any(p => !p.Enviado);
             botRecibir.Enabled = pendientes.Any(p => p.Enviado);
-            botPedir.Enabled = MaterialSeleccionado() != null;
         }
 
         private void MostrarFotoArriba()
@@ -609,9 +614,14 @@ namespace Aviones_2._0.Forms.Compras
             {
                 if (dialogo.ShowDialog(this) == DialogResult.OK)
                 {
-                    Recargar(null, idMaterial);
+                    Recargar(null);
                 }
             }
+            // Pedido (o no): el listado de abajo queda sin ninguno elegido y sin foto
+            dgvMateriales.ClearSelection();
+            dgvMateriales.CurrentCell = null;
+            ActualizarBotones();
+            MostrarFotoAbajo();
         }
 
         /// <summary>Un material que todavía no está cargado: se crea sin stock y se pide.</summary>
@@ -808,6 +818,7 @@ namespace Aviones_2._0.Forms.Compras
                 ? $"Recibir el pedido {vendedorRecepcion}: corrija lo que haga falta y toque PASAR A STOCK"
                 : "Listado de compras (pedidos pendientes)";
             labTotalPedidos.Visible = !recibiendo;
+            labTotalCompra.Visible = !recibiendo && dgvPedidos.Rows.Count > 0;
 
             // Mientras se recibe sólo se ve el pedido: los materiales de abajo y sus botones se esconden
             foreach (Control c in new Control[] { dgvMateriales, picAbajo, labMateriales.Parent })
@@ -817,7 +828,7 @@ namespace Aviones_2._0.Forms.Compras
             tlp.RowStyles[2] = new RowStyle(SizeType.Percent, recibiendo ? 100F : 40F);
             tlp.RowStyles[4] = recibiendo ? new RowStyle(SizeType.Absolute, 0F) : new RowStyle(SizeType.Percent, 60F);
             flpStock.Visible = !recibiendo;
-            grpPedidos.Visible = !recibiendo;
+            grpPedidos.Visible = !recibiendo && pendientes.Count > 0;
             flpRecepcion.Visible = recibiendo;
             ResumeLayout();
 

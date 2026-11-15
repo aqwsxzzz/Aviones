@@ -331,6 +331,13 @@ namespace Aviones_2._0.Forms.Materiales
 
         private void botNuevo_Click(object sender, EventArgs e)
         {
+            // Un material nuevo: el listado queda sin ninguno elegido (y sin foto) mientras se carga
+            cargando = true;
+            dgvMateriales.ClearSelection();
+            dgvMateriales.CurrentCell = null;
+            cargando = false;
+            MostrarDetalle();
+
             int? familia = cboFamilia.SelectedValue is int id && id > 0 ? id : (int?)null;
             using (var editor = new frmMaterialEditor(null, familia))
             {
@@ -427,11 +434,16 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 return;
             }
+            var antes = new Dictionary<int, decimal> { [m.IdMaterial] = m.Disponible };
             using (var editor = new frmLoteEditor(m.IdMaterial, Descripcion(m), lote))
             {
                 if (editor.ShowDialog(this) == DialogResult.OK)
                 {
                     Mensajes.Intentar(this, () => CargarMateriales(m.IdMaterial));
+                    if (Agotados.Revisar(this, antes))
+                    {
+                        Mensajes.Intentar(this, () => CargarMateriales());
+                    }
                 }
             }
         }
@@ -456,11 +468,16 @@ namespace Aviones_2._0.Forms.Materiales
                               $"({lote.Fabricante}, {lote.Ubicacion}) de \"{Descripcion(m)}\"?";
             if (Mensajes.Confirmar(this, pregunta, "Eliminar lote"))
             {
-                Mensajes.Intentar(this, () =>
+                var antes = new Dictionary<int, decimal> { [m.IdMaterial] = m.Disponible };
+                bool eliminado = Mensajes.Intentar(this, () =>
                 {
                     lotes.Eliminar(lote.IdLote);
                     CargarMateriales(m.IdMaterial);
                 });
+                if (eliminado && Agotados.Revisar(this, antes))
+                {
+                    Mensajes.Intentar(this, () => CargarMateriales());
+                }
             }
         }
 

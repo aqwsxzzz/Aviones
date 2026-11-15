@@ -264,6 +264,7 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // flpEstado
             //
+            this.flpEstado.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.flpEstado.AutoSize = true;
             this.flpEstado.Controls.Add(this.radNuevo);
             this.flpEstado.Controls.Add(this.radUsado);
@@ -330,7 +331,7 @@ namespace Aviones_2._0.Forms.Materiales
             //
             this.txtAComprar.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtAComprar.Name = "txtAComprar";
-            this.txtAComprar.Size = new System.Drawing.Size(100, 23);
+            this.txtAComprar.Size = new System.Drawing.Size(70, 23);
             this.txtAComprar.TabIndex = 0;
             this.txtAComprar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             //
@@ -411,7 +412,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.tlpLote.ColumnCount = 4;
             this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 140F));
             this.tlpLote.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpLote.Controls.Add(this.labFabricante, 0, 0);
             this.tlpLote.Controls.Add(this.selFabricante, 1, 0);
@@ -469,8 +470,9 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // txtCantidad
             //
+            this.txtCantidad.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.txtCantidad.Name = "txtCantidad";
-            this.txtCantidad.Size = new System.Drawing.Size(120, 23);
+            this.txtCantidad.Size = new System.Drawing.Size(70, 23);
             this.txtCantidad.TabIndex = 2;
             this.txtCantidad.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             //
@@ -498,6 +500,7 @@ namespace Aviones_2._0.Forms.Materiales
             //
             // dtpFecha
             //
+            this.dtpFecha.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.dtpFecha.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpFecha.Name = "dtpFecha";
             this.dtpFecha.Size = new System.Drawing.Size(120, 23);

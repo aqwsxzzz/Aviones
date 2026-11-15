@@ -53,6 +53,9 @@ namespace Aviones_2._0.Common
 
         public static string Dinero(decimal valor) => valor.ToString("N2", CultureInfo.CurrentCulture);
 
+        /// <summary>Con un solo decimal (por ejemplo, el total de lo que se está comprando).</summary>
+        public static string DineroUnDecimal(decimal valor) => valor.ToString("N1", CultureInfo.CurrentCulture);
+
         /// <summary>Totales: sin decimales.</summary>
         public static string DineroRedondo(decimal valor) => valor.ToString("N0", CultureInfo.CurrentCulture);
     }

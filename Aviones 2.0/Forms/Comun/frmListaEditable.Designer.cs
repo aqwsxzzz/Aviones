@@ -47,7 +47,7 @@ namespace Aviones_2._0.Forms.Comun
             // lstItems
             //
             this.lstItems.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstItems.Font = new System.Drawing.Font("Arial", 11F);
+            this.lstItems.Font = new System.Drawing.Font("Arial", 13F);
             this.lstItems.IntegralHeight = false;
             this.lstItems.Name = "lstItems";
             this.lstItems.TabIndex = 1;
@@ -123,7 +123,7 @@ namespace Aviones_2._0.Forms.Comun
             this.CancelButton = this.botCerrar;
             this.ClientSize = new System.Drawing.Size(560, 440);
             this.Controls.Add(this.tlpPrincipal);
-            this.Font = new System.Drawing.Font("Arial", 10F);
+            this.Font = new System.Drawing.Font("Arial", 12F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
