@@ -4,6 +4,48 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.8.0
+* Que las fotos de fondo que no coinciden con el tamaño de la pantalla se estiren para cubrirla toda.
+> La foto cubre toda la pantalla.
+! Para que no se deforme (estirada, el avión quedaría aplastado), se agranda hasta cubrir todo y se recorta lo que sobra en los bordes.
+
+* Los botones "Salir" de abajo a la derecha, en el mismo lugar que "SALIR DEL SISTEMA".
+> En el menú, Materiales, Modelos y Compras, SALIR está exactamente en el mismo lugar y del mismo tamaño.
+! En las ventanas chicas (editores, avisos) no se puede: son más chicas que la pantalla, así que su CANCELAR queda dentro de la ventana.
+
+* Materiales: el recuadro del valor y el botón Salir a los lugares indicados.
+> El recuadro Valor termina donde termina el listado; SALIR, como en el menú.
+
+* Materiales: al entrar, el listado centrado en la pantalla; recién al elegir un registro (o tocar un botón) en su lugar de siempre.
+> Así quedó.
+
+* Materiales: la lista de modelos que usan el material, sólo cuando algún modelo lo tiene.
+> "Usado en ... modelos" aparece sólo si algún modelo usa el material.
+
+* Nuevo material: al elegir la familia, pasar directamente a Grupo; "Unidades" por defecto; "Se compró" pasa a "Estado del material".
+> Así quedó.
+
+* Nuevo material: que Enter recorra los campos en orden (Familia, Grupo, Característica, Color, Medidas, Código, Nota, Unidad, Cargar foto, Stock mínimo, Fabricante, Ubicación, Cantidad, Valor unitario, Fecha, Estado del material, GUARDAR).
+> Enter recorre los campos en ese orden y saltea los que no se usan. En Nota, Enter también pasa al siguiente (para un renglón nuevo dentro de la nota: Mayúsculas + Enter).
+! "Cargar foto" quedó afuera del recorrido con Enter: es un botón, y Enter lo tocaría y abriría la ventana para buscar la foto cada vez. Se usa con un clic.
+
+* Nuevo material: letra más grande en las listas de Grupo, Característica, Color y Medidas.
+> Esas listas ahora son del programa, con letra grande. Con las flechas se marca una y Enter la elige (y pasa al campo siguiente).
+! La lista que usaba antes es la de Windows, que no deja cambiar la letra; por eso se hizo una propia.
+
+* Nuevo material: al elegir la familia, que el listado muestre sólo esa familia y que con doble clic en una casilla del listado se pase ese dato a la ventana de ingreso; la ventana al costado.
+> La ventana de NUEVO se abre al costado derecho, sin tapar el listado. Al elegir la familia, el listado muestra sólo esa familia. Con doble clic (o Enter) en una casilla del listado, ese dato pasa al material nuevo (Familia, Grupo, Característica, Color, Medidas, Código o Unidad) y se sigue con el campo siguiente. Mientras está abierta, los botones de abajo se apagan; Esc o CANCELAR la cierra.
+! Para que entre al costado, la ventana del material ahora es angosta y alta: la foto va debajo de Unidad y el primer ingreso tiene un dato por renglón. Es la misma ventana para Modificar y para el material nuevo desde Compras.
+
+* Compras: el dato "Ya pedido" del pedido que acabo de cerrar se ve muy pálido; la columna en negrita.
+> El naranja de lo ya pedido es más oscuro y la columna "Ya pedido" va en negrita.
+
+* Compras: al volver al listado de materiales, que el registro de la lista de compras se desmarque y su foto desaparezca.
+> Se trabaja con una lista a la vez: al tocar una, la otra queda sin nada elegido y sin foto.
+
+* Compras: correr el recuadro Pedidos hasta el borde derecho del listado.
+> El recuadro Pedidos termina donde termina el listado; SALIR, como en el menú.
+
 = 0.7.0
 * Nuevo / Modificar material: las casillas "Cantidad" y "Stock mínimo" más cortas e iguales, y "Fecha ingreso" en el mismo renglón que su campo.
 > Las dos casillas quedaron del mismo largo, más cortas, y la fecha y "Se compró" quedan alineadas con su título.

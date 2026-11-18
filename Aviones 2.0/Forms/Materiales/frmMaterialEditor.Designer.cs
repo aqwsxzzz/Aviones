@@ -258,9 +258,9 @@ namespace Aviones_2._0.Forms.Materiales
             //
             this.labEstado.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labEstado.AutoSize = true;
-            this.labEstado.Margin = new System.Windows.Forms.Padding(16, 0, 3, 0);
+            this.labEstado.Margin = new System.Windows.Forms.Padding(3, 0, 3, 0);
             this.labEstado.Name = "labEstado";
-            this.labEstado.Text = "Se compró";
+            this.labEstado.Text = "Estado del material";
             //
             // flpEstado
             //

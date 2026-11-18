@@ -28,6 +28,7 @@ namespace Aviones_2._0.Forms.Modelos
             dgvMateriales.BackgroundColor = BackColor;
             Estilo.Botones(botNuevo, botModificar, botEliminar, botImprimir, botImprimirMateriales);
             Estilo.BotonSecundario(botSalir);
+            Estilo.SalirAbajoALaDerecha(this, botSalir);
             OrdenGrilla.Habilitar(dgvModelos, dgvMateriales);
         }
 

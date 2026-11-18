@@ -25,6 +25,12 @@ namespace Aviones_2._0.Forms.Materiales
         /// <summary>Evita recargar mientras se llenan los controles por código.</summary>
         private bool cargando;
 
+        /// <summary>El alta de un material, abierta al costado del listado mientras se carga; null si no hay.</summary>
+        private frmMaterialEditor alta;
+
+        /// <summary>Ancho del listado cuando el detalle está a su lado; centrado conserva ese ancho.</summary>
+        private int anchoLista;
+
         public frmMateriales()
         {
             InitializeComponent();
@@ -35,13 +41,22 @@ namespace Aviones_2._0.Forms.Materiales
             Estilo.Botones(botNuevo, botModificar, botEliminar, botInforme, botImprimir,
                 botAgregarLote, botModificarLote, botEliminarLote);
             Estilo.BotonSecundario(botSalir);
+            Estilo.SalirAbajoALaDerecha(this, botSalir);
             dgvLotes.SelectionChanged += (s, e) => ActualizarBotonesLote();
             OrdenGrilla.Habilitar(dgvMateriales, dgvLotes, dgvUsos);
+
+            // El recuadro Valor termina donde termina el listado
+            dgvMateriales.SizeChanged += (s, e) => AlinearValor();
+            dgvMateriales.LocationChanged += (s, e) => AlinearValor();
+            labResumen.SizeChanged += (s, e) => AlinearValor();
+            labValor.SizeChanged += (s, e) => AlinearValor();
+            splPrincipal.Panel1.SizeChanged += (s, e) => AcomodarLista();
         }
 
         private void frmMateriales_Load(object sender, EventArgs e)
         {
             splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.72));
+            anchoLista = splPrincipal.SplitterDistance;
             Mensajes.Intentar(this, () =>
             {
                 CargarFamilias();
@@ -130,8 +145,9 @@ namespace Aviones_2._0.Forms.Materiales
             botModificar.Enabled = hay;
             botEliminar.Enabled = hay;
             botAgregarLote.Enabled = hay;
-            // Sin material elegido no se muestra el detalle (foto, lotes, modelos): aparece al elegir uno
-            tlpDetalle.Visible = hay;
+            // Sin material elegido no se muestra el detalle (foto, lotes, modelos): aparece al elegir uno.
+            // Con el alta abierta, en ese lugar está la ventana del alta.
+            tlpDetalle.Visible = hay && alta == null;
 
             // La nota del material, en un recuadro debajo de la foto
             labNota.Text = m?.Nota;
@@ -155,13 +171,58 @@ namespace Aviones_2._0.Forms.Materiales
 
                     var usos = materiales.ListarUsos(m.IdMaterial);
                     dgvUsos.DataSource = OrdenGrilla.Aplicar(dgvUsos, usos);
-                    labUsos.Text = usos.Count == 0 ? "No se usa en ningún modelo" : $"Usado en {usos.Select(u => u.IdModelo).Distinct().Count()} modelos";
+                    labUsos.Text = $"Usado en {usos.Select(u => u.IdModelo).Distinct().Count()} modelos";
+                    // La lista de modelos aparece sólo si algún modelo usa el material
+                    labUsos.Visible = dgvUsos.Visible = usos.Count > 0;
 
                     MostrarFoto(Imagenes.DesdeBytes(materiales.ObtenerImagen(m.IdMaterial)));
                 });
             }
 
             ActualizarBotonesLote();
+            AcomodarLista();
+        }
+
+        /// <summary>
+        /// Sin nada elegido (y sin el alta abierta) el listado va centrado en la pantalla, con su ancho de siempre;
+        /// al elegir un material vuelve a la izquierda, con el detalle al lado.
+        /// </summary>
+        private void AcomodarLista()
+        {
+            if (anchoLista == 0)
+            {
+                return;
+            }
+            bool centrada = MaterialSeleccionado() == null && alta == null;
+            splPrincipal.Panel2Collapsed = centrada;
+            if (centrada)
+            {
+                var panel = splPrincipal.Panel1.ClientSize;
+                int ancho = Math.Min(anchoLista, panel.Width);
+                dgvMateriales.Dock = DockStyle.None;
+                dgvMateriales.Bounds = new Rectangle((panel.Width - ancho) / 2, 0, ancho, panel.Height);
+            }
+            else if (dgvMateriales.Dock != DockStyle.Fill)
+            {
+                dgvMateriales.Dock = DockStyle.Fill;
+            }
+            AlinearValor();
+        }
+
+        /// <summary>El recuadro Valor, a la derecha, terminando donde termina el listado.</summary>
+        private void AlinearValor()
+        {
+            if (!IsHandleCreated || !labValor.IsHandleCreated)
+            {
+                return;
+            }
+            int finLista = PointToClient(dgvMateriales.PointToScreen(new Point(dgvMateriales.Width, 0))).X;
+            int finResumen = PointToClient(labResumen.PointToScreen(new Point(labResumen.Width, 0))).X + labResumen.Margin.Right;
+            int izquierda = Math.Max(16, finLista - finResumen - labValor.Width - labValor.Margin.Right);
+            if (labValor.Margin.Left != izquierda)
+            {
+                labValor.Margin = new Padding(izquierda, labValor.Margin.Top, labValor.Margin.Right, labValor.Margin.Bottom);
+            }
         }
 
         private void ActualizarBotonesLote()
@@ -275,14 +336,35 @@ namespace Aviones_2._0.Forms.Materiales
 
         private void dgvMateriales_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            if (e.RowIndex < 0)
             {
-                botModificar_Click(sender, e);
+                return;
             }
+            // Con el alta abierta, el doble clic copia ese dato al material nuevo
+            if (alta != null)
+            {
+                if (e.ColumnIndex >= 0 && dgvMateriales.Rows[e.RowIndex].DataBoundItem is MaterialStock m)
+                {
+                    alta.Copiar(m, dgvMateriales.Columns[e.ColumnIndex].DataPropertyName);
+                }
+                return;
+            }
+            botModificar_Click(sender, e);
         }
 
         private void dgvMateriales_KeyDown(object sender, KeyEventArgs e)
         {
+            if (alta != null)
+            {
+                // Con el alta abierta, Enter copia el dato de la casilla elegida (como el doble clic)
+                var celda = dgvMateriales.CurrentCell;
+                if (e.KeyCode == Keys.Enter && celda != null && celda.OwningRow.DataBoundItem is MaterialStock m)
+                {
+                    e.Handled = true;
+                    alta.Copiar(m, celda.OwningColumn.DataPropertyName);
+                }
+                return;
+            }
             if (e.KeyCode == Keys.Enter)
             {
                 e.Handled = true;
@@ -338,24 +420,57 @@ namespace Aviones_2._0.Forms.Materiales
             cargando = false;
             MostrarDetalle();
 
-            int? familia = cboFamilia.SelectedValue is int id && id > 0 ? id : (int?)null;
-            using (var editor = new frmMaterialEditor(null, familia))
+            if (alta != null)
             {
-                bool guardado = editor.ShowDialog(this) == DialogResult.OK;
-                Mensajes.Intentar(this, () =>
-                {
-                    CargarFamilias();
-                    if (guardado)
-                    {
-                        LimpiarFiltros();
-                        CargarMateriales(editor.IdMaterial);
-                    }
-                    else
-                    {
-                        CargarMateriales();
-                    }
-                });
+                alta.Activate();
+                return;
             }
+
+            // El alta se abre al costado, sin tapar el listado: elegida la familia, el listado muestra sólo esa,
+            // y con doble clic en una casilla se copia ese dato al alta (muchos se repiten de un material a otro).
+            int? familia = cboFamilia.SelectedValue is int id && id > 0 ? id : (int?)null;
+            alta = new frmMaterialEditor(null, familia) { StartPosition = FormStartPosition.Manual, ShowInTaskbar = false };
+            alta.FamiliaElegida += FiltrarFamilia;
+            alta.Load += (s, a) =>
+            {
+                var area = Screen.FromControl(this).WorkingArea;
+                alta.Location = new Point(area.Right - alta.Width - 12, area.Top + Math.Max(12, (area.Height - alta.Height) / 2 - 40));
+            };
+            alta.FormClosed += (s, a) => AltaCerrada();
+            flpBotones.Enabled = false;
+            MostrarDetalle();
+            alta.Show(this);
+        }
+
+        private void FiltrarFamilia(int idFamilia)
+        {
+            if (!(cboFamilia.SelectedValue is int actual) || actual != idFamilia)
+            {
+                cboFamilia.SelectedValue = idFamilia;   // recarga el listado con esa familia
+            }
+        }
+
+        private void AltaCerrada()
+        {
+            bool guardado = alta.DialogResult == DialogResult.OK;
+            int idNuevo = alta.IdMaterial;
+            alta.Dispose();
+            alta = null;
+            flpBotones.Enabled = true;
+            Mensajes.Intentar(this, () =>
+            {
+                CargarFamilias();
+                if (guardado)
+                {
+                    LimpiarFiltros();
+                    CargarMateriales(idNuevo);
+                }
+                else
+                {
+                    CargarMateriales();
+                }
+            });
+            Activate();
         }
 
         private void botModificar_Click(object sender, EventArgs e)
@@ -519,7 +634,9 @@ namespace Aviones_2._0.Forms.Materiales
         {
             if (e.KeyCode == Keys.Escape)
             {
-                Close();
+                // Con el alta abierta, Esc la cierra a ella; si no, se sale de Materiales
+                if (alta != null) alta.Close();
+                else Close();
             }
         }
     }

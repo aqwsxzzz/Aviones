@@ -163,6 +163,30 @@ namespace Aviones_2._0.Common
             return Color.FromArgb((int)Math.Round((r + m) * 255), (int)Math.Round((g + m) * 255), (int)Math.Round((b + m) * 255));
         }
 
+        /// <summary>
+        /// Dónde va el botón de salir, igual en todas las pantallas grandes (el mismo lugar que "SALIR DEL SISTEMA"):
+        /// abajo a la derecha de la pantalla.
+        /// </summary>
+        public static Rectangle LugarSalir
+        {
+            get
+            {
+                var pantalla = Screen.PrimaryScreen.Bounds;
+                return new Rectangle(pantalla.Width - 200, pantalla.Height - 100, 160, 60);
+            }
+        }
+
+        /// <summary>Saca el botón de salir de donde esté y lo pone en <see cref="LugarSalir"/>, encima de todo.</summary>
+        public static void SalirAbajoALaDerecha(Form form, Button salir)
+        {
+            salir.Parent?.Controls.Remove(salir);
+            salir.Margin = Padding.Empty;
+            salir.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            salir.Bounds = LugarSalir;
+            form.Controls.Add(salir);
+            salir.BringToFront();
+        }
+
         public static void BotonSecundario(Button b)
         {
             Botones(b);

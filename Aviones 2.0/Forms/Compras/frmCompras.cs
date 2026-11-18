@@ -30,7 +30,7 @@ namespace Aviones_2._0.Forms.Compras
         /// <summary>Filtro de la lista de compras por estado.</summary>
         private const int MostrarTodos = 0, MostrarAbiertos = 1, MostrarCerrados = 2;
         /// <summary>Naranja oscuro: se lee bien sobre el fondo verde claro.</summary>
-        private static readonly Color YaPedido = Color.FromArgb(200, 85, 0);
+        private static readonly Color YaPedido = Color.FromArgb(175, 60, 0);
         private static readonly Color Fondo = Color.Honeydew;
 
         private List<PedidoCompra> pendientes = new List<PedidoCompra>();
@@ -217,7 +217,11 @@ namespace Aviones_2._0.Forms.Compras
                 Columna(nameof(StockCritico.MinimoAplicado), "Mínimo", 50, "0.###"),
                 Columna(nameof(StockCritico.PedidoPendiente), "Ya pedido", 55, "0.###"));
             dgvMateriales.Columns["col" + nameof(StockCritico.Disponible)].DefaultCellStyle.Font = new Font("Arial", 10F, FontStyle.Bold);
+            dgvMateriales.Columns["col" + nameof(StockCritico.PedidoPendiente)].DefaultCellStyle.Font = new Font("Arial", 10F, FontStyle.Bold);
             dgvMateriales.SelectionChanged += (s, e) => { ActualizarBotones(); MostrarFotoAbajo(); };
+            // Se trabaja con una lista a la vez: al tocar una, la otra queda sin elegido y sin foto
+            dgvMateriales.CellMouseDown += (s, e) => SinElegir(dgvPedidos);
+            dgvPedidos.CellMouseDown += (s, e) => SinElegir(dgvMateriales);
             dgvMateriales.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) Pedir(); };
             dgvMateriales.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { e.Handled = true; Pedir(); } };
             dgvMateriales.CellFormatting += dgvMateriales_CellFormatting;
@@ -347,21 +351,22 @@ namespace Aviones_2._0.Forms.Compras
             flpRecepcion.Controls.Add(botPasarAStock);
             flpRecepcion.Controls.Add(botCancelarRecepcion);
 
+            // Abajo, debajo de las listas: los botones del stock a la izquierda y el recuadro Pedidos
+            // contra el borde derecho de las listas. SALIR va aparte, en el mismo lugar que en el menú.
             var abajo = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, ColumnCount = 2, Margin = new Padding(0, 12, 0, 0) };
             abajo.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             abajo.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
             var izquierda = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Dock = DockStyle.Fill, Margin = new Padding(0) };
             izquierda.Controls.Add(flpStock);
-            izquierda.Controls.Add(grpPedidos);
             izquierda.Controls.Add(flpRecepcion);
             abajo.Controls.Add(izquierda, 0, 0);
-            botSalir.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
-            botSalir.Margin = new Padding(0);
-            abajo.Controls.Add(botSalir, 1, 0);
+            grpPedidos.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            grpPedidos.Margin = new Padding(0);
+            abajo.Controls.Add(grpPedidos, 1, 0);
             tlp.Controls.Add(abajo, 0, 5);
-            tlp.SetColumnSpan(abajo, 2);
 
             Controls.Add(tlp);
+            Estilo.SalirAbajoALaDerecha(this, botSalir);
 
             picArriba.DoubleClick += (s, e) => Imagenes.Ampliar(this, picArriba.Image, "Foto del material");
             picAbajo.DoubleClick += (s, e) => Imagenes.Ampliar(this, picAbajo.Image, MaterialSeleccionado()?.Descripcion);
@@ -618,9 +623,19 @@ namespace Aviones_2._0.Forms.Compras
                 }
             }
             // Pedido (o no): el listado de abajo queda sin ninguno elegido y sin foto
-            dgvMateriales.ClearSelection();
-            dgvMateriales.CurrentCell = null;
+            SinElegir(dgvMateriales);
+        }
+
+        private void SinElegir(DataGridView dgv)
+        {
+            if (dgv.SelectedRows.Count == 0 && dgv.CurrentCell == null)
+            {
+                return;
+            }
+            dgv.ClearSelection();
+            dgv.CurrentCell = null;
             ActualizarBotones();
+            MostrarFotoArriba();
             MostrarFotoAbajo();
         }
 
