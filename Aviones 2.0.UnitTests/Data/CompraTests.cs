@@ -366,6 +366,36 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void PasarAStock_GuardaVendedorFotoUnidadYNota()
+        {
+            int servo = CrearMaterial("Servo", 0m);
+            int pServo = compras.CrearPedido(servo, 2m, null);
+            compras.EnviarPedidos(new[] { pServo });
+            int hobbyking = IdDe(ListaRepositorio.Vendedores(), "HobbyKing") ?? 0;
+            int unidades = new TipoUnidadRepositorio().Crear("Unidades");
+
+            var corregido = materiales.Obtener(servo);
+            corregido.IdTipoUnidad = unidades;
+            corregido.Nota = "Para el Cub";
+            var foto = new byte[] { 1, 2, 3 };
+            compras.PasarAStock(new[]
+            {
+                new Recepcion
+                {
+                    IdPedido = pServo, Lote = Recibido(2m), Material = corregido,
+                    CambiarVendedor = true, IdVendedor = hobbyking, CambiarFoto = true, Foto = foto
+                }
+            });
+
+            var m = materiales.Obtener(servo);
+            Assert.AreEqual(unidades, m.IdTipoUnidad);
+            Assert.AreEqual("Para el Cub", m.Nota);
+            CollectionAssert.AreEqual(foto, materiales.ObtenerImagen(servo));
+            Assert.AreEqual(hobbyking, Valor("SELECT IdVendedor FROM dbo.PedidosCompra WHERE IdPedido = @pServo", new { pServo }) ?? 0m);
+            Assert.AreEqual(0, compras.ListarPendientes().Count);
+        }
+
+        [TestMethod]
         public void ParaComprar_TodosConUltimoPrecioYSiEsCritico()
         {
             int servo = CrearMaterial("Servo", 3m, minimo: 4m, precio: 7m);

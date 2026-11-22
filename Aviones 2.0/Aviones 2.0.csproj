@@ -139,7 +139,11 @@
     </Compile>
     <Compile Include="Common\Novedades.cs" />
     <Compile Include="Common\Agotados.cs" />
+    <Compile Include="Common\ListaPrincipal.cs" />
     <Compile Include="Forms\Comun\Sugerencias.cs" />
+    <Compile Include="Forms\Comun\frmTexto.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Comun\frmElegirDeLista.cs">
       <SubType>Form</SubType>
     </Compile>

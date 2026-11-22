@@ -187,7 +187,16 @@ namespace Aviones_2._0.Data.Repositorios
                     {
                         MaterialRepositorio.Actualizar(cn, tx, r.Material);
                     }
-                    Recibir(cn, tx, r.IdPedido, r.Lote, esperarResto: true);
+                    if (r.CambiarVendedor)
+                    {
+                        cn.Execute("UPDATE dbo.PedidosCompra SET IdVendedor = @IdVendedor WHERE IdPedido = @IdPedido",
+                            new { r.IdVendedor, r.IdPedido }, tx);
+                    }
+                    Recibir(cn, tx, r.IdPedido, r.Lote, esperarResto: true);   // también deja el material en r.Lote
+                    if (r.CambiarFoto)
+                    {
+                        MaterialRepositorio.GuardarImagen(cn, tx, r.Lote.IdMaterial, r.Foto);
+                    }
                 }
                 tx.Commit();
             }

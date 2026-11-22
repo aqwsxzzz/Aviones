@@ -49,6 +49,13 @@ namespace Aviones_2._0.Forms.Materiales
             dgvMateriales.SizeChanged += (s, e) => AlinearValor();
             dgvMateriales.LocationChanged += (s, e) => AlinearValor();
             labResumen.SizeChanged += (s, e) => AlinearValor();
+            flpResumen.LocationChanged += (s, e) => AlinearValor();
+            // Los botones de los lotes, contra el borde derecho de la lista de lotes
+            flpBotonesLote.Dock = DockStyle.None;
+            flpBotonesLote.Anchor = AnchorStyles.Right;
+            // La columna Valor no necesita tanto lugar
+            colValorDisponible.FillWeight = 45F;
+            colValorDisponible.MinimumWidth = 60;
             labValor.SizeChanged += (s, e) => AlinearValor();
             splPrincipal.Panel1.SizeChanged += (s, e) => AcomodarLista();
         }
@@ -194,18 +201,7 @@ namespace Aviones_2._0.Forms.Materiales
                 return;
             }
             bool centrada = MaterialSeleccionado() == null && alta == null;
-            splPrincipal.Panel2Collapsed = centrada;
-            if (centrada)
-            {
-                var panel = splPrincipal.Panel1.ClientSize;
-                int ancho = Math.Min(anchoLista, panel.Width);
-                dgvMateriales.Dock = DockStyle.None;
-                dgvMateriales.Bounds = new Rectangle((panel.Width - ancho) / 2, 0, ancho, panel.Height);
-            }
-            else if (dgvMateriales.Dock != DockStyle.Fill)
-            {
-                dgvMateriales.Dock = DockStyle.Fill;
-            }
+            ListaPrincipal.Acomodar(splPrincipal, dgvMateriales, anchoLista, centrada, flpFiltros, flpResumen);
             AlinearValor();
         }
 
@@ -429,18 +425,27 @@ namespace Aviones_2._0.Forms.Materiales
             // El alta se abre al costado, sin tapar el listado: elegida la familia, el listado muestra sólo esa,
             // y con doble clic en una casilla se copia ese dato al alta (muchos se repiten de un material a otro).
             int? familia = cboFamilia.SelectedValue is int id && id > 0 ? id : (int?)null;
+            familiaAntesDelAlta = cboFamilia.SelectedValue as int?;
             alta = new frmMaterialEditor(null, familia) { StartPosition = FormStartPosition.Manual, ShowInTaskbar = false };
             alta.FamiliaElegida += FiltrarFamilia;
             alta.Load += (s, a) =>
             {
+                // A la derecha, arrancando a la altura del listado
                 var area = Screen.FromControl(this).WorkingArea;
-                alta.Location = new Point(area.Right - alta.Width - 12, area.Top + Math.Max(12, (area.Height - alta.Height) / 2 - 40));
+                int arriba = dgvMateriales.PointToScreen(Point.Empty).Y;
+                alta.Location = new Point(area.Right - alta.Width - 12, Math.Max(area.Top, Math.Min(arriba, area.Bottom - alta.Height)));
             };
             alta.FormClosed += (s, a) => AltaCerrada();
             flpBotones.Enabled = false;
+            // Mientras se pasan datos al alta, tocar el listado no lo pinta de azul
+            dgvMateriales.DefaultCellStyle.SelectionBackColor = dgvMateriales.DefaultCellStyle.BackColor;
+            dgvMateriales.DefaultCellStyle.SelectionForeColor = Color.Black;
             MostrarDetalle();
             alta.Show(this);
         }
+
+        /// <summary>El filtro de familia que había antes de abrir el alta, para volver a él si se cancela.</summary>
+        private int? familiaAntesDelAlta;
 
         private void FiltrarFamilia(int idFamilia)
         {
@@ -452,22 +457,34 @@ namespace Aviones_2._0.Forms.Materiales
 
         private void AltaCerrada()
         {
-            bool guardado = alta.DialogResult == DialogResult.OK;
+            // Guardado: tiene Id (el resultado de una ventana que no bloquea no queda al cerrarla)
             int idNuevo = alta.IdMaterial;
             alta.Dispose();
             alta = null;
             flpBotones.Enabled = true;
+            Estilo.ColoresDeSeleccion(dgvMateriales);
             Mensajes.Intentar(this, () =>
             {
                 CargarFamilias();
-                if (guardado)
+                // Vuelve al listado de antes (o a todos, para ver el nuevo); el total se recalcula con él
+                if (idNuevo > 0)
                 {
                     LimpiarFiltros();
-                    CargarMateriales(idNuevo);
                 }
                 else
                 {
-                    CargarMateriales();
+                    cargando = true;
+                    cboFamilia.SelectedValue = familiaAntesDelAlta ?? 0;
+                    cargando = false;
+                }
+                CargarMateriales(idNuevo > 0 ? idNuevo : (int?)null);
+                if (idNuevo == 0)
+                {
+                    cargando = true;
+                    dgvMateriales.ClearSelection();
+                    dgvMateriales.CurrentCell = null;
+                    cargando = false;
+                    MostrarDetalle();
                 }
             });
             Activate();

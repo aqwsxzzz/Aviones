@@ -160,6 +160,17 @@ namespace Aviones_2._0.Data
 
         /// <summary>Lo que entra al stock. Con cantidad 0 no llegó nada y el pedido sigue pendiente.</summary>
         public Lote Lote { get; set; }
+
+        /// <summary>Se eligió (o cambió) el vendedor al recibir: se guarda <see cref="IdVendedor"/> en el pedido.</summary>
+        public bool CambiarVendedor { get; set; }
+
+        /// <summary>A quién se le compró; null sin vendedor.</summary>
+        public int? IdVendedor { get; set; }
+
+        /// <summary>Se cargó, cambió o quitó la foto al recibir: se guarda <see cref="Foto"/> (null la quita).</summary>
+        public bool CambiarFoto { get; set; }
+
+        public byte[] Foto { get; set; }
     }
 
     public static class EstadosPedido

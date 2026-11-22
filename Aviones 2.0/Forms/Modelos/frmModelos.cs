@@ -30,6 +30,22 @@ namespace Aviones_2._0.Forms.Modelos
             Estilo.BotonSecundario(botSalir);
             Estilo.SalirAbajoALaDerecha(this, botSalir);
             OrdenGrilla.Habilitar(dgvModelos, dgvMateriales);
+            splPrincipal.Panel1.SizeChanged += (s, e) => AcomodarLista();
+        }
+
+        /// <summary>Ancho del listado cuando el detalle está a su lado; centrado conserva ese ancho.</summary>
+        private int anchoLista;
+
+        /// <summary>
+        /// Sin modelo elegido, los filtros y el listado van centrados en la pantalla;
+        /// al elegir uno vuelven a su lugar, con el detalle al lado.
+        /// </summary>
+        private void AcomodarLista()
+        {
+            if (anchoLista > 0)
+            {
+                ListaPrincipal.Acomodar(splPrincipal, dgvModelos, anchoLista, ModeloSeleccionado() == null, flpFiltros);
+            }
         }
 
         protected override void OnShown(EventArgs e)
@@ -46,6 +62,7 @@ namespace Aviones_2._0.Forms.Modelos
         private void frmModelos_Load(object sender, EventArgs e)
         {
             splPrincipal.SplitterDistance = Math.Max(400, (int)(splPrincipal.Width * 0.45));
+            anchoLista = splPrincipal.SplitterDistance;
             Mensajes.Intentar(this, () =>
             {
                 var estados = new List<EstadoModelo> { new EstadoModelo { IdEstadoModelo = 0, Nombre = "(Todas)" } };
@@ -114,6 +131,7 @@ namespace Aviones_2._0.Forms.Modelos
             botImprimirMateriales.Enabled = m != null;
             // Sin modelo elegido no se muestra el detalle (foto, materiales, total): aparece al elegir uno
             tlpDetalle.Visible = m != null;
+            AcomodarLista();
 
             if (m == null)
             {

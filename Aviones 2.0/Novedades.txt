@@ -4,6 +4,47 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.9.0
+* La ventana de NUEVO tapa el listado de materiales: achicar la columna Valor y bajar la ventana hasta la altura del listado.
+> La columna Valor es más angosta y la ventana arranca a la altura del listado.
+
+* Los botones de los lotes, alineados con el borde derecho de su listado.
+> Agregar, Modificar y Eliminar lote terminan donde termina la lista de lotes.
+
+* Con más materiales que los que entran en la pantalla, el último renglón queda cortado.
+> El listado termina siempre en un renglón entero.
+
+* Con el listado centrado, los filtros y el resumen tienen que empezar en el borde izquierdo del listado y correrse con él.
+> Así quedó: arrancan donde arranca el listado y se corren con él.
+
+* Mientras cargo un material nuevo, que no se pinte de azul cada renglón que toco para pasar datos.
+> Con la ventana de NUEVO abierta, tocar el listado no lo pinta; el doble clic pasa el dato igual.
+
+* Después de guardar un material nuevo el listado vuelve a mostrar todo, pero el valor total queda el de la familia.
+> Corregido: al cerrar NUEVO el listado y el total vuelven juntos (a todos los materiales si se guardó, o a como estaban si se canceló).
+
+* Modelos: sin ningún modelo elegido, los filtros y el listado centrados en la pantalla; al elegir uno, todo a su lugar.
+> Así quedó, igual que en Materiales.
+
+* Modelos: la foto un 50 % más grande, bajando un poco el listado de materiales del modelo.
+> La foto tiene un 50 % más de lugar y la lista de materiales empieza más abajo.
+
+* Compras, "Agregar material sin stock": que no pida lo del recuadro (nota, unidad, foto, stock mínimo), que todavía no se compró; que lo pida al recibirlo.
+> Al crearlo desde Compras sólo pide familia, grupo, característica, color, medidas y código. Lo demás se completa al recibir.
+! La unidad no puede quedar vacía: se guarda como "Unidades" y al recibir se puede cambiar (columna Unidad).
+
+* Compras: "Recibir pedido" no visible hasta cerrar un pedido; y una vez cerrado, que no se vean "Cerrar pedido", "Modificar" y "Eliminar".
+> Mientras hay pedidos abiertos se ven MODIFICAR, ELIMINAR y CERRAR PEDIDO; mientras hay pedidos cerrados se ve RECIBIR PEDIDO.
+! Como los pedidos son por vendedor, puede haber abiertos (de un vendedor) y cerrados (de otro) a la vez: en ese caso se ven todos. Con un solo vendedor queda exactamente el paso a paso pedido.
+
+* Compras: al cerrar el pedido, que pregunte a qué vendedor si hay distintos; los que no tienen vendedor van juntos aparte. (Hice un pedido a un vendedor y otro sin vendedor y lo cerró todo junto.)
+> Así funciona: probado con un pedido a HobbyKing y otro sin vendedor, CERRAR PEDIDO pregunta cuál cerrar.
+! En la captura que mandaste los tres pedidos tenían la columna Vendedor vacía, así que eran todos "sin vendedor" y por eso los cerró juntos. Seguramente al pedirlo no quedó elegido el vendedor.
+
+* Compras, al recibir: ningún renglón activo hasta hacer doble clic; sacar "Se compró"; agregar Nota (con doble clic abre una ventanita para escribirla) y Foto (para agregar o cambiar la del material); y poder elegir el vendedor.
+> Así quedó. Se edita con doble clic en la casilla (las listas se abren solas). Nota abre su ventanita; Foto pide la imagen (o, si ya tiene, deja cargar otra o quitarla). Hay columnas Unidad y Vendedor para elegirlos. Todo se guarda junto al tocar PASAR A STOCK.
+! Sin "Se compró", lo que se recibe entra como nuevo.
+
 = 0.8.0
 * Que las fotos de fondo que no coinciden con el tamaño de la pantalla se estiren para cubrirla toda.
 > La foto cubre toda la pantalla.

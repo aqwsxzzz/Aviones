@@ -35,9 +35,15 @@ namespace Aviones_2._0.Common
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 9F, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv.DefaultCellStyle.BackColor = Celda;
+            ColoresDeSeleccion(dgv);
+            dgv.DefaultCellStyle.Font = new Font("Arial", 10F);
+        }
+
+        /// <summary>El renglón elegido en azul con letra blanca (los de siempre).</summary>
+        public static void ColoresDeSeleccion(DataGridView dgv)
+        {
             dgv.DefaultCellStyle.SelectionBackColor = Seleccion;
             dgv.DefaultCellStyle.SelectionForeColor = Color.White;
-            dgv.DefaultCellStyle.Font = new Font("Arial", 10F);
         }
 
         public static void Botones(params Button[] botones)

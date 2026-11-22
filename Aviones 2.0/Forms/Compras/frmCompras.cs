@@ -230,7 +230,9 @@ namespace Aviones_2._0.Forms.Compras
             dgvRecepcion.BackgroundColor = Fondo;
             dgvRecepcion.ReadOnly = false;
             dgvRecepcion.SelectionMode = DataGridViewSelectionMode.CellSelect;
-            dgvRecepcion.EditMode = DataGridViewEditMode.EditOnEnter;
+            // Nada se activa hasta hacer doble clic en una casilla
+            dgvRecepcion.EditMode = DataGridViewEditMode.EditProgrammatically;
+            dgvRecepcion.CellDoubleClick += dgvRecepcion_CellDoubleClick;
             dgvRecepcion.DataError += (s, e) =>
             {
                 e.ThrowException = false;
@@ -248,32 +250,96 @@ namespace Aviones_2._0.Forms.Compras
             dgvRecepcion.Columns.Clear();
             dgvRecepcion.AutoGenerateColumns = false;
             var familias = new FamiliaRepositorio().Listar().Select(f => new ElementoLista { Id = f.IdFamilia, Nombre = f.Nombre }).ToList();
+            var unidades = new TipoUnidadRepositorio().Listar().Select(t => new ElementoLista { Id = t.IdTipoUnidad, Nombre = t.Nombre }).ToList();
+            var vendedoresLista = ConNinguno(vendedores.Listar());
             var fabricantes = ConNinguno(ListaRepositorio.Fabricantes().Listar());
             var ubicaciones = ConNinguno(ListaRepositorio.Ubicaciones().Listar());
             dgvRecepcion.Columns.AddRange(
-                Lista(nameof(FilaRecepcion.IdFamilia), "Familia", 100, familias),
-                Columna(nameof(FilaRecepcion.Grupo), "Grupo", 100, soloLectura: false),
-                Columna(nameof(FilaRecepcion.Caracteristica), "Característica", 120, soloLectura: false),
-                Columna(nameof(FilaRecepcion.Color), "Color", 70, soloLectura: false),
-                Columna(nameof(FilaRecepcion.Medidas), "Medidas", 85, soloLectura: false),
-                Columna(nameof(FilaRecepcion.Codigo), "Código", 70, soloLectura: false),
-                Columna(nameof(FilaRecepcion.Pedido), "Pedido", 50, "0.###"),
-                Columna(nameof(FilaRecepcion.Llego), "Llegó", 50, "0.###", soloLectura: false),
-                Columna(nameof(FilaRecepcion.TipoUnidad), "Unidad", 60),
-                Columna(nameof(FilaRecepcion.ValorUnitario), "Valor unitario", 65, "N2", soloLectura: false),
-                Lista(nameof(FilaRecepcion.IdFabricante), "Fabricante", 100, fabricantes),
-                Lista(nameof(FilaRecepcion.IdUbicacion), "Ubicación", 100, ubicaciones),
-                Lista(nameof(FilaRecepcion.Compra), "Se compró", 65,
-                    new List<string> { EstadosMaterial.Nombre(EstadosMaterial.Nuevo), EstadosMaterial.Nombre(EstadosMaterial.Usado) }));
-            // Lo que se puede cambiar va en blanco; lo pedido y la unidad, en el gris de siempre
+                Lista(nameof(FilaRecepcion.IdFamilia), "Familia", 95, familias),
+                Columna(nameof(FilaRecepcion.Grupo), "Grupo", 95, soloLectura: false),
+                Columna(nameof(FilaRecepcion.Caracteristica), "Característica", 115, soloLectura: false),
+                Columna(nameof(FilaRecepcion.Color), "Color", 65, soloLectura: false),
+                Columna(nameof(FilaRecepcion.Medidas), "Medidas", 80, soloLectura: false),
+                Columna(nameof(FilaRecepcion.Codigo), "Código", 65, soloLectura: false),
+                Columna(nameof(FilaRecepcion.Nota), "Nota", 90),
+                Columna(nameof(FilaRecepcion.Foto), "Foto", 35),
+                Columna(nameof(FilaRecepcion.Pedido), "Pedido", 45, "0.###"),
+                Columna(nameof(FilaRecepcion.Llego), "Llegó", 45, "0.###", soloLectura: false),
+                Lista(nameof(FilaRecepcion.IdTipoUnidad), "Unidad", 70, unidades),
+                Columna(nameof(FilaRecepcion.ValorUnitario), "Valor unitario", 60, "N2", soloLectura: false),
+                Lista(nameof(FilaRecepcion.IdVendedor), "Vendedor", 90, vendedoresLista),
+                Lista(nameof(FilaRecepcion.IdFabricante), "Fabricante", 90, fabricantes),
+                Lista(nameof(FilaRecepcion.IdUbicacion), "Ubicación", 90, ubicaciones));
+            // Lo que se puede cambiar va en blanco; lo pedido, en el gris de siempre.
+            // Nota y foto también se cambian, con doble clic (abren su ventana), no escribiendo en la casilla.
             foreach (DataGridViewColumn c in dgvRecepcion.Columns)
             {
-                if (!c.ReadOnly)
+                if (!c.ReadOnly || c.DataPropertyName == nameof(FilaRecepcion.Nota) || c.DataPropertyName == nameof(FilaRecepcion.Foto))
                 {
                     c.DefaultCellStyle.BackColor = Color.White;
                 }
             }
+            dgvRecepcion.Columns["col" + nameof(FilaRecepcion.Foto)].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvRecepcion.Columns["col" + nameof(FilaRecepcion.Llego)].DefaultCellStyle.Font = new Font("Arial", 10F, FontStyle.Bold);
+        }
+
+        /// <summary>
+        /// Doble clic en una casilla de la recepción: la nota abre una ventanita para escribirla, la foto
+        /// pide la imagen; el resto se edita en la misma casilla (las listas se abren solas).
+        /// </summary>
+        private void dgvRecepcion_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || !(dgvRecepcion.Rows[e.RowIndex].DataBoundItem is FilaRecepcion fila))
+            {
+                return;
+            }
+            var columna = dgvRecepcion.Columns[e.ColumnIndex];
+            if (columna.DataPropertyName == nameof(FilaRecepcion.Nota))
+            {
+                using (var ventana = new frmTexto($"Nota de {fila.Grupo}", fila.Nota))
+                {
+                    if (ventana.ShowDialog(this) == DialogResult.OK)
+                    {
+                        fila.Nota = string.IsNullOrWhiteSpace(ventana.Texto) ? null : ventana.Texto.Trim();
+                        dgvRecepcion.InvalidateRow(e.RowIndex);
+                    }
+                }
+                return;
+            }
+            if (columna.DataPropertyName == nameof(FilaRecepcion.Foto))
+            {
+                if (fila.Foto.Length > 0)
+                {
+                    int respuesta = Mensajes.Elegir(this, "¿Cargar otra foto o quitar la que tiene?", "Foto", "OTRA FOTO", "QUITAR", "CANCELAR");
+                    if (respuesta == 1)
+                    {
+                        fila.CambiarFoto(null);
+                    }
+                    if (respuesta != 0)
+                    {
+                        dgvRecepcion.InvalidateRow(e.RowIndex);
+                        MostrarFotoArriba(forzar: true);
+                        return;
+                    }
+                }
+                var foto = Imagenes.Elegir(this);
+                if (foto != null)
+                {
+                    fila.CambiarFoto(foto);
+                    dgvRecepcion.InvalidateRow(e.RowIndex);
+                    MostrarFotoArriba(forzar: true);
+                }
+                return;
+            }
+            if (!columna.ReadOnly)
+            {
+                dgvRecepcion.CurrentCell = dgvRecepcion[e.ColumnIndex, e.RowIndex];
+                dgvRecepcion.BeginEdit(true);
+                if (dgvRecepcion.EditingControl is ComboBox lista)
+                {
+                    lista.DroppedDown = true;
+                }
+            }
         }
 
         private static List<ElementoLista> ConNinguno(List<ElementoLista> lista)
@@ -526,18 +592,31 @@ namespace Aviones_2._0.Forms.Compras
             var pedido = PedidoSeleccionado();
             // Sin nada en la lista de compras, el recuadro Pedidos no se muestra
             grpPedidos.Visible = recepcion == null && pendientes.Count > 0;
+            // Se ve sólo lo que corresponde al paso: con pedidos abiertos, modificar, eliminar y cerrar;
+            // con pedidos cerrados (enviados), recibir
+            bool hayAbiertos = pendientes.Any(p => !p.Enviado);
+            botModificar.Visible = botEliminar.Visible = botCerrar.Visible = hayAbiertos;
+            botRecibir.Visible = pendientes.Any(p => p.Enviado);
             botModificar.Enabled = pedido != null && !pedido.Enviado;
-            botEliminar.Enabled = pedido != null;
+            botEliminar.Enabled = pedido != null;   // también un enviado, si se canceló la compra
             botImprimir.Enabled = dgvPedidos.Rows.Count > 0;
-            botCerrar.Enabled = pendientes.Any(p => !p.Enviado);
-            botRecibir.Enabled = pendientes.Any(p => p.Enviado);
         }
 
-        private void MostrarFotoArriba()
+        private void MostrarFotoArriba(bool forzar = false)
         {
-            int? id = recepcion != null
-                ? (dgvRecepcion.CurrentRow?.DataBoundItem as FilaRecepcion)?.IdMaterial
-                : PedidoSeleccionado()?.IdMaterial;
+            var fila = recepcion != null ? dgvRecepcion.CurrentRow?.DataBoundItem as FilaRecepcion : null;
+            if (fila != null && fila.FotoCambiada)
+            {
+                // Recibiendo, la foto que se acaba de elegir (todavía no está guardada)
+                fotoArriba = -1;
+                Imagenes.Mostrar(picArriba, Imagenes.DesdeBytes(fila.FotoNueva));
+                return;
+            }
+            if (forzar)
+            {
+                fotoArriba = -1;
+            }
+            int? id = recepcion != null ? fila?.IdMaterial : PedidoSeleccionado()?.IdMaterial;
             MostrarFoto(picArriba, id, ref fotoArriba);
         }
 
@@ -810,7 +889,8 @@ namespace Aviones_2._0.Forms.Compras
                 {
                     ArmarColumnasRecepcion();
                     filas = delVendedor
-                        .Select(p => new FilaRecepcion(p, materiales.Obtener(p.IdMaterial), lotes.ListarPorMaterial(p.IdMaterial).LastOrDefault()))
+                        .Select(p => new FilaRecepcion(p, materiales.Obtener(p.IdMaterial), lotes.ListarPorMaterial(p.IdMaterial).LastOrDefault(),
+                            materiales.ObtenerImagen(p.IdMaterial) != null))
                         .ToList();
                 }))
             {
@@ -820,6 +900,10 @@ namespace Aviones_2._0.Forms.Compras
             vendedorRecepcion = id == SinVendedor ? "sin vendedor" : "de " + nombre;
             dgvRecepcion.DataSource = recepcion;
             ModoRecepcion(true);
+            // Ninguna casilla activa hasta que se haga doble clic en una
+            dgvRecepcion.ClearSelection();
+            dgvRecepcion.CurrentCell = null;
+            MostrarFotoArriba(forzar: true);
         }
 
         private void ModoRecepcion(bool recibiendo)

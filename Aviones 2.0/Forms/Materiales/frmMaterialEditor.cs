@@ -64,6 +64,7 @@ namespace Aviones_2._0.Forms.Materiales
         }
 
         private int? familiaAvisada;
+        private Label labFoto;
 
         private void FamiliaCambiada()
         {
@@ -105,7 +106,8 @@ namespace Aviones_2._0.Forms.Materiales
             tlpPrincipal.RowCount++;
             tlpPrincipal.RowStyles.Insert(filaFoto, new RowStyle(SizeType.AutoSize));
             tlpPrincipal.SetCellPosition(flpImagen, new TableLayoutPanelCellPosition(1, filaFoto));
-            tlpPrincipal.Controls.Add(new Label { Text = "Foto", AutoSize = true, Margin = new Padding(3, 8, 3, 3) }, 0, filaFoto);
+            labFoto = new Label { Text = "Foto", AutoSize = true, Margin = new Padding(3, 8, 3, 3) };
+            tlpPrincipal.Controls.Add(labFoto, 0, filaFoto);
             tlpPrincipal.SetColumnSpan(grpLote, 2);
             tlpPrincipal.SetColumnSpan(flpBotones, 2);
             // Con Tab, la foto después de Unidad
@@ -299,10 +301,16 @@ namespace Aviones_2._0.Forms.Materiales
                 {
                     Text = "Nuevo material";
                     grpLote.Visible = !SinPrimerIngreso;
+                    // Un material que todavía no se compró: nota, unidad, foto y mínimo se completan al recibirlo
+                    foreach (var c in new Control[] { labNota, txtNota, labUnidad, flpUnidad, labFoto, flpImagen, labAComprar, flpMinimo })
+                    {
+                        c.Visible = !SinPrimerIngreso;
+                    }
                     cboFamilia.SelectedValue = idFamiliaSugerida ?? -1;
                     if (idFamiliaSugerida == null) cboFamilia.SelectedIndex = -1;
                     // Casi todo se cuenta en unidades: viene elegida
-                    cboUnidad.SelectedIndex = cboUnidad.FindStringExact("Unidades");
+                    int unidades = cboUnidad.FindStringExact("Unidades");
+                    cboUnidad.SelectedIndex = unidades >= 0 || cboUnidad.Items.Count == 0 || !SinPrimerIngreso ? unidades : 0;
                     dtpFecha.Value = DateTime.Today;
                 }
                 else

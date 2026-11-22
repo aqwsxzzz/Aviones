@@ -214,9 +214,15 @@ namespace Aviones_2._0.Data.Repositorios
         {
             using (var cn = Db.Abrir())
             {
-                cn.Execute("UPDATE dbo.Materiales SET Imagen = @imagen WHERE IdMaterial = @idMaterial",
-                    new { idMaterial, imagen });
+                GuardarImagen(cn, null, idMaterial, imagen);
             }
+        }
+
+        /// <summary>Guarda la foto dentro de una transacción ya abierta (por ejemplo, al pasar un pedido a stock).</summary>
+        internal static void GuardarImagen(IDbConnection cn, IDbTransaction tx, int idMaterial, byte[] imagen)
+        {
+            cn.Execute("UPDATE dbo.Materiales SET Imagen = @imagen WHERE IdMaterial = @idMaterial",
+                new { idMaterial, imagen }, tx);
         }
 
         private static void Validar(Material m)
