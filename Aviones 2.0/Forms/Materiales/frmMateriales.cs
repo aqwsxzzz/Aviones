@@ -56,6 +56,19 @@ namespace Aviones_2._0.Forms.Materiales
             // La columna Valor no necesita tanto lugar
             colValorDisponible.FillWeight = 45F;
             colValorDisponible.MinimumWidth = 60;
+            colValorDisponible.HeaderText = "Valor total";
+            // Con Fabricante y Ubicación agregados, las columnas de números ceden lugar a las de texto
+            foreach (var numero in new[] { colCantidad, colDispNuevo, colDispUsado, colDisponible })
+            {
+                numero.FillWeight = 40F;
+            }
+            colUnidad.FillWeight = 55F;
+            int despues = colDisponible.Index + 1;
+            dgvMateriales.Columns.Insert(despues, colFabricanteLotes);
+            dgvMateriales.Columns.Insert(despues + 1, colUbicacionLotes);
+            dgvMateriales.Columns.Insert(despues + 2, colValorUnitario);
+            // La lista de familias, con letra grande como los demás listados
+            cboFamilia.Font = new Font("Arial", 12F);
             labValor.SizeChanged += (s, e) => AlinearValor();
             splPrincipal.Panel1.SizeChanged += (s, e) => AcomodarLista();
         }
@@ -201,6 +214,17 @@ namespace Aviones_2._0.Forms.Materiales
                 return;
             }
             bool centrada = MaterialSeleccionado() == null && alta == null;
+            // Con el alta abierta al costado, el listado se angosta para terminar antes de la ventana
+            int ancho = anchoLista;
+            if (alta != null && alta.Visible)
+            {
+                int hastaElAlta = PointToClient(new Point(alta.Left, 0)).X - splPrincipal.Left - 16;
+                ancho = Math.Max(400, Math.Min(anchoLista, hastaElAlta));
+            }
+            if (!centrada && splPrincipal.SplitterDistance != ancho)
+            {
+                splPrincipal.SplitterDistance = ancho;
+            }
             ListaPrincipal.Acomodar(splPrincipal, dgvMateriales, anchoLista, centrada, flpFiltros, flpResumen);
             AlinearValor();
         }
@@ -305,6 +329,31 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 e.CellStyle.Font = Cursiva(e.CellStyle.Font);
             }
+            // En la madera, Color y Medidas son medidas: a la derecha se comparan mejor
+            if ((e.ColumnIndex == colColor.Index || e.ColumnIndex == colMedidas.Index)
+                && (m.Familia ?? "").Trim().StartsWith("Madera", StringComparison.CurrentCultureIgnoreCase))
+            {
+                e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+        }
+
+        // Sólo en este listado: de qué fabricante es y dónde está, y el valor unitario junto al total
+        private readonly DataGridViewTextBoxColumn colFabricanteLotes = ColumnaExtra(nameof(MaterialStock.Fabricante), "Fabricante", 75);
+        private readonly DataGridViewTextBoxColumn colUbicacionLotes = ColumnaExtra(nameof(MaterialStock.Ubicacion), "Ubicación", 75);
+        private readonly DataGridViewTextBoxColumn colValorUnitario = ColumnaExtra(nameof(MaterialStock.ValorUnitario), "Valor", 45, "N2");
+
+        private static DataGridViewTextBoxColumn ColumnaExtra(string propiedad, string titulo, float peso, string formato = null)
+        {
+            var c = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = propiedad, HeaderText = titulo, FillWeight = peso, MinimumWidth = 55, Name = "col" + propiedad + "Lista"
+            };
+            if (formato != null)
+            {
+                c.DefaultCellStyle.Format = formato;
+                c.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+            return c;
         }
 
         private readonly Dictionary<Font, Font> cursivas = new Dictionary<Font, Font>();
@@ -433,6 +482,8 @@ namespace Aviones_2._0.Forms.Materiales
                 // A la derecha, arrancando a la altura del listado
                 var area = Screen.FromControl(this).WorkingArea;
                 int arriba = dgvMateriales.PointToScreen(Point.Empty).Y;
+                // Del mismo largo que el listado
+                alta.MinimumSize = new Size(0, Math.Min(dgvMateriales.Height, area.Height - 24));
                 alta.Location = new Point(area.Right - alta.Width - 12, Math.Max(area.Top, Math.Min(arriba, area.Bottom - alta.Height)));
             };
             alta.FormClosed += (s, a) => AltaCerrada();
@@ -442,6 +493,7 @@ namespace Aviones_2._0.Forms.Materiales
             dgvMateriales.DefaultCellStyle.SelectionForeColor = Color.Black;
             MostrarDetalle();
             alta.Show(this);
+            AcomodarLista();   // ya ubicada la ventana, el listado se angosta hasta ella
         }
 
         /// <summary>El filtro de familia que había antes de abrir el alta, para volver a él si se cancela.</summary>
@@ -466,7 +518,8 @@ namespace Aviones_2._0.Forms.Materiales
             Mensajes.Intentar(this, () =>
             {
                 CargarFamilias();
-                // Vuelve al listado de antes (o a todos, para ver el nuevo); el total se recalcula con él
+                // Guardado, vuelve al listado general; cancelado, a como estaba. En los dos casos sin nada
+                // elegido (el listado queda centrado) y con el total del listado que se ve.
                 if (idNuevo > 0)
                 {
                     LimpiarFiltros();
@@ -477,15 +530,13 @@ namespace Aviones_2._0.Forms.Materiales
                     cboFamilia.SelectedValue = familiaAntesDelAlta ?? 0;
                     cargando = false;
                 }
-                CargarMateriales(idNuevo > 0 ? idNuevo : (int?)null);
-                if (idNuevo == 0)
-                {
-                    cargando = true;
-                    dgvMateriales.ClearSelection();
-                    dgvMateriales.CurrentCell = null;
-                    cargando = false;
-                    MostrarDetalle();
-                }
+                CargarMateriales();
+                cargando = true;
+                dgvMateriales.ClearSelection();
+                dgvMateriales.CurrentCell = null;
+                cargando = false;
+                splPrincipal.SplitterDistance = anchoLista;
+                MostrarDetalle();
             });
             Activate();
         }
@@ -640,7 +691,9 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 titulo += $" - \"{txtBuscar.Text.Trim()}\"";
             }
-            ImpresionGrilla.VistaPrevia(this, dgvMateriales, titulo, $"{labResumen.Text}   ·   {labValor.Text}");
+            // Lo agregado al listado de la pantalla no va en la impresión, que sigue como estaba
+            ImpresionGrilla.VistaPrevia(this, dgvMateriales, titulo, $"{labResumen.Text}   ·   {labValor.Text}",
+                colFabricanteLotes, colUbicacionLotes, colValorUnitario);
         }
 
         #endregion

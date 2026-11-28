@@ -47,35 +47,61 @@ namespace Aviones_2._0.Data.Repositorios
         }
 
         /// <summary>
-        /// Corrige los datos del lote (no si se compró nuevo o usado). Si cambia la cantidad, el stock
-        /// de la compra (nuevo, o usado si se compró usado) cambia en la misma diferencia;
-        /// no puede quedar negativo.
+        /// Corrige los datos del lote. Si cambia la cantidad, el stock de la compra (nuevo, o usado si se
+        /// compró usado) cambia en la misma diferencia; no puede quedar negativo. Si se compró nuevo o usado
+        /// se puede cambiar mientras no haya salido nada del lote: todo pasa al otro stock.
         /// </summary>
         public void Actualizar(Lote lote)
         {
-            Validar(lote);
             using (var cn = Db.Abrir())
+            using (var tx = cn.BeginTransaction())
             {
-                int filas = cn.Execute(@"
-                    UPDATE dbo.Lotes SET
-                        IdFabricante = @IdFabricante, IdUbicacion = @IdUbicacion, ValorUnitario = @ValorUnitario,
-                        FechaIngreso = @FechaIngreso,
-                        DisponibleNuevo = CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo + (@Cantidad - Cantidad) ELSE 0 END,
-                        DisponibleUsado = CASE WHEN CompradoUsado = 1 THEN DisponibleUsado + (@Cantidad - Cantidad) ELSE DisponibleUsado END,
-                        Cantidad = @Cantidad
-                    WHERE IdLote = @IdLote
-                      AND (CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo ELSE DisponibleUsado END) + (@Cantidad - Cantidad) >= 0", lote);
-                if (filas == 0)
-                {
-                    throw new ReglaNegocioException("La cantidad no puede ser menor que lo que ya salió del lote (usado en modelos o descartado).");
-                }
-                var actual = cn.QuerySingle<Lote>($"{Consulta} WHERE L.IdLote = @IdLote", lote);
-                lote.CompradoUsado = actual.CompradoUsado;
-                lote.DisponibleNuevo = actual.DisponibleNuevo;
-                lote.DisponibleUsado = actual.DisponibleUsado;
-                lote.Fabricante = actual.Fabricante;
-                lote.Ubicacion = actual.Ubicacion;
+                Actualizar(cn, tx, lote);
+                tx.Commit();
             }
+        }
+
+        /// <summary>Lo mismo dentro de una transacción ya abierta (por ejemplo, al modificar el material con su lote).</summary>
+        internal static void Actualizar(IDbConnection cn, IDbTransaction tx, Lote lote)
+        {
+            Validar(lote);
+            var antes = cn.QuerySingleOrDefault<Lote>($"{Consulta} WHERE L.IdLote = @IdLote", lote, tx)
+                ?? throw new ReglaNegocioException("El lote ya no existe.");
+            if (lote.CompradoUsado != antes.CompradoUsado)
+            {
+                int usos = cn.ExecuteScalar<int>("SELECT COUNT(*) FROM dbo.MaterialesModelo WHERE IdLote = @IdLote", lote, tx);
+                decimal deLaCompra = antes.CompradoUsado ? antes.DisponibleUsado : antes.DisponibleNuevo;
+                decimal delOtro = antes.CompradoUsado ? antes.DisponibleNuevo : antes.DisponibleUsado;
+                if (usos > 0 || deLaCompra != antes.Cantidad || delOtro != 0)
+                {
+                    throw new ReglaNegocioException(
+                        "Si se compró nuevo o usado se puede cambiar sólo mientras no salió nada del lote (no se usó en modelos ni se descartó).");
+                }
+                cn.Execute(@"
+                    UPDATE dbo.Lotes SET CompradoUsado = @CompradoUsado,
+                        DisponibleNuevo = CASE WHEN @CompradoUsado = 1 THEN 0 ELSE Cantidad END,
+                        DisponibleUsado = CASE WHEN @CompradoUsado = 1 THEN Cantidad ELSE 0 END
+                    WHERE IdLote = @IdLote", lote, tx);
+            }
+            int filas = cn.Execute(@"
+                UPDATE dbo.Lotes SET
+                    IdFabricante = @IdFabricante, IdUbicacion = @IdUbicacion, ValorUnitario = @ValorUnitario,
+                    FechaIngreso = @FechaIngreso,
+                    DisponibleNuevo = CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo + (@Cantidad - Cantidad) ELSE 0 END,
+                    DisponibleUsado = CASE WHEN CompradoUsado = 1 THEN DisponibleUsado + (@Cantidad - Cantidad) ELSE DisponibleUsado END,
+                    Cantidad = @Cantidad
+                WHERE IdLote = @IdLote
+                  AND (CASE WHEN CompradoUsado = 0 THEN DisponibleNuevo ELSE DisponibleUsado END) + (@Cantidad - Cantidad) >= 0", lote, tx);
+            if (filas == 0)
+            {
+                throw new ReglaNegocioException("La cantidad no puede ser menor que lo que ya salió del lote (usado en modelos o descartado).");
+            }
+            var actual = cn.QuerySingle<Lote>($"{Consulta} WHERE L.IdLote = @IdLote", lote, tx);
+            lote.CompradoUsado = actual.CompradoUsado;
+            lote.DisponibleNuevo = actual.DisponibleNuevo;
+            lote.DisponibleUsado = actual.DisponibleUsado;
+            lote.Fabricante = actual.Fabricante;
+            lote.Ubicacion = actual.Ubicacion;
         }
 
         public void Eliminar(int idLote)

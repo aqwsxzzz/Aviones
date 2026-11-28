@@ -18,8 +18,11 @@ namespace Aviones_2._0.Common
         private readonly string titulo;
         private readonly string pie;
         private readonly Font fuenteTitulo = new Font("Arial", 14F, FontStyle.Bold);
-        private readonly Font fuenteEncabezado = new Font("Arial", 8.5F, FontStyle.Bold);
-        private readonly Font fuente = new Font("Arial", 8.5F);
+        private Font fuenteEncabezado = new Font("Arial", 8.5F, FontStyle.Bold);
+        private Font fuente = new Font("Arial", 8.5F);
+        /// <summary>Si el listado no entra en la hoja, la letra se achica hasta acá antes de cortar textos.</summary>
+        private const float LetraMinima = 6F;
+        private readonly HashSet<DataGridViewColumn> sinImprimir;
         private List<DataGridViewColumn> columnas;
         /// <summary>Ancho natural de cada columna, en centésimas de pulgada (la unidad de la impresión).</summary>
         private float[] naturales;
@@ -29,22 +32,24 @@ namespace Aviones_2._0.Common
         /// <summary>Espacio a cada lado del texto en una celda.</summary>
         private const float Relleno = 4f;
 
-        private ImpresionGrilla(DataGridView grilla, string titulo, string pie)
+        private ImpresionGrilla(DataGridView grilla, string titulo, string pie, IEnumerable<DataGridViewColumn> sinImprimir)
         {
             this.grilla = grilla;
             this.titulo = titulo;
             this.pie = pie;
+            this.sinImprimir = new HashSet<DataGridViewColumn>(sinImprimir ?? Enumerable.Empty<DataGridViewColumn>());
         }
 
         /// <summary>Muestra la vista previa. Devuelve si se mandó a la impresora.</summary>
-        public static bool VistaPrevia(IWin32Window dueño, DataGridView grilla, string titulo, string pie = null)
+        /// <param name="sinImprimir">Columnas de la pantalla que no van en el papel.</param>
+        public static bool VistaPrevia(IWin32Window dueño, DataGridView grilla, string titulo, string pie = null, params DataGridViewColumn[] sinImprimir)
         {
             if (grilla.Rows.Count == 0)
             {
                 Mensajes.Aviso(dueño, "No hay nada para imprimir.");
                 return false;
             }
-            var impresion = new ImpresionGrilla(grilla, titulo, pie);
+            var impresion = new ImpresionGrilla(grilla, titulo, pie, sinImprimir);
             bool impreso = false;
             using (var documento = new PrintDocument { DocumentName = titulo })
             using (var vista = new PrintPreviewDialog { Document = documento, WindowState = FormWindowState.Maximized })
@@ -86,7 +91,7 @@ namespace Aviones_2._0.Common
         /// <summary>El ancho que necesita cada columna para su título (en un renglón) y su contenido más largo.</summary>
         private void Medir()
         {
-            columnas = grilla.Columns.Cast<DataGridViewColumn>().Where(c => c.Visible).OrderBy(c => c.DisplayIndex).ToList();
+            columnas = grilla.Columns.Cast<DataGridViewColumn>().Where(c => c.Visible && !sinImprimir.Contains(c)).OrderBy(c => c.DisplayIndex).ToList();
             using (var bmp = new Bitmap(1, 1))
             using (var g = Graphics.FromImage(bmp))
             {
@@ -125,6 +130,14 @@ namespace Aviones_2._0.Common
             if (pagina == 1)
             {
                 Medir(g);   // la impresora mide la letra distinto que la pantalla: se mide con la suya
+                // Si no entra, antes que cortar palabras se achica la letra
+                while (AnchoNatural > area.Width && fuente.Size > LetraMinima)
+                {
+                    float tamaño = Math.Max(LetraMinima, fuente.Size - 0.25F);
+                    fuente = new Font(fuente.FontFamily, tamaño);
+                    fuenteEncabezado = new Font(fuenteEncabezado.FontFamily, tamaño, FontStyle.Bold);
+                    Medir(g);
+                }
             }
 
             // Del ancho de su contenido; si no entra ni apaisado, se achican todas por igual

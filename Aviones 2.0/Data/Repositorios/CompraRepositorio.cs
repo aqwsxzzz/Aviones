@@ -39,7 +39,7 @@ namespace Aviones_2._0.Data.Repositorios
                            (SELECT TOP 1 L.ValorUnitario FROM dbo.Lotes L
                              WHERE L.IdMaterial = S.IdMaterial ORDER BY L.FechaIngreso DESC, L.IdLote DESC) AS UltimoPrecio
                     FROM dbo.vMaterialesStock S
-                    ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Medidas",
+                    ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Color, S.Medidas",
                     new { minimoGeneral }).ToList();
             }
         }

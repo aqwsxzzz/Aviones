@@ -115,6 +115,15 @@ namespace Aviones_2._0.Data
         /// <summary>Todo lo comprado x su valor unitario: esté guardado, usado o puesto en un modelo.</summary>
         public decimal Valor { get; set; }
 
+        /// <summary>Precio promedio de lo comprado: Valor / Cantidad (así Valor unitario x Cantidad = Valor).</summary>
+        public decimal ValorUnitario => Cantidad > 0 ? Valor / Cantidad : 0m;
+
+        /// <summary>Fabricante de sus lotes; "Varios" si son distintos. Sólo se llena en el listado de Materiales.</summary>
+        public string Fabricante { get; set; }
+
+        /// <summary>Ubicación de sus lotes; "Varios" si son distintas. Sólo se llena en el listado de Materiales.</summary>
+        public string Ubicacion { get; set; }
+
         public string Descripcion => string.Join(" ", new[] { Grupo, Caracteristica, Color, Medidas }
             .Where(t => !string.IsNullOrWhiteSpace(t)));
     }
@@ -264,6 +273,9 @@ namespace Aviones_2._0.Data
         public decimal Consumido => Cantidad - Disponible;
 
         public string Compra => CompradoUsado ? "Usado" : "Nuevo";
+
+        /// <summary>No salió nada ni volvió nada: todo sigue como se compró (se puede cambiar si fue nuevo o usado).</summary>
+        public bool Intacto => Consumido == 0 && (CompradoUsado ? DisponibleNuevo : DisponibleUsado) == 0;
 
         public decimal ValorUnitario { get; set; }
         public DateTime FechaIngreso { get; set; } = DateTime.Today;

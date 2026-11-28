@@ -53,7 +53,8 @@ namespace Aviones_2._0.Forms.Materiales
                 dtpFecha.Value = lote.FechaIngreso;
                 radCompraUsado.Checked = lote.CompradoUsado;
                 radCompraNuevo.Checked = !lote.CompradoUsado;
-                flpCompra.Enabled = false;   // cómo se compró no se cambia después
+                // Si se cargó como nuevo y era usado (o al revés), se corrige mientras no haya salido nada del lote
+                flpCompra.Enabled = lote.Intacto;
                 labUso.Text = $"Quedan {Numeros.Cantidad(lote.DisponibleNuevo)} nuevos y {Numeros.Cantidad(lote.DisponibleUsado)} usados"
                     + (lote.Consumido > 0 ? $"; salieron {Numeros.Cantidad(lote.Consumido)} (en modelos o descartados)." : ".")
                     + "\nSi cambia la cantidad, lo disponible " + (lote.CompradoUsado ? "usado" : "nuevo")

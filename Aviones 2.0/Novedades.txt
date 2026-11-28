@@ -4,6 +4,53 @@ Se muestran al abrir el programa después de actualizarlo, y desde el botón NOV
 Formato:  "= versión"  empieza una versión;  "* "  lo pedido;  "> "  lo que se hizo;
 "! "  en qué quedó distinto a lo pedido (opcional). Las demás líneas no se muestran.
 
+= 0.10.0
+* La ventana de NUEVO se superpone con el listado: achicar la columna Valor e igualar el largo del listado con el de la ventana.
+> Con NUEVO abierto, el listado se angosta para terminar antes de la ventana, y la ventana tiene el mismo largo que el listado.
+
+* Cuando la familia es Madera, Fabricante "BalsaUSA" y Ubicación "Cajas de madera" ya elegidos; con Enter se confirman.
+> Al elegir la familia, Fabricante y Ubicación vienen con los del último ingreso de esa familia (para la madera, BalsaUSA y las cajas de madera). Con Enter se confirman; si no, se eligen en sus listas.
+! Funciona para todas las familias, no sólo Madera: cada una trae lo que se usó la última vez. Si se cambia el fabricante o la ubicación a mano, se respeta.
+
+* Agrandar la letra de la lista de familias.
+> La lista de Familia de arriba tiene letra más grande.
+
+* Con Familia = Madera, Color y Medidas alineados a la derecha.
+> Así quedó, sólo en Madera.
+
+* Con Sistema de poder y Hélice, el orden tiene que ser Familia, Grupo, Característica, Color y Medidas.
+> El listado ahora se ordena por Familia, Grupo, Característica, Color y Medidas (antes no tenía en cuenta el color). Vale para todas las familias.
+
+* Código también con la lista de ayuda de palabras.
+> Así quedó, como Grupo, Característica, Color y Medidas.
+
+* Hay un Enter de más entre Estado del material y GUARDAR.
+> Enter en "Estado del material" guarda directamente.
+
+* Después de ingresar un material nuevo, volver al listado general centrado, sin el material nuevo elegido.
+> Así quedó.
+
+* Un material que se ingresó como Nuevo era Usado y no deja modificarlo.
+> En Modificar lote (y en Modificar material) se puede cambiar Nuevo/Usado mientras no haya salido nada de ese lote.
+! Si ya se usó en un modelo o se descartó algo, no se puede: se mezclaría lo que salió con lo que queda.
+
+* En el listado de Materiales, agregar Fabricante y Ubicación, y una columna Valor total = Valor x Cantidad. Sólo en esta pantalla.
+> El listado tiene Fabricante, Ubicación, Valor (por unidad) y Valor total. La impresión sigue como antes.
+! Un material puede tener varias compras (lotes) de distintos fabricantes o lugares: si son todos iguales se ve el nombre, si no "Varios". El Valor es el promedio por unidad de lo comprado, así Valor x Cantidad da el Valor total.
+
+* MODIFICAR un material: pantalla más grande y con todos los datos, para no modificar en dos lugares.
+> Si el material tiene una sola compra (lo habitual), Modificar trae también los datos del lote (fabricante, ubicación, cantidad, valor, fecha y estado) y se guarda todo junto.
+! Si tiene varias compras, cada una se sigue corrigiendo con Modificar lote: en una sola pantalla no entran varios lotes.
+
+* Impresión de Materiales: que no se corten palabras y que los títulos (Nuevo, Usado, Valor) no pasen a un segundo renglón; también en papel.
+> Si el listado no entra en la hoja, la letra se achica hasta que entra todo entero, con cada título en un renglón.
+
+* "Agregar material sin stock" crea un material que aparece en Materiales; todavía es una solicitud y debería aparecer recién al recibirlo.
+> Un material que nunca tuvo stock y está pedido no aparece en Materiales; aparece al recibirlo (en Compras sí se ve).
+
+* El vendedor no tenía nada; en "Llegó" puse 0 y no deja eliminar el pedido ni limpiar la lista de compras.
+> Si no llegó nada, PASAR A STOCK pregunta si se saca de la lista de compras. Si de algunos llegó y de otros no, al terminar pregunta si los que no llegaron siguen esperando o se sacan. Si un material se había creado sólo para ese pedido (nunca tuvo stock), ofrece borrarlo también (lo mismo con ELIMINAR).
+
 = 0.9.0
 * La ventana de NUEVO tapa el listado de materiales: achicar la columna Valor y bajar la ventana hasta la altura del listado.
 > La columna Valor es más angosta y la ventana arranca a la altura del listado.

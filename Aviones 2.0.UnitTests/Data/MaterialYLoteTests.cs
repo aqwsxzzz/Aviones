@@ -245,6 +245,46 @@ namespace Aviones_2._0.UnitTests.Data
         }
 
         [TestMethod]
+        public void LoteActualizar_NuevoPasaAUsadoMientrasNoSalioNada()
+        {
+            var (_, idLote) = CrearMaterialConLote(4m);
+            var lote = lotes.Obtener(idLote);
+            lote.CompradoUsado = true;
+            lotes.Actualizar(lote);
+            Assert.AreEqual(4m, lotes.Obtener(idLote).DisponibleUsado);
+            Assert.AreEqual(0m, lotes.Obtener(idLote).DisponibleNuevo);
+
+            // Usado en un modelo ya no se puede cambiar
+            new ModeloRepositorio().Crear(new Modelo { Nombre = "Cub", IdEstadoModelo = EstadoActivo },
+                new[] { new LoteAsignado(idLote, 1m, EstadosMaterial.Usado) });
+            lote = lotes.Obtener(idLote);
+            Assert.IsFalse(lote.Intacto);
+            lote.CompradoUsado = false;
+            Assert.ThrowsExactly<ReglaNegocioException>(() => lotes.Actualizar(lote));
+        }
+
+        [TestMethod]
+        public void ListarStock_SinLaSolicitudDeCompraYConFabricanteOVarios()
+        {
+            var (idMaterial, _) = CrearMaterialConLote(2m, fabricante: "Top Flite");
+            lotes.Crear(new Lote
+            {
+                IdMaterial = idMaterial, Cantidad = 1m,
+                IdFabricante = IdDe(ListaRepositorio.Fabricantes(), "Hitec"), IdUbicacion = IdDe(ListaRepositorio.Ubicaciones(), "Bolsa Macro")
+            });
+            int solicitud = materiales.Crear(new Material { IdFamilia = IdFamilia, Grupo = "Pedido", IdTipoUnidad = IdMetros });
+            new CompraRepositorio().CrearPedido(solicitud, 3m, null);
+
+            var lista = materiales.ListarStock();
+            Assert.AreEqual(idMaterial, lista.Single().IdMaterial);   // la solicitud no aparece
+            Assert.AreEqual("Varios", lista.Single().Fabricante);
+            Assert.AreEqual("Bolsa Macro", lista.Single().Ubicacion);
+
+            var ultimos = materiales.UltimosDeLaFamilia(IdFamilia);
+            Assert.AreEqual(IdDe(ListaRepositorio.Fabricantes(), "Hitec"), ultimos.IdFabricante);
+        }
+
+        [TestMethod]
         public void LoteEliminar_UsadoEnModeloNoSePuede()
         {
             var (_, idLote) = CrearMaterialConLote(5m);

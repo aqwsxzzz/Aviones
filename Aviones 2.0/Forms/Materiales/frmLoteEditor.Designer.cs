@@ -163,7 +163,7 @@ namespace Aviones_2._0.Forms.Materiales
             this.labCompra.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.labCompra.AutoSize = true;
             this.labCompra.Name = "labCompra";
-            this.labCompra.Text = "Se compró";
+            this.labCompra.Text = "Estado del material";
             //
             // flpCompra
             //

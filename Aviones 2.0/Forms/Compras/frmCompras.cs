@@ -779,10 +779,53 @@ namespace Aviones_2._0.Forms.Compras
         {
             var pedido = PedidoSeleccionado();
             if (pedido != null
-                && Mensajes.Confirmar(this, $"¿Sacar de la lista de compras {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} de {pedido.Material}?", "Eliminar pedido")
-                && Mensajes.Intentar(this, () => compras.EliminarPedido(pedido.IdPedido)))
+                && Mensajes.Confirmar(this, $"¿Sacar de la lista de compras {Numeros.Cantidad(pedido.Cantidad)} {pedido.TipoUnidad} de {pedido.Material}?", "Eliminar pedido"))
             {
+                SacarDeLaLista(new[] { (pedido.IdPedido, pedido.IdMaterial) });
                 Recargar(null);
+            }
+        }
+
+        /// <summary>
+        /// Saca pedidos de la lista de compras (ya no se compran o no van a llegar). Si un material existía
+        /// sólo por ese pedido (se creó con "Agregar material sin stock" y nunca tuvo stock), ofrece borrarlo también.
+        /// </summary>
+        private void SacarDeLaLista(IEnumerable<(int IdPedido, int IdMaterial)> pedidos)
+        {
+            var lista = pedidos.ToList();
+            if (!Mensajes.Intentar(this, () =>
+                {
+                    foreach (var p in lista)
+                    {
+                        compras.EliminarPedido(p.IdPedido);
+                    }
+                }))
+            {
+                return;
+            }
+            List<MaterialStock> solos = null;
+            if (!Mensajes.Intentar(this, () => solos = lista.Select(p => p.IdMaterial).Distinct()
+                    .Select(id => materiales.ObtenerStock(id))
+                    .Where(m => m != null && m.CantidadLotes == 0 && m.PedidoPendiente == 0 && materiales.ListarUsos(m.IdMaterial).Count == 0)
+                    .ToList()))
+            {
+                return;
+            }
+            if (solos.Count == 0)
+            {
+                return;
+            }
+            string nombres = string.Join("\n", solos.Select(m => $"    {m.Familia} {m.Descripcion}"));
+            if (Mensajes.Confirmar(this, $"Estos materiales se habían creado para el pedido y nunca tuvieron stock:\n\n{nombres}\n\n¿Borrarlos también?",
+                    "Materiales sin compra"))
+            {
+                Mensajes.Intentar(this, () =>
+                {
+                    foreach (var m in solos)
+                    {
+                        materiales.Eliminar(m.IdMaterial);
+                    }
+                });
             }
         }
 
@@ -960,17 +1003,25 @@ namespace Aviones_2._0.Forms.Compras
                 return;
             }
             int llegaron = filas.Count(f => f.Llego > 0);
+            var nada = filas.Where(f => f.Llego == 0).Select(f => (f.IdPedido, f.IdMaterial)).ToList();
             if (llegaron == 0)
             {
-                Mensajes.Aviso(this, "No llegó nada: escriba en \"Llegó\" cuánto se recibió de cada material.", "Pasar a stock");
+                // No llegó nada (por ejemplo, el vendedor no tenía): se saca de la lista o sigue esperando
+                if (Mensajes.Elegir(this, $"No llegó nada del pedido {vendedorRecepcion}.\n\n¿Sacarlo de la lista de compras? (no entra nada al stock)",
+                        "Pasar a stock", "SACARLO DE LA LISTA", "SIGUE ESPERANDO") == 0)
+                {
+                    SacarDeLaLista(nada);
+                    ModoRecepcion(false);
+                    Recargar(null);
+                }
                 return;
             }
 
             var pregunta = new List<string> { $"¿Pasar a stock {llegaron} {(llegaron == 1 ? "material" : "materiales")} del pedido {vendedorRecepcion}?" };
-            int faltan = filas.Count(f => f.Llego < f.Pedido);
-            if (faltan > 0)
+            int menos = filas.Count(f => f.Llego > 0 && f.Llego < f.Pedido);
+            if (menos > 0)
             {
-                pregunta.Add($"De {faltan} llegó menos o nada: lo que falta sigue pendiente.");
+                pregunta.Add($"De {menos} llegó menos: lo que falta sigue pendiente.");
             }
             int cambiados = filas.Count(f => f.Llego > 0 && f.MaterialCambiado);
             if (cambiados > 0)
@@ -985,6 +1036,13 @@ namespace Aviones_2._0.Forms.Compras
             var hoy = DateTime.Today;
             if (Mensajes.Intentar(this, () => compras.PasarAStock(filas.Select(f => f.ARecepcion(hoy)))))
             {
+                // Lo que no llegó: sigue esperando o se saca de la lista
+                if (nada.Count > 0 && Mensajes.Elegir(this,
+                        $"De {nada.Count} {(nada.Count == 1 ? "material" : "materiales")} no llegó nada.\n\n¿Siguen esperando en la lista de compras o se sacan?",
+                        "Pasar a stock", "SIGUEN ESPERANDO", "SACARLOS DE LA LISTA") == 1)
+                {
+                    SacarDeLaLista(nada);
+                }
                 ModoRecepcion(false);
                 Recargar(null);
             }

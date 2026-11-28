@@ -22,7 +22,14 @@ namespace Aviones_2._0.Forms.Materiales
         private readonly int? idFamiliaSugerida;
         private byte[] imagen;
         private bool imagenCambiada;
-        private Sugerencias sugGrupo, sugCaracteristica, sugColor, sugMedidas;
+        private Sugerencias sugGrupo, sugCaracteristica, sugColor, sugMedidas, sugCodigo;
+        private Sugerencias[] Todas => new[] { sugGrupo, sugCaracteristica, sugColor, sugMedidas, sugCodigo };
+
+        /// <summary>Al modificar, el único lote del material (se corrige en la misma pantalla); null si tiene varios.</summary>
+        private Lote loteUnico;
+
+        /// <summary>Fabricante y ubicación que puso el programa según la familia (si el usuario los cambia, se respetan).</summary>
+        private int? fabricanteSugerido, ubicacionSugerida;
 
         /// <summary>Se eligió la familia (Materiales filtra su listado con ella).</summary>
         public event Action<int> FamiliaElegida;
@@ -76,8 +83,34 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 familiaAvisada = id;
                 FamiliaElegida?.Invoke(id);
+                SugerirLugarDeCompra(id);
             }
             BeginInvoke((Action)(() => txtGrupo.Select()));
+        }
+
+        /// <summary>
+        /// En el primer ingreso, el fabricante y la ubicación del último lote de esa familia
+        /// (por ejemplo, la madera: BalsaUSA y las cajas de madera). Enter los confirma; si no, se eligen en sus listas.
+        /// </summary>
+        private void SugerirLugarDeCompra(int idFamilia)
+        {
+            if (!EsNuevo || !grpLote.Visible)
+            {
+                return;
+            }
+            Mensajes.Intentar(this, () =>
+            {
+                var (idFabricante, idUbicacion) = materiales.UltimosDeLaFamilia(idFamilia);
+                // Sólo si está vacío o lo había puesto el programa: lo que eligió el usuario no se toca
+                if (selFabricante.Valor == null || selFabricante.Valor == fabricanteSugerido)
+                {
+                    selFabricante.Valor = fabricanteSugerido = idFabricante;
+                }
+                if (selUbicacion.Valor == null || selUbicacion.Valor == ubicacionSugerida)
+                {
+                    selUbicacion.Valor = ubicacionSugerida = idUbicacion;
+                }
+            });
         }
 
         /// <summary>
@@ -90,6 +123,8 @@ namespace Aviones_2._0.Forms.Materiales
             tlpLote.SuspendLayout();
 
             tlpPrincipal.SetRowSpan(flpImagen, 1);
+            // Márgenes más chicos: al costado del listado tiene que terminar a su misma altura
+            tlpPrincipal.Padding = new Padding(14, 8, 14, 4);
             tlpPrincipal.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, 390F);
             tlpPrincipal.ColumnStyles.RemoveAt(2);
             tlpPrincipal.ColumnCount = 2;
@@ -119,7 +154,7 @@ namespace Aviones_2._0.Forms.Materiales
             // La foto a la izquierda y sus botones al lado
             flpImagen.FlowDirection = FlowDirection.LeftToRight;
             flpImagen.Margin = new Padding(3, 6, 3, 3);
-            picImagen.Size = new System.Drawing.Size(200, 150);
+            picImagen.Size = new System.Drawing.Size(200, 110);
             var botonesFoto = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, AutoSize = true, WrapContents = false, Margin = new Padding(10, 0, 0, 0) };
             foreach (var b in new[] { botCargarImagen, botQuitarImagen })
             {
@@ -173,7 +208,7 @@ namespace Aviones_2._0.Forms.Materiales
             {
                 return;
             }
-            foreach (var sug in new[] { sugGrupo, sugCaracteristica, sugColor, sugMedidas })
+            foreach (var sug in Todas)
             {
                 if (sug != null && sug.HayElegida)
                 {
@@ -189,6 +224,12 @@ namespace Aviones_2._0.Forms.Materiales
                 return;
             }
             e.Handled = e.SuppressKeyPress = true;
+            if (orden[actual] == flpEstado)
+            {
+                // Casi todo lo que se compra es nuevo: confirmado el estado, se guarda
+                botGuardar.PerformClick();
+                return;
+            }
             IrDespuesDe(orden[actual]);
         }
 
@@ -224,7 +265,7 @@ namespace Aviones_2._0.Forms.Materiales
         {
             if (keyData == Keys.Escape)
             {
-                foreach (var sug in new[] { sugGrupo, sugCaracteristica, sugColor, sugMedidas })
+                foreach (var sug in Todas)
                 {
                     if (sug != null && sug.Abierta)
                     {
@@ -266,7 +307,7 @@ namespace Aviones_2._0.Forms.Materiales
                     campo = txtMedidas;
                     break;
                 case nameof(MaterialStock.Codigo):
-                    txtCodigo.Text = origen.Codigo;
+                    sugCodigo.Poner(origen.Codigo);
                     campo = txtCodigo;
                     break;
                 case nameof(MaterialStock.TipoUnidad):
@@ -294,6 +335,7 @@ namespace Aviones_2._0.Forms.Materiales
                 sugCaracteristica = new Sugerencias(txtCaracteristica, materiales.ListarCaracteristicas());
                 sugColor = new Sugerencias(txtColor, materiales.ListarColores());
                 sugMedidas = new Sugerencias(txtMedidas, materiales.ListarMedidas());
+                sugCodigo = new Sugerencias(txtCodigo, materiales.ListarCodigos());
                 selFabricante.Cargar(null);
                 selUbicacion.Cargar(null);
 
@@ -312,13 +354,34 @@ namespace Aviones_2._0.Forms.Materiales
                     int unidades = cboUnidad.FindStringExact("Unidades");
                     cboUnidad.SelectedIndex = unidades >= 0 || cboUnidad.Items.Count == 0 || !SinPrimerIngreso ? unidades : 0;
                     dtpFecha.Value = DateTime.Today;
+                    if (idFamiliaSugerida.HasValue)
+                    {
+                        familiaAvisada = idFamiliaSugerida;
+                        SugerirLugarDeCompra(idFamiliaSugerida.Value);
+                    }
                 }
                 else
                 {
                     Text = "Modificar material";
-                    grpLote.Visible = false;
                     MostrarMaterial(materiales.Obtener(idMaterial.Value)
                         ?? throw new ReglaNegocioException("El material ya no existe."));
+                    // Con un solo lote (lo habitual) se corrige todo acá; con varios, cada uno con Modificar lote
+                    var susLotes = new LoteRepositorio().ListarPorMaterial(idMaterial.Value);
+                    loteUnico = susLotes.Count == 1 ? susLotes[0] : null;
+                    grpLote.Visible = loteUnico != null;
+                    if (loteUnico != null)
+                    {
+                        grpLote.Text = "Lote (su única compra)";
+                        selFabricante.Valor = loteUnico.IdFabricante;
+                        selUbicacion.Valor = loteUnico.IdUbicacion;
+                        txtCantidad.Text = Numeros.Cantidad(loteUnico.Cantidad);
+                        txtValor.Text = Numeros.Dinero(loteUnico.ValorUnitario);
+                        dtpFecha.Value = loteUnico.FechaIngreso;
+                        radUsado.Checked = loteUnico.CompradoUsado;
+                        radNuevo.Checked = !loteUnico.CompradoUsado;
+                        // Nuevo o usado se corrige mientras no haya salido nada del lote
+                        flpEstado.Enabled = loteUnico.Intacto;
+                    }
                     imagen = materiales.ObtenerImagen(idMaterial.Value);
                     Imagenes.Mostrar(picImagen, Imagenes.DesdeBytes(imagen), fotoMaxima);
                 }
@@ -455,7 +518,8 @@ namespace Aviones_2._0.Forms.Materiales
             }
 
             Lote primerLote = null;
-            if (EsNuevo && grpLote.Visible && !string.IsNullOrWhiteSpace(txtCantidad.Text))
+            bool conLote = grpLote.Visible && (loteUnico != null || !string.IsNullOrWhiteSpace(txtCantidad.Text));
+            if (conLote)
             {
                 if (!Numeros.TryLeer(txtCantidad.Text, out decimal cantidad) || cantidad <= 0)
                 {
@@ -469,6 +533,8 @@ namespace Aviones_2._0.Forms.Materiales
                 }
                 primerLote = new Lote
                 {
+                    IdLote = loteUnico?.IdLote ?? 0,
+                    IdMaterial = idMaterial ?? 0,
                     IdFabricante = selFabricante.Valor,
                     IdUbicacion = selUbicacion.Valor,
                     Cantidad = cantidad,
@@ -506,7 +572,7 @@ namespace Aviones_2._0.Forms.Materiales
                 }
                 else
                 {
-                    materiales.Actualizar(material);
+                    materiales.Actualizar(material, loteUnico != null ? primerLote : null);
                     IdMaterial = material.IdMaterial;
                 }
                 if (imagenCambiada || (EsNuevo && imagen != null))

@@ -40,10 +40,21 @@ namespace Aviones_2._0.Data.Repositorios
             {
                 condiciones.Add("S.PedidoPendiente > 0");
             }
+            // Lo pedido que nunca tuvo stock es todavía una solicitud de compra: entra al inventario al recibirlo
+            condiciones.Add("NOT (S.CantidadLotes = 0 AND S.PedidoPendiente > 0)");
 
-            string sql = "SELECT * FROM dbo.vMaterialesStock S"
-                + (condiciones.Count > 0 ? " WHERE " + string.Join(" AND ", condiciones) : "")
-                + " ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Medidas";
+            // Fabricante y ubicación de sus lotes: el nombre si todos tienen el mismo, "Varios" si no
+            string sql = @"
+                SELECT S.*,
+                    (SELECT CASE WHEN COUNT(DISTINCT ISNULL(L.IdFabricante, 0)) > 1 THEN 'Varios' ELSE MAX(F.Nombre) END
+                     FROM dbo.Lotes L LEFT JOIN dbo.Fabricantes F ON F.IdFabricante = L.IdFabricante
+                     WHERE L.IdMaterial = S.IdMaterial) AS Fabricante,
+                    (SELECT CASE WHEN COUNT(DISTINCT ISNULL(L.IdUbicacion, 0)) > 1 THEN 'Varios' ELSE MAX(U.Nombre) END
+                     FROM dbo.Lotes L LEFT JOIN dbo.Ubicaciones U ON U.IdUbicacion = L.IdUbicacion
+                     WHERE L.IdMaterial = S.IdMaterial) AS Ubicacion
+                FROM dbo.vMaterialesStock S"
+                + " WHERE " + string.Join(" AND ", condiciones)
+                + " ORDER BY S.Familia, S.Grupo, S.Caracteristica, S.Color, S.Medidas";
 
             using (var cn = Db.Abrir())
             {
@@ -94,11 +105,18 @@ namespace Aviones_2._0.Data.Repositorios
             }
         }
 
-        public void Actualizar(Material material)
+        /// <param name="lote">Si se pasa, su único lote corregido en la misma pantalla; se guarda todo junto.</param>
+        public void Actualizar(Material material, Lote lote = null)
         {
             using (var cn = Db.Abrir())
+            using (var tx = cn.BeginTransaction())
             {
-                Actualizar(cn, null, material);
+                Actualizar(cn, tx, material);
+                if (lote != null)
+                {
+                    LoteRepositorio.Actualizar(cn, tx, lote);
+                }
+                tx.Commit();
             }
         }
 
@@ -192,6 +210,25 @@ namespace Aviones_2._0.Data.Repositorios
         public List<string> ListarMedidas() => ListarDistintos("Medidas");
 
         /// <summary>Lo ya escrito en una columna, para sugerirlo al escribir.</summary>
+        public List<string> ListarCodigos() => ListarDistintos("Codigo");
+
+        /// <summary>
+        /// Fabricante y ubicación del último lote que entró de esa familia: lo más probable para un material
+        /// nuevo de la misma familia (por ejemplo, la madera de BalsaUSA va a las cajas de madera).
+        /// </summary>
+        public (int? IdFabricante, int? IdUbicacion) UltimosDeLaFamilia(int idFamilia)
+        {
+            using (var cn = Db.Abrir())
+            {
+                var lote = cn.QuerySingleOrDefault<Lote>(@"
+                    SELECT TOP 1 L.IdFabricante, L.IdUbicacion
+                    FROM dbo.Lotes L JOIN dbo.Materiales M ON M.IdMaterial = L.IdMaterial
+                    WHERE M.IdFamilia = @idFamilia
+                    ORDER BY L.FechaIngreso DESC, L.IdLote DESC", new { idFamilia });
+                return (lote?.IdFabricante, lote?.IdUbicacion);
+            }
+        }
+
         private static List<string> ListarDistintos(string columna)
         {
             using (var cn = Db.Abrir())
